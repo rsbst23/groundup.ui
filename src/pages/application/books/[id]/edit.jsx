@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   TextField,
   Button,
@@ -8,13 +8,10 @@ import {
   Typography,
   CircularProgress,
 } from "@mui/material";
-import { editBook, fetchBooks } from "../../../store/booksSlice";
+import { editBook, fetchBooks } from "../../../../store/booksSlice";
 
-const BookDetail = () => {
-  const { id } = useParams();
-  const location = useLocation(); // Get current path
-  const isEditMode = location.pathname.includes("/edit"); // Detect edit mode
-
+const EditBook = () => {
+  const { id } = useParams(); // Get ID from URL
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { books, loading, error } = useSelector((state) => state.books);
@@ -40,12 +37,15 @@ const BookDetail = () => {
     e.preventDefault();
     if (!title.trim() || !author.trim()) return;
 
-    const resultAction = await dispatch(
-      editBook({ id, book: { title: title.trim(), author: author.trim() } })
-    );
+    const payload = { id, title: title.trim(), author: author.trim() };
+    console.log("Updating book:", payload);
+
+    const resultAction = await dispatch(editBook(payload));
 
     if (editBook.fulfilled.match(resultAction)) {
-      navigate("/books");
+      navigate("../../");
+    } else {
+      console.error("Update failed:", resultAction.error);
     }
   };
 
@@ -55,7 +55,7 @@ const BookDetail = () => {
   return (
     <Box
       component="form"
-      onSubmit={isEditMode ? handleSubmit : (e) => e.preventDefault()}
+      onSubmit={handleSubmit}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -70,7 +70,7 @@ const BookDetail = () => {
       }}
     >
       <Typography variant="h5" align="center">
-        {isEditMode ? "Edit Book" : "View Book"}
+        Edit Book
       </Typography>
 
       <TextField
@@ -78,23 +78,19 @@ const BookDetail = () => {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         required
-        InputProps={{ readOnly: !isEditMode }}
       />
       <TextField
         label="Author"
         value={author}
         onChange={(e) => setAuthor(e.target.value)}
         required
-        InputProps={{ readOnly: !isEditMode }}
       />
 
-      {isEditMode && (
-        <Button type="submit" variant="contained">
-          Update Book
-        </Button>
-      )}
+      <Button type="submit" variant="contained">
+        Update Book
+      </Button>
     </Box>
   );
 };
 
-export default BookDetail;
+export default EditBook;

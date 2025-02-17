@@ -9,7 +9,7 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
-import { addBook } from "../../store/booksSlice";
+import { addBook } from "../../../store/booksSlice";
 
 const AddBook = () => {
   const [title, setTitle] = useState("");
@@ -27,7 +27,7 @@ const AddBook = () => {
         addBook({ title: title.trim(), author: author.trim() })
       );
       if (addBook.fulfilled.match(resultAction)) {
-        navigate("/books"); // Navigate only if API call succeeds
+        navigate("../"); // Navigate only if API call succeeds
       }
     } catch (error) {
       console.error("Failed to add book:", error);

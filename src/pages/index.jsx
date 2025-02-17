@@ -1,31 +1,28 @@
 import { Link } from "react-router-dom";
-import { Container, Typography, Button } from "@mui/material";
+import { Container, Typography, Button, Box } from "@mui/material";
 
 const Home = () => {
-  return (
-    <Container
-      sx={{
-        textAlign: "center",
-        paddingTop: "2rem",
-      }}
-    >
-      <Typography variant="h4" gutterBottom>
-        Welcome to the GroundUp Library 📚
-      </Typography>
-      <Typography variant="body1" paragraph>
-        Manage your books easily with our CRUD system.
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        component={Link}
-        to="/books"
-        sx={{ marginTop: "1rem" }}
-      >
-        View Books
-      </Button>
-    </Container>
-  );
+    return (
+        <Container
+            maxWidth="xl"
+            sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "80vh" }}
+        >
+            <Typography variant="h3" gutterBottom>
+                Welcome to the GroundUp App
+            </Typography>
+            <Typography variant="h6" sx={{ mb: 3, textAlign: "center" }}>
+                Manage your books and more with ease.
+            </Typography>
+            <Box sx={{ display: "flex", gap: 2 }}>
+                <Button component={Link} to="/login" variant="contained">
+                    Login
+                </Button>
+                <Button component={Link} to="/application" variant="outlined">
+                    Enter App
+                </Button>
+            </Box>
+        </Container>
+    );
 };
 
 export default Home;

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchBooks, removeBook } from "../../store/booksSlice";
+import { fetchBooks, removeBook } from "../../../store/booksSlice";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -45,7 +45,7 @@ const BooksList = () => {
       </Typography>
       <Button
         component={Link}
-        to="/books/add"
+        to="add"
         variant="contained"
         color="primary"
         sx={{ mb: 2 }}
@@ -60,7 +60,7 @@ const BooksList = () => {
               <>
                 <IconButton
                   component={Link}
-                  to={`/books/${book.id}/edit`}
+                  to={`${book.id}/edit`}
                   edge="end"
                   color="primary"
                 >
@@ -79,7 +79,7 @@ const BooksList = () => {
             <ListItemText
               primary={
                 <Link
-                  to={`/books/${book.id}`}
+                  to={`${book.id}`}
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
                   {book.title}
