@@ -1,13 +1,12 @@
-import React from "react";
-import Counter from "./components/Counter";
+import { BrowserRouter as Router } from "react-router-dom";
+import Layout from "./components/Layout";
+import { useRoutes } from "react-router-dom";
+import routes from "~react-pages";
 
-const App = () => {
-  return (
-    <div>
-      <h1>Welcome to GroundUp UI</h1>
-      <Counter />
-    </div>
-  );
-};
+console.log("Routes Loaded:", routes);
 
-export default App;
+export default function App() {
+  const elements = useRoutes(routes);
+
+  return <Layout>{elements}</Layout>;
+}
