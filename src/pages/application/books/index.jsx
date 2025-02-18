@@ -1,16 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBooks, removeBook } from "../../../store/booksSlice";
-import { Link } from "react-router-dom";
-import {
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
-  Typography,
-  Box,
-} from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
+import { Link, Button, List, ListItem, ListItemText, IconButton, Typography, Box } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
@@ -44,7 +36,7 @@ const BooksList = () => {
         Books List
       </Typography>
       <Button
-        component={Link}
+        component={RouterLink}
         to="add"
         variant="contained"
         color="primary"
@@ -59,7 +51,7 @@ const BooksList = () => {
             secondaryAction={
               <>
                 <IconButton
-                  component={Link}
+                  component={RouterLink}
                   to={`${book.id}/edit`}
                   edge="end"
                   color="primary"
@@ -78,11 +70,8 @@ const BooksList = () => {
           >
             <ListItemText
               primary={
-                <Link
-                  to={`${book.id}`}
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  {book.title}
+                <Link component={RouterLink} to={`${book.id}`}>
+                    {book.title}
                 </Link>
               }
               secondary={`Author: ${book.author}`}

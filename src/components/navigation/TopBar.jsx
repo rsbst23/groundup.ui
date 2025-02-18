@@ -1,21 +1,21 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, AppBar, Toolbar, Typography } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 
 const TopBar = () => {
     return (
-        <AppBar position="sticky" sx={{ zIndex: 1201 }}>
+        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             <Toolbar>
                 <Typography
                     variant="h6"
-                    component={Link}
+                    component={RouterLink}
                     to="/" // Link to the home page
                     sx={{
                         textDecoration: "none",
                         color: "inherit",
-                        "&:hover": { textDecoration: "underline" }
+                        "&:hover": { color: "white", textDecoration: "underline" }
                     }}
                 >
-                    GroundUp Application
+                    Ground Up
                 </Typography>
             </Toolbar>
         </AppBar>

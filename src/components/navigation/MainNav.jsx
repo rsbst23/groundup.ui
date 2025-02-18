@@ -3,18 +3,17 @@ import { Link } from "react-router-dom";
 
 const MainNav = () => {
     return (
-        <AppBar position="static" sx={{ width: "100%", boxShadow: 2, bgcolor: "primary.main" }}>
-            {/* Constrains content inside a full-width AppBar */}
+        <AppBar position="static" sx={{ color: "#ffffff", bgcolor: "primary.main" }}>
             <Container maxWidth="xl">
-                <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Toolbar>
                     {/* Left-aligned logo */}
                     <Typography
                         variant="h6"
                         component={Link}
                         to="/"
-                        sx={{ textDecoration: "none", color: "inherit" }}
+                        sx={{ textDecoration: "none", color: "#ffffff", fontWeight: "bold", "&:hover": { color: "white", textDecoration: "underline" } }}
                     >
-                        Ground Up App
+                        Ground Up
                     </Typography>
 
                     {/* Right-aligned buttons */}

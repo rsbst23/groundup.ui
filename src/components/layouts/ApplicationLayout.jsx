@@ -3,21 +3,30 @@ import { Box, CssBaseline } from "@mui/material";
 import Sidebar from "../navigation/Sidebar";
 import TopBar from "../navigation/TopBar";
 
+const drawerWidth = 240;
+const topBarHeight = 64; // Default height for MUI AppBar
+
 const ApplicationLayout = () => {
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", width: "100vw", height: "100vh" }}>
+        <Box sx={{ display: "flex", width: "100vw", height: "100vh" }}>
             <CssBaseline />
 
-            {/* TopBar should be above everything */}
-            <TopBar />
+            {/* TopBar (Fixed at Top) */}
+            <TopBar sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }} />
 
-            {/* Sidebar and main content in a flex container */}
-            <Box sx={{ display: "flex", flexGrow: 1 }}>
-                <Sidebar />
+            {/* Sidebar (Fixed Below TopBar) */}
+            <Sidebar />
 
-                <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                    <Outlet /> {/* This loads the page content */}
-                </Box>
+            {/* Main Content Area (Ensures Sidebar Doesn't Overlap) */}
+            <Box
+                component="main"
+                sx={{
+                    flexGrow: 1,
+                    p: 3,
+                    mt: `${topBarHeight}px`, // Pushes down to make space for TopBar
+                }}
+            >
+                <Outlet /> {/* Renders the current page content */}
             </Box>
         </Box>
     );
