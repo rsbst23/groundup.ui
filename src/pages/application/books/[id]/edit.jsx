@@ -9,12 +9,14 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { editBook, fetchBooks } from "../../../../store/booksSlice";
+import { usePage } from "../../../../contexts/PageContext";
 
 const EditBook = () => {
   const { id } = useParams(); // Get ID from URL
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { books, loading, error } = useSelector((state) => state.books);
+  const { setPageConfig } = usePage();
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -25,13 +27,21 @@ const EditBook = () => {
     }
   }, [dispatch, books.length]);
 
+    // Set the page title and actions when the component mounts
+    
+
   useEffect(() => {
     const book = books.find((b) => b.id.toString() === id);
     if (book) {
       setTitle(book.title);
       setAuthor(book.author);
+      setPageConfig({
+            title: book.title,
+            breadcrumb: "Book",
+            actions: (null),
+      });
     }
-  }, [books, id]);
+  }, [books, id, setPageConfig]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -25,12 +25,12 @@ const BooksList = () => {
         dispatch(fetchBooks());
     }, [dispatch]);
 
-    // Set the page title and actions when the component mounts
     useEffect(() => {
         setPageConfig({
-            title: "Books",
+            title: "Book List",
+            breadcrumb: "Books",
             actions: (
-                <Button component={RouterLink} to="add" variant="contained" color="primary">
+                <Button component={RouterLink} to="application/books/add" variant="contained" color="primary">
                     Add New Book
                 </Button>
             ),
@@ -44,7 +44,7 @@ const BooksList = () => {
     };
 
     return (
-        <Box>
+        <Paper sx={{ p: 2 }}>
             {loading ? (
                 <Typography variant="h6">Loading books...</Typography>
             ) : error ? (
@@ -54,40 +54,38 @@ const BooksList = () => {
             ) : books.length === 0 ? (
                 <Typography variant="h6">No books found.</Typography>
             ) : (
-                <Paper sx={{ p: 2 }}>
-                    <List>
-                        {books.map((book) => (
-                            <ListItem
-                                key={book.id}
-                                secondaryAction={
-                                    <>
-                                        <IconButton component={RouterLink} to={`${book.id}/edit`} color="primary">
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton onClick={() => handleDelete(book.id)} color="error">
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </>
+                <List>
+                    {books.map((book) => (
+                        <ListItem
+                            key={book.id}
+                            secondaryAction={
+                                <>
+                                    <IconButton component={RouterLink} to={`${book.id}/edit`} color="primary">
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton onClick={() => handleDelete(book.id)} color="error">
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </>
+                            }
+                        >
+                            <ListItemText
+                                primary={
+                                    <Typography
+                                        component={RouterLink}
+                                        to={`${book.id}`}
+                                        sx={{ textDecoration: "none", color: "inherit", "&:hover": { textDecoration: "underline" } }}
+                                    >
+                                        {book.title}
+                                    </Typography>
                                 }
-                            >
-                                <ListItemText
-                                    primary={
-                                        <Typography
-                                            component={RouterLink}
-                                            to={`${book.id}`}
-                                            sx={{ textDecoration: "none", color: "inherit", "&:hover": { textDecoration: "underline" } }}
-                                        >
-                                            {book.title}
-                                        </Typography>
-                                    }
-                                    secondary={`Author: ${book.author}`}
-                                />
-                            </ListItem>
-                        ))}
-                    </List>
-                </Paper>
+                                secondary={`Author: ${book.author}`}
+                            />
+                        </ListItem>
+                    ))}
+                </List>
             )}
-        </Box>
+        </Paper>
     );
 };
 

@@ -2,7 +2,7 @@ import { Drawer, List, ListItemButton, ListItemText } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
 const drawerWidth = 240;
-const topBarHeight = 128;
+const topBarHeight = 64; // TopBar height
 
 const Sidebar = () => {
     return (
@@ -14,10 +14,10 @@ const Sidebar = () => {
                 [`& .MuiDrawer-paper`]: {
                     width: drawerWidth,
                     boxSizing: "border-box",
-                    top: `${topBarHeight}px`, // Moves below TopBar
-                    height: `calc(100vh - ${topBarHeight}px)`, // Fills remaining height
-                    backgroundColor: "#ffffff",
-                    borderRight: "0px solid #e0e0e0",
+                    top: `${topBarHeight}px`, // Start under TopBar
+                    height: `calc(100vh - ${topBarHeight}px)`, // Fill rest of viewport
+                    backgroundColor: "background.default",
+                    borderRight: "1px solid #ddd",
                 },
             }}
         >

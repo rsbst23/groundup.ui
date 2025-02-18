@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -10,13 +10,23 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { addBook } from "../../../store/booksSlice";
+import { usePage } from "../../../contexts/PageContext";
 
 const AddBook = () => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.books);
+    const [title, setTitle] = useState("");
+    const [author, setAuthor] = useState("");
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { loading, error } = useSelector((state) => state.books);
+    const { setPageConfig } = usePage();
+
+    useEffect(() => {
+        setPageConfig({
+            title: "Add Book",
+            breadcrumb: "Add Book",
+            actions: (null),
+        });
+    }, [setPageConfig]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

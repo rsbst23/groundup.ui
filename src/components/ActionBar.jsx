@@ -1,39 +1,31 @@
-import { Box, Typography, Breadcrumbs, Link, Container, Paper } from "@mui/material";
-import { usePage } from "../contexts/PageContext";
+import { Box, Typography, Breadcrumbs, Link, Paper } from "@mui/material";
 
-const actionBarHeight = 64;
-
-const ActionBar = () => {
-    const { pageConfig } = usePage();
-
+const ActionBar = ({ title, breadcrumb, actions }) => {
     return (
         <Paper
             elevation={2}
             sx={{
-                width: "100vw",
-                height: `${actionBarHeight}px`,
+                width: "100%",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                px: 3,
+                p: 1,
+                pl: 2,
+                pr: 2,
                 backgroundColor: "#ffffff",
-                borderRadius: 0,
-                boxShadow: 0,
-                zIndex: 10,
-                position: "fixed",
-                top: 64, // Ensures it sits below the TopBar
-                left: 0,
-            //    borderBottom: "1px solid #ccc",
+                borderRadius: 1,
+                boxShadow: 1,
+                mb: 3, // Ensures spacing between ActionBar and content
             }}
         >
             <Box>
-                <Typography variant="h6">{pageConfig.title}</Typography>
+                <Typography variant="h6">{title}</Typography>
                 <Breadcrumbs>
                     <Link color="inherit">Home</Link>
-                    <Typography color="text.primary">{pageConfig.title}</Typography>
+                    <Typography color="text.primary">{breadcrumb}</Typography>
                 </Breadcrumbs>
             </Box>
-            <Box>{pageConfig.actions}</Box>
+            <Box>{actions}</Box>
         </Paper>
     );
 };
