@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 const TopBar = () => {
     return (
-        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <AppBar position="fixed" sx={{ boxShadow: 0, zIndex: (theme) => theme.zIndex.drawer + 1 } }>
             <Toolbar>
                 <Typography
                     variant="h6"

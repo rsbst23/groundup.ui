@@ -2,85 +2,93 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBooks, removeBook } from "../../../store/booksSlice";
 import { Link as RouterLink } from "react-router-dom";
-import { Link, Button, List, ListItem, ListItemText, IconButton, Typography, Box } from "@mui/material";
+import {
+    Button,
+    List,
+    ListItem,
+    ListItemText,
+    IconButton,
+    Typography,
+    Box,
+    Paper,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { usePage } from "../../../contexts/PageContext";
 
 const BooksList = () => {
-  const dispatch = useDispatch();
-  const { books, loading, error } = useSelector((state) => state.books);
+    const dispatch = useDispatch();
+    const { books, loading, error } = useSelector((state) => state.books);
+    const { setPageConfig } = usePage();
 
-  useEffect(() => {
-    dispatch(fetchBooks());
-  }, [dispatch]);
+    useEffect(() => {
+        dispatch(fetchBooks());
+    }, [dispatch]);
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this book?")) {
-      dispatch(removeBook(id));
-    }
-  };
+    // Set the page title and actions when the component mounts
+    useEffect(() => {
+        setPageConfig({
+            title: "Books",
+            actions: (
+                <Button component={RouterLink} to="add" variant="contained" color="primary">
+                    Add New Book
+                </Button>
+            ),
+        });
+    }, [setPageConfig]);
 
-  if (loading) return <Typography variant="h6">Loading books...</Typography>;
-  if (error)
+    const handleDelete = (id) => {
+        if (window.confirm("Are you sure you want to delete this book?")) {
+            dispatch(removeBook(id));
+        }
+    };
+
     return (
-      <Typography variant="h6" color="error">
-        Error: {error}
-      </Typography>
+        <Box>
+            {loading ? (
+                <Typography variant="h6">Loading books...</Typography>
+            ) : error ? (
+                <Typography variant="h6" color="error">
+                    Error: {error}
+                </Typography>
+            ) : books.length === 0 ? (
+                <Typography variant="h6">No books found.</Typography>
+            ) : (
+                <Paper sx={{ p: 2 }}>
+                    <List>
+                        {books.map((book) => (
+                            <ListItem
+                                key={book.id}
+                                secondaryAction={
+                                    <>
+                                        <IconButton component={RouterLink} to={`${book.id}/edit`} color="primary">
+                                            <EditIcon />
+                                        </IconButton>
+                                        <IconButton onClick={() => handleDelete(book.id)} color="error">
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </>
+                                }
+                            >
+                                <ListItemText
+                                    primary={
+                                        <Typography
+                                            component={RouterLink}
+                                            to={`${book.id}`}
+                                            sx={{ textDecoration: "none", color: "inherit", "&:hover": { textDecoration: "underline" } }}
+                                        >
+                                            {book.title}
+                                        </Typography>
+                                    }
+                                    secondary={`Author: ${book.author}`}
+                                />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Paper>
+            )}
+        </Box>
     );
-  if (books.length === 0)
-    return <Typography variant="h6">No books found.</Typography>;
-
-  return (
-    <Box sx={{ maxWidth: 600, margin: "auto", padding: 2 }}>
-      <Typography variant="h4" align="center" gutterBottom>
-        Books List
-      </Typography>
-      <Button
-        component={RouterLink}
-        to="add"
-        variant="contained"
-        color="primary"
-        sx={{ mb: 2 }}
-      >
-        Add New Book
-      </Button>
-      <List>
-        {books.map((book) => (
-          <ListItem
-            key={book.id}
-            secondaryAction={
-              <>
-                <IconButton
-                  component={RouterLink}
-                  to={`${book.id}/edit`}
-                  edge="end"
-                  color="primary"
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => handleDelete(book.id)}
-                  edge="end"
-                  color="error"
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </>
-            }
-          >
-            <ListItemText
-              primary={
-                <Link component={RouterLink} to={`${book.id}`}>
-                    {book.title}
-                </Link>
-              }
-              secondary={`Author: ${book.author}`}
-            />
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
 };
 
 export default BooksList;

@@ -4,7 +4,7 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
     palette: {
         primary: {
-            main: "#408800", // Primary color remains green
+            main: "#3a856a", // Primary color remains green
         },
         secondary: {
             main: "#ff9800",
@@ -34,10 +34,10 @@ const theme = createTheme({
                     borderRadius: "8px",
                     padding: "8px 16px",
                     textTransform: "none",
-                    backgroundColor: "#408800", // Default green button
+                    backgroundColor: "#3a856a", // Default green button
                     color: "#ffffff", // Default text color
                     "&:hover": {
-                        backgroundColor: "#2f6600", // Darker green on hover
+                        backgroundColor: "#1f7456", // Darker green on hover
                         color: "#ffffff", // Ensure text stays white on hover
                     },
                 }
@@ -49,7 +49,7 @@ const theme = createTheme({
                     textDecoration: "none",
                     color: "inherit", // Inherit color (avoids browser default blue links)
                     "&:hover": {
-                        color: "#408800",
+                        color: "#1f7456",
                     },
                 },
             },
@@ -59,7 +59,7 @@ const theme = createTheme({
                 root: {
                     width: "100%",
                     boxShadow: 2,
-                    backgroundColor: "#408800", // Keep navbar green
+                    backgroundColor: "#3a856a", // Keep navbar green
                     color: "#ffffff", // Ensure text is white in navbar
                     "&:hover": {
                         color: "#ffffff", // Keeps color unchanged on hover
