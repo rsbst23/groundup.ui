@@ -28,6 +28,9 @@ const Sidebar = () => {
                 <ListItemButton component={RouterLink} to="/application/books">
                     <ListItemText primary="Books" />
                 </ListItemButton>
+                <ListItemButton component={RouterLink} to="/application/inventorycategories">
+                    <ListItemText primary="Inventory Categories" />
+                </ListItemButton>
             </List>
         </Drawer>
     );
