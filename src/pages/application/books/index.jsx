@@ -1,20 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBooks, removeBook } from "../../../store/booksSlice";
 import { Link as RouterLink } from "react-router-dom";
 import {
     Button,
-    List,
-    ListItem,
-    ListItemText,
     IconButton,
     Typography,
-    Box,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
     Paper,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { usePage } from "../../../contexts/PageContext";
+import ListPageLayout from "../../../components/layouts/ListPageLayout";
 
 const BooksList = () => {
     const dispatch = useDispatch();
@@ -30,7 +33,7 @@ const BooksList = () => {
             title: "Book List",
             breadcrumb: "Books",
             actions: (
-                <Button component={RouterLink} to="application/books/add" variant="contained" color="primary">
+                <Button component={RouterLink} to="add" variant="contained" color="primary">
                     Add New Book
                 </Button>
             ),
@@ -44,33 +47,26 @@ const BooksList = () => {
     };
 
     return (
-        <Paper sx={{ p: 2 }}>
-            {loading ? (
-                <Typography variant="h6">Loading books...</Typography>
-            ) : error ? (
-                <Typography variant="h6" color="error">
-                    Error: {error}
-                </Typography>
-            ) : books.length === 0 ? (
-                <Typography variant="h6">No books found.</Typography>
-            ) : (
-                <List>
-                    {books.map((book) => (
-                        <ListItem
-                            key={book.id}
-                            secondaryAction={
-                                <>
-                                    <IconButton component={RouterLink} to={`${book.id}/edit`} color="primary">
-                                        <EditIcon />
-                                    </IconButton>
-                                    <IconButton onClick={() => handleDelete(book.id)} color="error">
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </>
-                            }
-                        >
-                            <ListItemText
-                                primary={
+        <ListPageLayout
+            title="Books"
+            actions={<Button component={RouterLink} to="add" variant="contained">Add New Book</Button>}
+            loading={loading}
+            error={error}
+        >
+            {/* Table View */}
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell><strong>Title</strong></TableCell>
+                            <TableCell><strong>Author</strong></TableCell>
+                            <TableCell align="right"><strong>Actions</strong></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {books.map((book) => (
+                            <TableRow key={book.id}>
+                                <TableCell>
                                     <Typography
                                         component={RouterLink}
                                         to={`${book.id}`}
@@ -78,14 +74,22 @@ const BooksList = () => {
                                     >
                                         {book.title}
                                     </Typography>
-                                }
-                                secondary={`Author: ${book.author}`}
-                            />
-                        </ListItem>
-                    ))}
-                </List>
-            )}
-        </Paper>
+                                </TableCell>
+                                <TableCell>{book.author}</TableCell>
+                                <TableCell align="right">
+                                    <IconButton component={RouterLink} to={`${book.id}/edit`} color="primary">
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton onClick={() => handleDelete(book.id)} color="error">
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </ListPageLayout>
     );
 };
 
