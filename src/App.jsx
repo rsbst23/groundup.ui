@@ -6,7 +6,6 @@ import routes from "~react-pages";
 console.log("Routes Loaded:", routes);
 
 export default function App() {
-  const elements = useRoutes(routes);
-
-  return <Layout>{elements}</Layout>;
+    const elements = useRoutes(routes);
+    return <Layout>{elements}</Layout>;
 }

@@ -8,16 +8,20 @@ import { BrowserRouter } from "react-router-dom";
 import Router from "./router";
 import theme from "./styles/theme";
 import "./styles/index.css";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  /*<StrictMode>*/
     <Provider store={store}>
         <ThemeProvider theme={theme}>
             <CssBaseline /> {/* Reset browser styles */}
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
             <BrowserRouter>
                 <Router />
             </BrowserRouter>
+            </LocalizationProvider>
         </ThemeProvider>
     </Provider>
-  </StrictMode>
+  /*</StrictMode>*/
 );

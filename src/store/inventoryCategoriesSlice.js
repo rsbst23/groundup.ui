@@ -6,21 +6,27 @@ import {
     deleteInventoryCategory,
 } from "../services/inventoryCategoryService";
 
-// Async Thunks with Error Handling
-
-// Fetch all categories
+// Fetch all categories with pagination
 export const fetchInventoryCategories = createAsyncThunk(
     "inventoryCategories/fetchAll",
-    async (_, { rejectWithValue }) => {
+    async ({ pageNumber = 1, pageSize = 10, sortBy = "Id", filters = {}, searchTerm = "" } = {}, { rejectWithValue }) => {
         try {
-            return await getInventoryCategories();
+            const response = await getInventoryCategories(pageNumber, pageSize, sortBy, filters, searchTerm);
+
+            return {
+                categories: response.data.items || [],
+                pageNumber: response.data.pageNumber,
+                pageSize: response.data.pageSize,
+                totalRecords: response.data.totalRecords,
+                totalPages: response.data.totalPages,
+            };
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 );
 
-// Add a category
+// Add a new category
 export const addInventoryCategory = createAsyncThunk(
     "inventoryCategories/add",
     async (category, { rejectWithValue }) => {
@@ -32,7 +38,7 @@ export const addInventoryCategory = createAsyncThunk(
     }
 );
 
-// Edit a category
+// Edit an existing category
 export const editInventoryCategory = createAsyncThunk(
     "inventoryCategories/edit",
     async ({ id, name }, { rejectWithValue }) => {
@@ -57,7 +63,7 @@ export const removeInventoryCategory = createAsyncThunk(
     }
 );
 
-// Slice
+// Slice definition
 const inventoryCategoriesSlice = createSlice({
     name: "inventoryCategories",
     initialState: {
@@ -65,18 +71,28 @@ const inventoryCategoriesSlice = createSlice({
         loading: false,
         deletingId: null, // Track which category is being deleted
         error: null,
+        pageNumber: 1,
+        pageSize: 10,
+        totalRecords: 0,
+        totalPages: 1,
     },
     reducers: {},
     extraReducers: (builder) => {
         builder
             // Fetch Categories
             .addCase(fetchInventoryCategories.pending, (state) => {
-                state.loading = true;
-                state.error = null;
+                if (!state.loading) { // Prevent multiple pending states triggering another fetch
+                    state.loading = true;
+                    state.error = null;
+                }
             })
             .addCase(fetchInventoryCategories.fulfilled, (state, action) => {
                 state.loading = false;
-                state.categories = action.payload;
+                state.categories = action.payload.categories || [];
+                state.pageNumber = action.payload.pageNumber;
+                state.pageSize = action.payload.pageSize;
+                state.totalRecords = action.payload.totalRecords;
+                state.totalPages = action.payload.totalPages;
             })
             .addCase(fetchInventoryCategories.rejected, (state, action) => {
                 state.loading = false;
@@ -104,9 +120,7 @@ const inventoryCategoriesSlice = createSlice({
             })
             .addCase(editInventoryCategory.fulfilled, (state, action) => {
                 state.loading = false;
-                const index = state.categories.findIndex(
-                    (c) => c.id === action.payload.id
-                );
+                const index = state.categories.findIndex((c) => c.id === action.payload.id);
                 if (index !== -1) state.categories[index] = action.payload;
             })
             .addCase(editInventoryCategory.rejected, (state, action) => {
@@ -120,9 +134,7 @@ const inventoryCategoriesSlice = createSlice({
             })
             .addCase(removeInventoryCategory.fulfilled, (state, action) => {
                 state.deletingId = null;
-                state.categories = state.categories.filter(
-                    (c) => c.id !== action.payload
-                );
+                state.categories = state.categories.filter((c) => c.id !== action.payload);
             })
             .addCase(removeInventoryCategory.rejected, (state, action) => {
                 state.deletingId = null;
