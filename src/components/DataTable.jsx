@@ -123,9 +123,7 @@ const DataTable = ({
             {loading ? (
                 <Typography variant="h6">Loading data...</Typography>
             ) : error ? (
-                <Typography variant="h6" color="error">
-                    Error: {String(error)}
-                </Typography>
+                null
             ) : (
                 <>
                     {/* Scrollable table with a sticky header */}

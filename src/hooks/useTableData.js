@@ -46,10 +46,9 @@ const useTableData = ({ fetchAction, removeAction, dataSelector, defaultSort = "
                     sortBy: sortDirection === "desc" ? `-${sortBy}` : sortBy,
                     filters,
                 })
-            ).unwrap();
-            setInitialLoading(false);
-        } catch (error) {
-            console.error("useTableData - Fetch error:", error);
+            );
+        } finally {
+            setInitialLoading(false); // Ensure loading state is always updated
         }
     };
 

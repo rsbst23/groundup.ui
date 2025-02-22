@@ -13,15 +13,27 @@ export const fetchInventoryCategories = createAsyncThunk(
         try {
             const response = await getInventoryCategories(pageNumber, pageSize, sortBy, filters, searchTerm);
 
+            // If API returns an error response, reject the promise
+            if (!response.success) {
+                return rejectWithValue({
+                    message: response.message || "An error occurred while retrieving data.",
+                    errors: response.errors || [],
+                });
+            }
+
             return {
-                categories: response.data.items || [],
-                pageNumber: response.data.pageNumber,
-                pageSize: response.data.pageSize,
-                totalRecords: response.data.totalRecords,
-                totalPages: response.data.totalPages,
+                categories: response.data?.items || [],
+                pageNumber: response.data?.pageNumber || 1,
+                pageSize: response.data?.pageSize || 10,
+                totalRecords: response.data?.totalRecords || 0,
+                totalPages: response.data?.totalPages || 1,
             };
         } catch (error) {
-            return rejectWithValue(error.message);
+            console.error("fetchInventoryCategories - Error:", error);
+            return rejectWithValue({
+                message: "A network or unexpected error occurred.",
+                errors: [error.message || "Unknown error"],
+            });
         }
     }
 );

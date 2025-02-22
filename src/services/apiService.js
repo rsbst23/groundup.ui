@@ -1,11 +1,33 @@
 import API_BASE_URL from "../config/apiConfig";
 
 const request = async (url, options = {}) => {
-    const response = await fetch(url, options);
-    if (!response.ok) {
-        throw new Error(`Request failed: ${response.statusText}`);
+    try {
+        const response = await fetch(url, options);
+        const isJsonResponse = response.headers.get("content-type")?.includes("application/json");
+        const data = isJsonResponse ? await response.json() : null; // Parse JSON only if available
+
+        if (!response.ok) {
+            console.error("API Error Response:", data);
+
+            // Throw structured API response if available, otherwise fallback to statusText
+            throw {
+                success: false,
+                message: data?.message || `Request failed: ${response.statusText}`,
+                errors: data?.errors || [],
+            };
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Network/API Request Failed:", error);
+
+        // Handle network errors separately
+        throw {
+            success: false,
+            message: error.message || "Network error. Please try again.",
+            errors: error.errors || ["Unexpected error occurred."],
+        };
     }
-    return response.status !== 204 ? await response.json() : null; // Handle DELETE which returns no content
 };
 
 const apiService = {
