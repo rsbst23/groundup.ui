@@ -128,8 +128,9 @@ const DataTable = ({
                 </Typography>
             ) : (
                 <>
-                    <TableContainer>
-                        <Table>
+                    {/* Scrollable table with a sticky header */}
+                    <TableContainer sx={{ maxHeight: "500px" }}>
+                        <Table stickyHeader>
                             <TableHead>
                                 <TableRow>
                                     {columns.map((column) => (
@@ -157,7 +158,14 @@ const DataTable = ({
                             <TableBody>
                                 {data.length > 0 ? (
                                     data.map((row) => (
-                                        <TableRow key={row.id}>
+                                        <TableRow
+                                            key={row.id}
+                                            sx={{
+                                                "&:hover": {
+                                                    backgroundColor: (theme) => theme.palette.action.hover,
+                                                },
+                                            }}
+                                        >
                                             {columns.map((column) => (
                                                 <TableCell key={column.field}>{row[column.field]}</TableCell>
                                             ))}
@@ -213,9 +221,12 @@ const DataTable = ({
                                 <>
                                     <DatePicker
                                         label="Min Date"
+                                        autoFocus
                                         value={tempMinDate}
                                         onChange={(date) => setTempMinDate(date)}
-                                        renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
+                                        renderInput={(params) => (
+                                            <TextField {...params} autoFocus fullWidth margin="normal" />
+                                        )}
                                     />
                                     <DatePicker
                                         label="Max Date"
@@ -230,6 +241,7 @@ const DataTable = ({
                                     variant="outlined"
                                     fullWidth
                                     margin="normal"
+                                    autoFocus
                                     value={tempTextFilter}
                                     onChange={(event) => setTempTextFilter(event.target.value)}
                                 />

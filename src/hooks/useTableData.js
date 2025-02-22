@@ -38,7 +38,6 @@ const useTableData = ({ fetchAction, removeAction, dataSelector, defaultSort = "
     }, [page, rowsPerPage, sortBy, sortDirection, filters, hasUserInteracted]);
 
     const fetchData = async () => {
-        console.log("Fetching data with:", { pageNumber: page + 1, pageSize: rowsPerPage, sortBy, filters });
         try {
             const response = await dispatch(
                 fetchAction({
@@ -48,8 +47,6 @@ const useTableData = ({ fetchAction, removeAction, dataSelector, defaultSort = "
                     filters,
                 })
             ).unwrap();
-            console.log("useTableData - API Response:", response);
-            console.log("useTableData - Extracted items:", response?.data?.items || []);
             setInitialLoading(false);
         } catch (error) {
             console.error("useTableData - Fetch error:", error);

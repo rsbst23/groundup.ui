@@ -1,20 +1,19 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import ActionBar from "../../components/ActionBar"; // Assuming ActionBar is in /components
 import { usePage } from "../../contexts/PageContext";
 
 const PageLayout = () => {
-    const { pageConfig } = usePage(); // Get title, breadcrumb, and actions
+    const { pageConfig } = usePage();
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
-            {/* ActionBar now reads values from PageContext */}
-            <ActionBar
-                title={pageConfig?.title || "Untitled"}
-                breadcrumb={pageConfig?.breadcrumb || "Current Page"}
-                actions={pageConfig?.actions || null}
-            />
-            <Outlet /> {/* Renders the page's content */}
+            {/* Header using pageConfig's breadcrumb */}
+            <Box sx={{ pt: 2, pb: 2, borderBottom: "1px solid #ccc" }}>
+                <Typography variant="body2">
+                    Home / {pageConfig?.breadcrumb || "Current Page"}
+                </Typography>
+            </Box>
+            <Outlet />
         </Box>
     );
 };

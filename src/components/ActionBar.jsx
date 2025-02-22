@@ -19,13 +19,14 @@ const ActionBar = ({ title, breadcrumb, actions }) => {
             }}
         >
             <Box>
-                <Typography variant="h6">{title}</Typography>
                 <Breadcrumbs>
                     <Link color="inherit">Home</Link>
                     <Typography color="text.primary">{breadcrumb}</Typography>
                 </Breadcrumbs>
+                {/*<Typography variant="h6">{title}</Typography>*/}
+                
             </Box>
-            <Box>{actions}</Box>
+            {/*<Box>{actions}</Box>*/}
         </Paper>
     );
 };

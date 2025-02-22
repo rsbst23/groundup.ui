@@ -26,7 +26,9 @@ const ApplicationLayout = () => {
                         component="main"
                         sx={{
                             flexGrow: 1,
-                            padding: 3,
+                            pl: 3,
+                            pr: 3,
+                            pb: 3,
                             mt: `${topBarHeight}px`,
                             backgroundColor: "background.default",
                         }}
