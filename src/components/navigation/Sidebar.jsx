@@ -1,10 +1,38 @@
-import { Drawer, List, ListItemButton, ListItemText } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Drawer, List, ListItem, ListItemText } from "@mui/material";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+import navigationConfig from "../../config/navigationConfig"; // Import navigation structure
 
 const drawerWidth = 240;
 const topBarHeight = 64; // TopBar height
 
 const Sidebar = () => {
+    const location = useLocation();
+
+    // Sort paths by length (longest first) to ensure the most specific match is selected
+    const activeMainSection = Object.values(navigationConfig)
+        .sort((a, b) => b.path.length - a.path.length)
+        .find((section) => {
+            const dynamicPathMatch = section.path.replace(/:\w+/g, "[^/]+"); // Convert :id to regex pattern
+            const regex = new RegExp(`^${dynamicPathMatch}`);
+            return regex.test(location.pathname);
+        });
+
+    const sidebarItems = activeMainSection?.sidebar || [];
+
+    // ** Determine the single active item (deepest match wins) **
+    let activeItemPath = null;
+    sidebarItems.forEach((item) => {
+        item.highlightOn.forEach((path) => {
+            const dynamicMatch = path.replace(/:\w+/g, "[^/]+");
+            const regex = new RegExp(`^${dynamicMatch}`);
+            if (regex.test(location.pathname)) {
+                if (!activeItemPath || path.length > activeItemPath.length) {
+                    activeItemPath = path; // Select the deepest matching path
+                }
+            }
+        });
+    });
+
     return (
         <Drawer
             variant="permanent"
@@ -22,15 +50,20 @@ const Sidebar = () => {
             }}
         >
             <List>
-                <ListItemButton component={RouterLink} to="/application">
-                    <ListItemText primary="Dashboard" />
-                </ListItemButton>
-                <ListItemButton component={RouterLink} to="/application/books">
-                    <ListItemText primary="Books" />
-                </ListItemButton>
-                <ListItemButton component={RouterLink} to="/application/inventorycategories">
-                    <ListItemText primary="Inventory Categories" />
-                </ListItemButton>
+                {sidebarItems.map((item) => {
+                    const isSelected = item.highlightOn.includes(activeItemPath); // Now only one item is selected
+
+                    return (
+                        <ListItem
+                            key={item.path}
+                            component={RouterLink}
+                            to={item.path.replace(":id", "39")} // Replace with sample ID
+                            className={`sidebar-item ${isSelected ? "selected" : ""}`}
+                        >
+                            <ListItemText primary={item.label} />
+                        </ListItem>
+                    );
+                })}
             </List>
         </Drawer>
     );

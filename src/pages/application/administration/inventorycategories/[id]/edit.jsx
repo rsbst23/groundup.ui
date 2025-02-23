@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import FormPageLayout from "../../../../components/layouts/FormPageLayout";
-import useFormState from "../../../../hooks/useFormState";
-import { editInventoryCategory, fetchInventoryCategoryById } from "../../../../store/inventoryCategoriesSlice";
+import FormPageLayout from "../../../../../components/layouts/FormPageLayout";
+import useFormState from "../../../../../hooks/useFormState";
+import { editInventoryCategory, fetchInventoryCategoryById } from "../../../../../store/inventoryCategoriesSlice";
 
 const EditInventoryCategory = () => {
     const { id } = useParams(); // Get category ID from URL

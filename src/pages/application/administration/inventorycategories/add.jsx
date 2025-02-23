@@ -1,9 +1,9 @@
 import React from "react";
 import { TextField } from "@mui/material";
 import { useDispatch } from "react-redux";
-import FormPageLayout from "../../../components/layouts/FormPageLayout";
-import useFormState from "../../../hooks/useFormState";
-import { addInventoryCategory } from "../../../store/inventoryCategoriesSlice";
+import FormPageLayout from "../../../../components/layouts/FormPageLayout";
+import useFormState from "../../../../hooks/useFormState";
+import { addInventoryCategory } from "../../../../store/inventoryCategoriesSlice";
 
 const AddInventoryCategory = () => {
     const dispatch = useDispatch();

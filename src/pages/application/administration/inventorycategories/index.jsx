@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import useTableData from "../../../hooks/useTableData";
-import DataTable from "../../../components/DataTable";
-import ListPageLayout from "../../../components/layouts/ListPageLayout";
-import { usePage } from "../../../contexts/PageContext";
-import { fetchInventoryCategories, removeInventoryCategory } from "../../../store/inventoryCategoriesSlice";
+import useTableData from "../../../../hooks/useTableData";
+import DataTable from "../../../../components/DataTable";
+import ListPageLayout from "../../../../components/layouts/ListPageLayout";
+import { usePage } from "../../../../contexts/PageContext";
+import { fetchInventoryCategories, removeInventoryCategory } from "../../../../store/inventoryCategoriesSlice";
 import { Link as RouterLink } from "react-router-dom";
 
 // Define columns for the data table
@@ -37,11 +37,6 @@ const InventoryCategoriesList = () => {
         }),
         defaultSort: "name",
     });
-
-    // Handler for the "Add New Category" button
-    const handleAddNew = () => {
-        navigate("/inventory-categories/add"); // Navigate to category creation page
-    };
 
     return (
         <ListPageLayout

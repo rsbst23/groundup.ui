@@ -4,7 +4,7 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
     palette: {
         primary: {
-            main: "#3a856a", // Primary color remains green
+            main: "#3a856a",
         },
         secondary: {
             main: "#ff9800",
@@ -12,9 +12,12 @@ const theme = createTheme({
         background: {
             default: "#f5f5f5",
             paper: "#ffffff",
+            sidebar: "#ffffff", // Sidebar background
+            sidebarHover: "rgba(0, 0, 0, 0.05)", // Hover effect
+            sidebarSelected: "rgba(0, 0, 0, 0.1)", // Selected item background
         },
         text: {
-            primary: "#333333", // Normal text remains dark
+            primary: "#333333",
             secondary: "#666666",
         },
     },
@@ -34,11 +37,11 @@ const theme = createTheme({
                     borderRadius: "8px",
                     padding: "8px 16px",
                     textTransform: "none",
-                    backgroundColor: "#3a856a", // Default green button
-                    color: "#ffffff", // Default text color
+                    backgroundColor: "#3a856a",
+                    color: "#ffffff",
                     "&:hover": {
-                        backgroundColor: "#1f7456", // Darker green on hover
-                        color: "#ffffff", // Ensure text stays white on hover
+                        backgroundColor: "#1f7456",
+                        color: "#ffffff",
                     },
                 }
             },
@@ -47,7 +50,7 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     textDecoration: "none",
-                    color: "inherit", // Inherit color (avoids browser default blue links)
+                    color: "inherit",
                     "&:hover": {
                         color: "#1f7456",
                     },
@@ -59,10 +62,10 @@ const theme = createTheme({
                 root: {
                     width: "100%",
                     boxShadow: 2,
-                    backgroundColor: "#3a856a", // Keep navbar green
-                    color: "#ffffff", // Ensure text is white in navbar
+                    backgroundColor: "#3a856a",
+                    color: "#ffffff",
                     "&:hover": {
-                        color: "#ffffff", // Keeps color unchanged on hover
+                        color: "#ffffff",
                     },
                 },
             },
@@ -73,6 +76,29 @@ const theme = createTheme({
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
+                },
+            },
+        },
+        MuiDrawer: {
+            styleOverrides: {
+                paper: {
+                    backgroundColor: "#ffffff",
+                    borderRight: "1px solid #ddd",
+                },
+            },
+        },
+        MuiListItem: {
+            styleOverrides: {
+                root: {
+                    cursor: "pointer",
+                    borderRadius: "4px",
+                    "&.selected": {
+                        backgroundColor: "rgba(0, 0, 0, 0.1)",
+                        fontWeight: "bold",
+                    },
+                    "&:hover": {
+                        backgroundColor: "rgba(0, 0, 0, 0.05)",
+                    },
                 },
             },
         },

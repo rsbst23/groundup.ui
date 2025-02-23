@@ -1,22 +1,74 @@
-import { Link, AppBar, Toolbar, Typography } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { useState } from "react";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+import {
+    AppBar,
+    Toolbar,
+    Typography,
+    Menu,
+    MenuItem,
+    Button,
+} from "@mui/material";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+
+const navigationItems = [
+    { label: "Home", path: "/application" },
+    { label: "Administration", path: "/application/administration" }
+];
 
 const TopBar = () => {
+    const location = useLocation();
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const activeItem =
+        [...navigationItems].sort((a, b) => b.path.length - a.path.length) // Sort by path length descending
+            .find((item) => location.pathname.startsWith(item.path)) || navigationItems[0];
+
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
     return (
-        <AppBar position="fixed" sx={{ boxShadow: 0, zIndex: (theme) => theme.zIndex.drawer + 1 } }>
+        <AppBar position="fixed" sx={{ boxShadow: 0, zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             <Toolbar>
                 <Typography
                     variant="h6"
                     component={RouterLink}
-                    to="/" // Link to the home page
+                    to="/"
                     sx={{
                         textDecoration: "none",
                         color: "inherit",
-                        "&:hover": { color: "white", textDecoration: "underline" }
+                        mr: 2,
+                        "&:hover": { color: "white", textDecoration: "underline" },
                     }}
                 >
                     Ground Up
                 </Typography>
+
+                <Button
+                    color="inherit"
+                    onClick={handleMenuOpen}
+                    endIcon={<ArrowDropDownIcon />}
+                    sx={{ textTransform: "none", fontSize: "1rem" }}
+                >
+                    {activeItem.label}
+                </Button>
+                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+                    {navigationItems.map((item) => (
+                        <MenuItem
+                            key={item.path}
+                            component={RouterLink}
+                            to={item.path}
+                            selected={location.pathname.startsWith(item.path)}
+                            onClick={handleMenuClose}
+                        >
+                            {item.label}
+                        </MenuItem>
+                    ))}
+                </Menu>
             </Toolbar>
         </AppBar>
     );
