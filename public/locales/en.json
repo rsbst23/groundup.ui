@@ -21,7 +21,11 @@
     "apply_filter": "Apply Filter",
     "clear_filter": "Clear Filter",
     "dashboard": "Dashboard",
-    "administration": "Administration",
     "inventory_categories": "Inventory Categories",
-    "properties": "Properties"
+    "properties": "Properties",
+    "edit_category": "Edit Category",
+    "category_name": "Category Name",
+    "add_category": "Add Category",
+    "created_date": "Created Date",
+    "administration_description": "Manage your system settings and configurations here."
 }

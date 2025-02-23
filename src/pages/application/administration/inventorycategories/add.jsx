@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import { TextField } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import FormPageLayout from "../../../../components/layouts/FormPageLayout";
 import useFormState from "../../../../hooks/useFormState";
 import { addInventoryCategory } from "../../../../store/inventoryCategoriesSlice";
 import { usePage } from "../../../../contexts/PageContext";
 
 const AddInventoryCategory = () => {
+    const { t } = useTranslation(); // Hook for translations
     const { setPageConfig } = usePage();
 
     // Correct useFormState call
@@ -20,21 +22,21 @@ const AddInventoryCategory = () => {
     useEffect(() => {
         setPageConfig({
             breadcrumb: [
-                { label: "Inventory Categories", path: "/application/administration/inventorycategories" },
-                { label: "Add Category", path: "/application/administration/inventorycategories/add" }
+                { label: t("inventory_categories"), path: "/application/administration/inventorycategories" },
+                { label: t("add_category"), path: "/application/administration/inventorycategories/add" }
             ],
         });
-    }, [setPageConfig]);
+    }, [setPageConfig, t]);
 
     return (
         <FormPageLayout
-            title="Add Category"
+            title={t("add_category")}
             onSave={form.handleSubmit}
             onCancel={form.handleCancel}
             error={form.apiError}
         >
             <TextField
-                label="Category Name"
+                label={t("category_name")}
                 name="name"
                 value={form.values.name}
                 onChange={form.handleChange}

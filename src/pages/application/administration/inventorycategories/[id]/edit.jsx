@@ -1,24 +1,26 @@
 import React, { useEffect } from "react";
 import { TextField } from "@mui/material";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import FormPageLayout from "../../../../../components/layouts/FormPageLayout";
 import useFormState from "../../../../../hooks/useFormState";
 import { editInventoryCategory, fetchInventoryCategoryById } from "../../../../../store/inventoryCategoriesSlice";
 import { usePage } from "../../../../../contexts/PageContext";
 
 const EditInventoryCategory = () => {
+    const { t } = useTranslation(); // Hook for translations
     const { setPageConfig } = usePage();
     const { id } = useParams(); // Get category ID from URL
 
     useEffect(() => {
         setPageConfig({
-            title: "Edit Category",
+            title: t("edit_category"), // Translate page title
             breadcrumb: [
-                { label: "Inventory Categories", path: "/application/administration/inventorycategories" },
-                { label: "Edit Category", path: location.pathname },
+                { label: t("inventory_categories"), path: "/application/administration/inventorycategories" },
+                { label: t("edit_category"), path: location.pathname },
             ],
         });
-    }, [setPageConfig, location.pathname]);
+    }, [setPageConfig, location.pathname, t]);
 
     const form = useFormState({
         fetchAction: fetchInventoryCategoryById,
@@ -31,18 +33,18 @@ const EditInventoryCategory = () => {
 
     // Show loading state while fetching data
     if (form.loading || !form.initialized) {
-        return <FormPageLayout title="Edit Category" loading={true} error={form.apiError} />;
+        return <FormPageLayout title={t("edit_category")} loading={true} error={form.apiError} />;
     }
 
     return (
         <FormPageLayout
-            title="Edit Category"
+            title={t("edit_category")}
             onSave={form.handleSubmit}
             onCancel={form.handleCancel}
             error={form.apiError}
         >
             <TextField
-                label="Category Name"
+                label={t("category_name")}
                 name="name"
                 value={form.values.name}
                 onChange={form.handleChange}
