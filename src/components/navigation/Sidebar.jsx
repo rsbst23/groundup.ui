@@ -1,12 +1,15 @@
 import { Drawer, List, ListItem, ListItemText } from "@mui/material";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import navigationConfig from "../../config/navigationConfig"; // Import navigation structure
+import getNavigationConfig from "../../config/navigationConfig"; // Use function to get translated config
+import { useTranslation } from "react-i18next";
 
 const drawerWidth = 240;
 const topBarHeight = 64; // TopBar height
 
 const Sidebar = () => {
+    const { t } = useTranslation(); // Localization hook
     const location = useLocation();
+    const navigationConfig = getNavigationConfig(t); // Pass t() to get translated labels
 
     // Sort paths by length (longest first) to ensure the most specific match is selected
     const activeMainSection = Object.values(navigationConfig)
@@ -60,7 +63,7 @@ const Sidebar = () => {
                             to={item.path.replace(":id", "39")} // Replace with sample ID
                             className={`sidebar-item ${isSelected ? "selected" : ""}`}
                         >
-                            <ListItemText primary={item.label} />
+                            <ListItemText primary={t(item.label)} />
                         </ListItem>
                     );
                 })}

@@ -1,34 +1,36 @@
-const navigationConfig = {
+import i18next from "i18next";
+
+const getNavigationConfig = () => ({
     home: {
-        label: "Dashboard",
+        label: i18next.t("dashboard"),
         path: "/application",
         sidebar: [
-            { label: "Dashboard", path: "/application", highlightOn: ["/application"] }
+            { label: i18next.t("dashboard"), path: "/application", highlightOn: ["/application"] }
         ],
     },
     administration: {
-        label: "Administration",
+        label: i18next.t("administration"),
         path: "/application/administration",
         sidebar: [
-            { label: "Administration", path: "/application/administration", highlightOn: ["/application/administration"] },
-            { label: "Inventory Categories", path: "/application/administration/inventorycategories", highlightOn: ["/application/administration/inventorycategories", "/application/administration/inventorycategories/edit"] }
+            { label: i18next.t("administration"), path: "/application/administration", highlightOn: ["/application/administration"] },
+            { label: i18next.t("inventory_categories"), path: "/application/administration/inventorycategories", highlightOn: ["/application/administration/inventorycategories", "/application/administration/inventorycategories/edit"] }
         ],
     },
     inventoryCategoryAdd: {
-        label: "Properties",
+        label: i18next.t("properties"),
         path: "/application/administration/inventorycategories/add",
         sidebar: [
-            { label: "Administration", path: "/application/administration", highlightOn: ["/application/administration"] },
-            { label: "Inventory Categories", path: "/application/administration/inventorycategories", highlightOn: ["/application/administration/inventorycategories", "/application/administration/inventorycategories/edit"] }
+            { label: i18next.t("administration"), path: "/application/administration", highlightOn: ["/application/administration"] },
+            { label: i18next.t("inventory_categories"), path: "/application/administration/inventorycategories", highlightOn: ["/application/administration/inventorycategories", "/application/administration/inventorycategories/edit"] }
         ],
     },
     inventoryCategoryEdit: {
-        label: "Properties",
+        label: i18next.t("properties"),
         path: "/application/administration/inventorycategories/:id/edit",
         sidebar: [
-            { label: "Properties", path: "/application/administration/inventorycategories/:id/edit", highlightOn: ["/application/administration/inventorycategories"] }
+            { label: i18next.t("properties"), path: "/application/administration/inventorycategories/:id/edit", highlightOn: ["/application/administration/inventorycategories"] }
         ]
     }
-};
+});
 
-export default navigationConfig;
+export default getNavigationConfig;

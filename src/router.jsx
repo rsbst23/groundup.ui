@@ -21,7 +21,7 @@ const routesWithLayout = [
         element: <ApplicationLayout />,
         children: [
             {
-                element: <PageLayout />, // Nested layout with ActionBar
+                element: <PageLayout />,
                 children: applicationRoutes, // All application pages go here
             },
         ],

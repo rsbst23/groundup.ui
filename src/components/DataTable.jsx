@@ -28,7 +28,7 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-
+import { useTranslation } from "react-i18next";
 
 const DataTable = ({
     columns,
@@ -48,6 +48,7 @@ const DataTable = ({
     filters,
     onFilterApply,
 }) => {
+    const { t } = useTranslation();
     // Local state for managing the filtering popover UI.
     const [filterAnchor, setFilterAnchor] = useState(null);
     const [activeFilterColumn, setActiveFilterColumn] = useState(null);
@@ -131,7 +132,7 @@ const DataTable = ({
     return (
         <Paper sx={{ p: 2 }}>
             {loading ? (
-                <Typography variant="h6">Loading data...</Typography>
+                <Typography variant="h6">{t("loading_data")}</Typography>
             ) : error ? (
                 null
             ) : (
@@ -148,7 +149,7 @@ const DataTable = ({
                                                 direction={sortBy === column.field ? sortDirection : "asc"}
                                                 onClick={() => onSort(column.field)}
                                             >
-                                                {column.label}
+                                                {t(column.label)}
                                             </TableSortLabel>
                                             {column.filterable && (
                                                 <IconButton size="small" onClick={(event) => handleFilterIconClick(event, column.field)}>
@@ -158,7 +159,7 @@ const DataTable = ({
                                         </TableCell>
                                     ))}
                                     <TableCell align="right">
-                                        <strong>Actions</strong>
+                                        <strong>{t("actions")}</strong>
                                     </TableCell>
                                 </TableRow>
                             </TableHead>
@@ -197,7 +198,7 @@ const DataTable = ({
                                     <TableRow>
                                         <TableCell colSpan={columns.length + 1} align="center">
                                             <Typography variant="body1" color="textSecondary">
-                                                No records found. Adjust filters and try again.
+                                                {t("no_records_found")}
                                             </Typography>
                                         </TableCell>
                                     </TableRow>
@@ -209,7 +210,7 @@ const DataTable = ({
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2 }}>
                         {/* Left Side: Items Per Page */}
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                            <Typography variant="body2">Items per page</Typography>
+                            <Typography variant="body2">{t("items_per_page")}</Typography>
                             <Select
                                 variant="outlined"
                                 size="small"
@@ -223,7 +224,7 @@ const DataTable = ({
                                 ))}
                             </Select>
                             <Typography variant="body2">
-                                {`${page * rowsPerPage + 1}-${Math.min((page + 1) * rowsPerPage, totalRecords)} of ${totalRecords} items`}
+                                {`${page * rowsPerPage + 1}-${Math.min((page + 1) * rowsPerPage, totalRecords)} ${t("of")} ${totalRecords} ${t("items")}`}
                             </Typography>
                         </Box>
 
@@ -257,7 +258,7 @@ const DataTable = ({
                                     }
                                 }}
                             />
-                            <Typography variant="body2">of {totalPages}</Typography>
+                            <Typography variant="body2">{t("of")}&nbsp;&nbsp;{totalPages}</Typography>
 
                             <IconButton
                                 onClick={() => onPageChange(null, page + 1)}
@@ -294,7 +295,7 @@ const DataTable = ({
                             {activeFilterType === "date" ? (
                                 <>
                                     <DatePicker
-                                        label="Min Date"
+                                        label={t("min_date")}
                                         autoFocus
                                         value={tempMinDate}
                                         onChange={(date) => setTempMinDate(date)}
@@ -303,7 +304,7 @@ const DataTable = ({
                                         )}
                                     />
                                     <DatePicker
-                                        label="Max Date"
+                                        label={t("filter_by", { column: t(activeFilterColumn) })}
                                         value={tempMaxDate}
                                         onChange={(date) => setTempMaxDate(date)}
                                         renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
@@ -321,10 +322,10 @@ const DataTable = ({
                                 />
                             )}
                             <Button onClick={applyFilter} variant="contained" color="primary">
-                                Apply Filter
+                                {t("apply_filter")}
                             </Button>
                             <Button onClick={clearFilter} color="secondary">
-                                Clear Filter
+                                {t("clear_filter")}
                             </Button>
                         </Paper>
                     </Popover>

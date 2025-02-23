@@ -17,7 +17,6 @@ const Breadcrumbs = () => {
 
             {breadcrumbArray.map((item, index) => {
                 if (!item || typeof item !== "object" || !item.label || !item.path) {
-                    console.error("Invalid breadcrumb item detected:", item);
                     return null; // Skip invalid items
                 }
 

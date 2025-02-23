@@ -7,4 +7,9 @@ export default defineConfig({
         react(),
         pages(),
     ],
+    server: {
+        fs: {
+            strict: false, // Prevents Vite from restricting file access
+        }
+    }
 });

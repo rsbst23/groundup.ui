@@ -9,15 +9,17 @@ import {
     Button,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-
-const navigationItems = [
-    { label: "Home", path: "/application" },
-    { label: "Administration", path: "/application/administration" }
-];
+import { useTranslation } from "react-i18next";
 
 const TopBar = () => {
+    const { t } = useTranslation();
     const location = useLocation();
     const [anchorEl, setAnchorEl] = useState(null);
+
+    const navigationItems = [
+        { label: t("home"), path: "/application" },
+        { label: t("administration"), path: "/application/administration" }
+    ];
 
     const activeItem =
         [...navigationItems].sort((a, b) => b.path.length - a.path.length) // Sort by path length descending
@@ -45,7 +47,7 @@ const TopBar = () => {
                         "&:hover": { color: "white", textDecoration: "underline" },
                     }}
                 >
-                    Ground Up
+                    {t("app_name")}
                 </Typography>
 
                 <Button
