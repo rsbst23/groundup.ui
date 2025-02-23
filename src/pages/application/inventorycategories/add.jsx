@@ -8,15 +8,15 @@ import { addInventoryCategory } from "../../../store/inventoryCategoriesSlice";
 const AddInventoryCategory = () => {
     const dispatch = useDispatch();
 
-    // useFormState now handles validation, errors, submission, and cancel action
-    const form = useFormState({ name: "" }, addInventoryCategory, "../");
+    // Initialize with empty values, no need to wait
+    const form = useFormState({ name: "" }, addInventoryCategory, "../", false);
 
     return (
         <FormPageLayout
             title="Add New Category"
             onSave={form.handleSubmit(dispatch)}
             onCancel={form.handleCancel}
-            error={form.apiError} // Pass error to FormPageLayout
+            error={form.apiError}
         >
             <TextField
                 label="Category Name"

@@ -14,6 +14,9 @@ import {
     Popover,
     TextField,
     Button,
+    Box,
+    Select,
+    MenuItem
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -21,6 +24,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+
 
 const DataTable = ({
     columns,
@@ -118,6 +126,8 @@ const DataTable = ({
     const activeColDef = columns.find((c) => c.field === activeFilterColumn);
     const activeFilterType = activeColDef?.filterType || "text";
 
+    const totalPages = Math.ceil(totalRecords / rowsPerPage);
+
     return (
         <Paper sx={{ p: 2 }}>
             {loading ? (
@@ -165,12 +175,18 @@ const DataTable = ({
                                             }}
                                         >
                                             {columns.map((column) => (
-                                                <TableCell key={column.field}>{row[column.field]}</TableCell>
+                                                <TableCell key={column.field}>
+                                                    {/* If column is marked as editLink, render as link */}
+                                                    {column.editLink ? (
+                                                        <RouterLink to={`${row.id}/edit`} style={{ textDecoration: "none" }}>
+                                                            {row[column.field]}
+                                                        </RouterLink>
+                                                    ) : (
+                                                        row[column.field]
+                                                    )}
+                                                </TableCell>
                                             ))}
                                             <TableCell align="right">
-                                                <IconButton component={RouterLink} to={`${row.id}/edit`} color="primary">
-                                                    <EditIcon />
-                                                </IconButton>
                                                 <IconButton onClick={() => onDelete(row.id)} color="error">
                                                     <DeleteIcon />
                                                 </IconButton>
@@ -190,14 +206,74 @@ const DataTable = ({
                         </Table>
                     </TableContainer>
 
-                    <TablePagination
-                        component="div"
-                        count={totalRecords}
-                        page={page}
-                        onPageChange={onPageChange}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={onRowsPerPageChange}
-                    />
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2 }}>
+                        {/* Left Side: Items Per Page */}
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Typography variant="body2">Items per page</Typography>
+                            <Select
+                                variant="outlined"
+                                size="small"
+                                value={rowsPerPage}
+                                onChange={onRowsPerPageChange}
+                            >
+                                {[10, 25, 50, 100].map((size) => (
+                                    <MenuItem key={size} value={size}>
+                                        {size}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                            <Typography variant="body2">
+                                {`${page * rowsPerPage + 1}-${Math.min((page + 1) * rowsPerPage, totalRecords)} of ${totalRecords} items`}
+                            </Typography>
+                        </Box>
+
+                        {/* Right Side: Pagination Controls */}
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <IconButton
+                                onClick={() => onPageChange(null, 0)}
+                                disabled={page === 0}
+                            >
+                                <FirstPageIcon />
+                            </IconButton>
+
+                            <IconButton
+                                onClick={() => onPageChange(null, page - 1)}
+                                disabled={page === 0}
+                            >
+                                <KeyboardArrowLeftIcon />
+                            </IconButton>
+
+                            <TextField
+                                variant="outlined"
+                                size="small"
+                                sx={{ width: 60, textAlign: "center" }}
+                                type="number"
+                                inputProps={{ min: 1, max: totalPages }}
+                                value={page + 1} // MUI uses zero-based index, but we display one-based
+                                onChange={(event) => {
+                                    let newPage = parseInt(event.target.value, 10) - 1; // Convert to zero-based index
+                                    if (!isNaN(newPage) && newPage >= 0 && newPage < totalPages) {
+                                        onPageChange(null, newPage);
+                                    }
+                                }}
+                            />
+                            <Typography variant="body2">of {totalPages}</Typography>
+
+                            <IconButton
+                                onClick={() => onPageChange(null, page + 1)}
+                                disabled={page >= totalPages - 1}
+                            >
+                                <KeyboardArrowRightIcon />
+                            </IconButton>
+
+                            <IconButton
+                                onClick={() => onPageChange(null, totalPages - 1)}
+                                disabled={page >= totalPages - 1}
+                            >
+                                <LastPageIcon />
+                            </IconButton>
+                        </Box>
+                    </Box>
 
                     <Popover
                         open={Boolean(filterAnchor)}

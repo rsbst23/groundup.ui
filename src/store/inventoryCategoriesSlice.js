@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     getInventoryCategories,
+    getInventoryCategoryById,
     createInventoryCategory,
     updateInventoryCategory,
     deleteInventoryCategory,
@@ -32,6 +33,30 @@ export const fetchInventoryCategories = createAsyncThunk(
             console.error("fetchInventoryCategories - Error:", error);
             return rejectWithValue({
                 message: "A network or unexpected error occurred.",
+                errors: [error.message || "Unknown error"],
+            });
+        }
+    }
+);
+
+// Fetch a single category by ID (Add this function)
+export const fetchInventoryCategoryById = createAsyncThunk(
+    "inventoryCategories/fetchById",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await getInventoryCategoryById(id);
+
+            if (!response.success) {
+                return rejectWithValue({
+                    message: response.message || "Error retrieving category.",
+                    errors: response.errors || [],
+                });
+            }
+
+            return response.data;
+        } catch (error) {
+            return rejectWithValue({
+                message: "A network error occurred.",
                 errors: [error.message || "Unknown error"],
             });
         }
@@ -111,6 +136,24 @@ const inventoryCategoriesSlice = createSlice({
                 state.error = action.payload;
             })
 
+            // Fetch Category by ID
+            .addCase(fetchInventoryCategoryById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchInventoryCategoryById.fulfilled, (state, action) => {
+                state.loading = false;
+                const category = action.payload;
+                const existingCategory = state.categories.find((c) => c.id === category.id);
+                if (!existingCategory) {
+                    state.categories.push(category);
+                }
+            })
+            .addCase(fetchInventoryCategoryById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
             // Add Category
             .addCase(addInventoryCategory.pending, (state) => {
                 state.loading = true;
@@ -118,7 +161,15 @@ const inventoryCategoriesSlice = createSlice({
             })
             .addCase(addInventoryCategory.fulfilled, (state, action) => {
                 state.loading = false;
-                state.categories.push(action.payload);
+
+                // Ensure we're accessing the `data` property from the API response
+                const newCategory = action.payload.data || action.payload;
+
+                if (newCategory.id) {
+                    state.categories.push(newCategory);
+                } else {
+                    console.error("New category is missing an ID:", newCategory);
+                }
             })
             .addCase(addInventoryCategory.rejected, (state, action) => {
                 state.loading = false;

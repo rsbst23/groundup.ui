@@ -10,7 +10,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 // Define columns for the data table
 const columns = [
-    { field: "name", label: "Category Name", filterable: true, filterType: "text" },
+    { field: "name", label: "Category Name", filterable: true, filterType: "text", editLink: true },
     { field: "createdDate", label: "Created Date", filterable: true, filterType: "date" },
 ];
 

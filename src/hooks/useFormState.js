@@ -1,19 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 /**
  * Generic form state management hook.
- * Now includes API submission handling, error handling, and cancel handling.
- * @param {Object} initialValues - The initial values for the form fields.
+ * Supports both adding new records and editing existing ones.
+ * @param {Object|null} initialValues - The initial values for the form fields.
  * @param {Function} submitAction - The Redux action to dispatch.
  * @param {string} successRedirect - The URL to navigate to on success.
+ * @param {boolean} isEditing - If true, waits for initial values before enabling form.
  * @returns {Object} - Form state, validation, submission handler, and errors.
  */
-const useFormState = (initialValues, submitAction, successRedirect) => {
-    const [values, setValues] = useState(initialValues);
+const useFormState = (initialValues, submitAction, successRedirect, isEditing = false) => {
+    const [values, setValues] = useState(initialValues || {}); // Default to empty object
     const [errors, setErrors] = useState({});
     const [apiError, setApiError] = useState(null);
     const navigate = useNavigate();
+    const [initialized, setInitialized] = useState(false);
+
+    // **Fix: Only update values on first load, and in Edit Mode, wait for API data**
+    useEffect(() => {
+        if (isEditing && !initialValues) return; // Wait for data to be fetched
+
+        if (!initialized && initialValues) {
+            setValues(initialValues);
+            setInitialized(true);
+        }
+    }, [initialValues, isEditing]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -36,31 +48,27 @@ const useFormState = (initialValues, submitAction, successRedirect) => {
         setApiError(null); // Reset API error
 
         if (!validate()) {
-            console.log("Form validation failed:", errors);
             return;
         }
 
         try {
             const response = await dispatch(submitAction(values)).unwrap();
-
             if (!response.success) {
                 setApiError(response.message || "An error occurred.");
-                return; // Do not navigate on failure
+                return;
             }
-
-            navigate(successRedirect); // Redirect only on success
+            navigate(successRedirect);
         } catch (errorResponse) {
-            setApiError(errorResponse);
+            setApiError(errorResponse.message || "An unexpected error occurred.");
         }
     };
 
-    // Fix: Reset apiError before navigating
     const handleCancel = () => {
-        setApiError(null); // Reset error before leaving page
+        setApiError(null);
         navigate(successRedirect);
     };
 
-    return { values, errors, apiError, handleChange, handleSubmit, handleCancel };
+    return { values, errors, apiError, handleChange, handleSubmit, handleCancel, initialized };
 };
 
 export default useFormState;

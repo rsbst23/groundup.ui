@@ -7,8 +7,6 @@ const request = async (url, options = {}) => {
         const data = isJsonResponse ? await response.json() : null; // Parse JSON only if available
 
         if (!response.ok) {
-            console.error("API Error Response:", data);
-
             // Throw structured API response if available, otherwise fallback to statusText
             throw {
                 success: false,
@@ -19,8 +17,6 @@ const request = async (url, options = {}) => {
 
         return data;
     } catch (error) {
-        console.error("Network/API Request Failed:", error);
-
         // Handle network errors separately
         throw {
             success: false,
@@ -30,7 +26,44 @@ const request = async (url, options = {}) => {
     }
 };
 
+const buildQueryString = ({ pageNumber, pageSize, sortBy, filters = {} }) => {
+    const filterParams = Object.entries(filters)
+        .filter(([_, value]) => value !== undefined && value !== null) // Remove undefined/null values
+        .map(([key, value]) => {
+            if (value) {
+                if (key.startsWith("MinFilters") || key.startsWith("MaxFilters")) {
+                    return `${key}=${encodeURIComponent(value)}`;
+                } else {
+                    return `ContainsFilters[${key}]=${encodeURIComponent(value)}`;
+                }
+            }
+        })
+        .join("&");
+    
+    const queryParams = [
+        `pageNumber=${pageNumber}`,
+        `pageSize=${pageSize}`,
+        `sortBy=${encodeURIComponent(sortBy)}`,
+        filterParams,
+    ].filter(Boolean);
+
+    return queryParams.join("&");
+};
+
 const apiService = {
+    getList: async (resource, { pageNumber = 1, pageSize = 10, sortBy = "Name", filters = {} } = {}) => {
+        
+        const queryParams = {
+            pageNumber,
+            pageSize,
+            sortBy: sortBy,
+            filters
+        };
+        
+        const queryString = buildQueryString(queryParams);
+        return request(`${API_BASE_URL}/${resource}?${queryString}`);
+    },
+
     getAll: async (resource) => request(`${API_BASE_URL}/${resource}`),
 
     getById: async (resource, id) => request(`${API_BASE_URL}/${resource}/${id}`),
