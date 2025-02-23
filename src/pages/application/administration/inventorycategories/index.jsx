@@ -16,7 +16,6 @@ const columns = [
 
 const InventoryCategoriesList = () => {
     const { setPageConfig } = usePage();
-    const navigate = useNavigate();
 
     // Set page-specific configuration
     useEffect(() => {
@@ -25,7 +24,6 @@ const InventoryCategoriesList = () => {
         ];
 
         setPageConfig({
-            title: "Inventory Categories",
             breadcrumb: breadcrumbData,
         });
     }, [setPageConfig]);

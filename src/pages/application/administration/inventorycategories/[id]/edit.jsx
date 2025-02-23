@@ -5,7 +5,6 @@ import FormPageLayout from "../../../../../components/layouts/FormPageLayout";
 import useFormState from "../../../../../hooks/useFormState";
 import { editInventoryCategory, fetchInventoryCategoryById } from "../../../../../store/inventoryCategoriesSlice";
 import { usePage } from "../../../../../contexts/PageContext";
-import { useSelector } from "react-redux";
 
 const EditInventoryCategory = () => {
     const { setPageConfig } = usePage();
@@ -20,8 +19,6 @@ const EditInventoryCategory = () => {
             ],
         });
     }, [setPageConfig, location.pathname]);
-
-    console.log("Calling useFormState with successRedirect:", "/application/administration/inventorycategories");
 
     const form = useFormState({
         fetchAction: fetchInventoryCategoryById,

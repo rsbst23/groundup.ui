@@ -16,8 +16,6 @@ const useFormState = ({ fetchAction, submitAction, successRedirect, id, isEditin
     const existingData = isEditing && dataSelector ? useSelector(dataSelector) : null;
 
     useEffect(() => {
-        console.log("Updated successRedirect inside useEffect:", successRedirectRef.current);
-
         if (isEditing) {
             if (existingData) {
                 setValues(existingData);
@@ -88,7 +86,6 @@ const useFormState = ({ fetchAction, submitAction, successRedirect, id, isEditin
         if (event) event.preventDefault();
         setApiError(null);
 
-        console.log("Cancel button clicked, navigating to:", successRedirectRef.current);
         navigate(successRedirectRef.current || "/application/administration/inventorycategories");
     };
 
