@@ -14,13 +14,6 @@ const navigationConfig = {
             { label: "Inventory Categories", path: "/application/administration/inventorycategories", highlightOn: ["/application/administration/inventorycategories", "/application/administration/inventorycategories/edit"] }
         ],
     },
-    inventoryCategoryEdit: {
-        label: "Properties",
-        path: "/application/administration/inventorycategories/:id/edit",
-        sidebar: [
-            { label: "Properties", path: "/application/administration/inventorycategories/:id/edit", highlightOn: ["/application/administration/inventorycategories"] }
-        ]
-    },
     inventoryCategoryAdd: {
         label: "Properties",
         path: "/application/administration/inventorycategories/add",
@@ -28,6 +21,13 @@ const navigationConfig = {
             { label: "Administration", path: "/application/administration", highlightOn: ["/application/administration"] },
             { label: "Inventory Categories", path: "/application/administration/inventorycategories", highlightOn: ["/application/administration/inventorycategories", "/application/administration/inventorycategories/edit"] }
         ],
+    },
+    inventoryCategoryEdit: {
+        label: "Properties",
+        path: "/application/administration/inventorycategories/:id/edit",
+        sidebar: [
+            { label: "Properties", path: "/application/administration/inventorycategories/:id/edit", highlightOn: ["/application/administration/inventorycategories"] }
+        ]
     }
 };
 

@@ -1,37 +1,55 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-/**
- * Generic form state management hook.
- * Supports both adding new records and editing existing ones.
- * @param {Object|null} initialValues - The initial values for the form fields.
- * @param {Function} submitAction - The Redux action to dispatch.
- * @param {string} successRedirect - The URL to navigate to on success.
- * @param {boolean} isEditing - If true, waits for initial values before enabling form.
- * @returns {Object} - Form state, validation, submission handler, and errors.
- */
-const useFormState = (initialValues, submitAction, successRedirect, isEditing = false) => {
-    const [values, setValues] = useState(initialValues || {}); // Default to empty object
+const useFormState = ({ fetchAction, submitAction, successRedirect, id, isEditing, dataSelector }) => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const successRedirectRef = useRef(successRedirect); // Persist successRedirect
+
+    const [values, setValues] = useState({});
     const [errors, setErrors] = useState({});
     const [apiError, setApiError] = useState(null);
-    const navigate = useNavigate();
+    const [loading, setLoading] = useState(isEditing);
     const [initialized, setInitialized] = useState(false);
 
-    // **Fix: Only update values on first load, and in Edit Mode, wait for API data**
-    useEffect(() => {
-        if (isEditing && !initialValues) return; // Wait for data to be fetched
+    const existingData = isEditing && dataSelector ? useSelector(dataSelector) : null;
 
-        if (!initialized && initialValues) {
-            setValues(initialValues);
+    useEffect(() => {
+        console.log("Updated successRedirect inside useEffect:", successRedirectRef.current);
+
+        if (isEditing) {
+            if (existingData) {
+                setValues(existingData);
+                setLoading(false);
+                setInitialized(true);
+            } else {
+                dispatch(fetchAction(id))
+                    .unwrap()
+                    .then((data) => {
+                        setValues(data);
+                        setLoading(false);
+                        setInitialized(true);
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching item:", error);
+                        setApiError(error.message || "Failed to load data.");
+                        setLoading(false);
+                        setInitialized(true); // Ensure cancel button works
+                    });
+            }
+        } else {
             setInitialized(true);
         }
-    }, [initialValues, isEditing]);
+    }, [dispatch, id, isEditing, existingData]);
 
+    // Fix: Restore handleChange to make the text box editable
     const handleChange = (event) => {
         const { name, value } = event.target;
         setValues((prev) => ({ ...prev, [name]: value }));
     };
 
+    // Fix: Restore validation
     const validate = () => {
         let newErrors = {};
         Object.keys(values).forEach((key) => {
@@ -43,9 +61,11 @@ const useFormState = (initialValues, submitAction, successRedirect, isEditing = 
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (dispatch) => async (event) => {
-        event.preventDefault();
-        setApiError(null); // Reset API error
+    // Fix: Restore form submission handling
+    const handleSubmit = async (event) => {
+        if (event) event.preventDefault(); // Prevent default form submission
+
+        setApiError(null);
 
         if (!validate()) {
             return;
@@ -57,18 +77,22 @@ const useFormState = (initialValues, submitAction, successRedirect, isEditing = 
                 setApiError(response.message || "An error occurred.");
                 return;
             }
-            navigate(successRedirect);
+            navigate(successRedirectRef.current);
         } catch (errorResponse) {
             setApiError(errorResponse.message || "An unexpected error occurred.");
         }
     };
 
-    const handleCancel = () => {
+    // Ensure cancel button always works
+    const handleCancel = (event) => {
+        if (event) event.preventDefault();
         setApiError(null);
-        navigate(successRedirect);
+
+        console.log("Cancel button clicked, navigating to:", successRedirectRef.current);
+        navigate(successRedirectRef.current || "/application/administration/inventorycategories");
     };
 
-    return { values, errors, apiError, handleChange, handleSubmit, handleCancel, initialized };
+    return { values, errors, apiError, handleChange, handleSubmit, handleCancel, initialized, loading };
 };
 
 export default useFormState;

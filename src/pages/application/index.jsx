@@ -1,7 +1,20 @@
+import React, { useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { Link } from "react-router-dom";
+import { usePage } from "../../contexts/PageContext";
 
 const DashboardHome = () => {
+    const { setPageConfig } = usePage();
+
+    useEffect(() => {
+        setPageConfig({
+            title: "Dashboard",
+            breadcrumb: [
+                { label: "Dashboard", path: "/application" }
+            ],
+        });
+    }, [setPageConfig]);
+
     return (
         <Box sx={{ textAlign: "center", mt: 5 }}>
             <Typography variant="h3" gutterBottom>

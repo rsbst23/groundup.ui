@@ -1,26 +1,36 @@
 import { Breadcrumbs as MUIBreadcrumbs, Link, Typography } from "@mui/material";
-import { useLocation, Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import { usePage } from "../../contexts/PageContext"; // Read breadcrumb config from context
 
 const Breadcrumbs = () => {
-    const location = useLocation();
-    const pathnames = location.pathname.split("/").filter((x) => x);
+    const { pageConfig } = usePage();
+
+    // Ensure breadcrumb is an array, fallback to empty array
+    const breadcrumbArray = Array.isArray(pageConfig?.breadcrumb) ? pageConfig.breadcrumb : [];
 
     return (
         <MUIBreadcrumbs aria-label="breadcrumb">
-            <Link component={RouterLink} to="/">
-                Home
-            </Link>
-            {pathnames.map((value, index) => {
-                const to = `/${pathnames.slice(0, index + 1).join("/")}`;
-                const isLast = index === pathnames.length - 1;
+            {/* Always show Home as a link */}
+            {/*<Link component={RouterLink} to="/">*/}
+            {/*    Home*/}
+            {/*</Link>*/}
+
+            {breadcrumbArray.map((item, index) => {
+                if (!item || typeof item !== "object" || !item.label || !item.path) {
+                    console.error("Invalid breadcrumb item detected:", item);
+                    return null; // Skip invalid items
+                }
+
+                const isLast = index === breadcrumbArray.length - 1;
+                const labelText = String(item.label); // Ensure label is always a string
 
                 return isLast ? (
-                    <Typography key={to} color="text.primary">
-                        {value}
+                    <Typography key={index} color="text.primary">
+                        {labelText} {/* Ensure rendering only a string */}
                     </Typography>
                 ) : (
-                    <Link key={to} component={RouterLink} to={to}>
-                        {value}
+                    <Link key={index} component={RouterLink} to={String(item.path)}>
+                        {labelText} {/* Ensure rendering only a string */}
                     </Link>
                 );
             })}

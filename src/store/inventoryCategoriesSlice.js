@@ -30,11 +30,7 @@ export const fetchInventoryCategories = createAsyncThunk(
                 totalPages: response.data?.totalPages || 1,
             };
         } catch (error) {
-            console.error("fetchInventoryCategories - Error:", error);
-            return rejectWithValue({
-                message: "A network or unexpected error occurred.",
-                errors: [error.message || "Unknown error"],
-            });
+            return rejectWithValue(error);
         }
     }
 );
@@ -55,10 +51,7 @@ export const fetchInventoryCategoryById = createAsyncThunk(
 
             return response.data;
         } catch (error) {
-            return rejectWithValue({
-                message: "A network error occurred.",
-                errors: [error.message || "Unknown error"],
-            });
+            return rejectWithValue(error);
         }
     }
 );
@@ -70,7 +63,7 @@ export const addInventoryCategory = createAsyncThunk(
         try {
             return await createInventoryCategory(category);
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue(error);
         }
     }
 );
@@ -82,7 +75,7 @@ export const editInventoryCategory = createAsyncThunk(
         try {
             return await updateInventoryCategory(id, { id, name });
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue(error);
         }
     }
 );
@@ -95,7 +88,7 @@ export const removeInventoryCategory = createAsyncThunk(
             await deleteInventoryCategory(id);
             return id;
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue(error);
         }
     }
 );

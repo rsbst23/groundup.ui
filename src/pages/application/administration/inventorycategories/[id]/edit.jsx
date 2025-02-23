@@ -1,52 +1,46 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { TextField } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import FormPageLayout from "../../../../../components/layouts/FormPageLayout";
 import useFormState from "../../../../../hooks/useFormState";
 import { editInventoryCategory, fetchInventoryCategoryById } from "../../../../../store/inventoryCategoriesSlice";
+import { usePage } from "../../../../../contexts/PageContext";
+import { useSelector } from "react-redux";
 
 const EditInventoryCategory = () => {
+    const { setPageConfig } = usePage();
     const { id } = useParams(); // Get category ID from URL
-    const dispatch = useDispatch();
-    const [initialValues, setInitialValues] = useState(null); // Track initial form values
-    const [loading, setLoading] = useState(true); // Track loading state
-
-    // Fetch the category from Redux store or API
-    const category = useSelector((state) =>
-        state.inventoryCategories.categories.find((c) => c.id === parseInt(id, 10))
-    );
 
     useEffect(() => {
-        if (!category) {
-            dispatch(fetchInventoryCategoryById(id))
-                .unwrap()
-                .then((data) => {
-                    setInitialValues({ name: data.name }); // Set initial form values
-                    setLoading(false);
-                })
-                .catch((error) => {
-                    console.error("Error fetching category:", error);
-                    setLoading(false);
-                });
-        } else {
-            setInitialValues({ name: category.name }); // Use existing Redux data if available
-            setLoading(false);
-        }
-    }, [dispatch, id, category]);
+        setPageConfig({
+            title: "Edit Category",
+            breadcrumb: [
+                { label: "Inventory Categories", path: "/application/administration/inventorycategories" },
+                { label: "Edit Category", path: location.pathname },
+            ],
+        });
+    }, [setPageConfig, location.pathname]);
 
-    // Wait for data to load before initializing the form
-    const form = useFormState(initialValues, (values) => editInventoryCategory({ id, ...values }), "../../", true);
+    console.log("Calling useFormState with successRedirect:", "/application/administration/inventorycategories");
+
+    const form = useFormState({
+        fetchAction: fetchInventoryCategoryById,
+        submitAction: editInventoryCategory,
+        successRedirect: "/application/administration/inventorycategories",
+        id,
+        isEditing: true,
+        dataSelector: (state) => state.inventoryCategories.categories.find((c) => c.id === parseInt(id, 10)),
+    });
 
     // Show loading state while fetching data
-    if (loading || !form.initialized) {
-        return <FormPageLayout title="Edit Category" loading={true} />;
+    if (form.loading || !form.initialized) {
+        return <FormPageLayout title="Edit Category" loading={true} error={form.apiError} />;
     }
 
     return (
         <FormPageLayout
             title="Edit Category"
-            onSave={form.handleSubmit(dispatch)}
+            onSave={form.handleSubmit}
             onCancel={form.handleCancel}
             error={form.apiError}
         >

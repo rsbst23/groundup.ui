@@ -1,20 +1,40 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { TextField } from "@mui/material";
 import { useDispatch } from "react-redux";
 import FormPageLayout from "../../../../components/layouts/FormPageLayout";
 import useFormState from "../../../../hooks/useFormState";
 import { addInventoryCategory } from "../../../../store/inventoryCategoriesSlice";
+import { usePage } from "../../../../contexts/PageContext";
 
 const AddInventoryCategory = () => {
+    const { setPageConfig } = usePage();
     const dispatch = useDispatch();
 
-    // Initialize with empty values, no need to wait
-    const form = useFormState({ name: "" }, addInventoryCategory, "../", false);
+    console.log("Calling useFormState for Add Page with successRedirect:", "/application/administration/inventorycategories");
+
+    // Correct useFormState call
+    const form = useFormState({
+        fetchAction: null, // No need to fetch data for new category
+        submitAction: addInventoryCategory,
+        successRedirect: "/application/administration/inventorycategories",
+        id: null,
+        isEditing: false,
+    });
+
+    useEffect(() => {
+        setPageConfig({
+            title: "Add Category",
+            breadcrumb: [
+                { label: "Inventory Categories", path: "/application/administration/inventorycategories" },
+                { label: "Add Category", path: "/application/administration/inventorycategories/add" }
+            ],
+        });
+    }, [setPageConfig]);
 
     return (
         <FormPageLayout
             title="Add New Category"
-            onSave={form.handleSubmit(dispatch)}
+            onSave={form.handleSubmit}
             onCancel={form.handleCancel}
             error={form.apiError}
         >

@@ -20,9 +20,13 @@ const InventoryCategoriesList = () => {
 
     // Set page-specific configuration
     useEffect(() => {
+        const breadcrumbData = [
+            { label: "Inventory Categories", path: "/application/administration/inventorycategories" }
+        ];
+
         setPageConfig({
             title: "Inventory Categories",
-            breadcrumb: "Inventory Categories",
+            breadcrumb: breadcrumbData,
         });
     }, [setPageConfig]);
 
