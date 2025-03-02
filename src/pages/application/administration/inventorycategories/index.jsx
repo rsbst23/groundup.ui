@@ -38,7 +38,7 @@ const InventoryCategoriesList = () => {
 
     const columns = [
         { field: "name", label: t("category_name"), filterable: true, filterType: "text", editLink: true },
-        { field: "createdDate", label: t("created_date"), filterable: true, filterType: "date" },
+        { field: "createdDate", label: t("created_date"), filterable: true, filterType: "date", type: "date" },
     ];
 
     return (

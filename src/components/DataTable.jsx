@@ -29,6 +29,7 @@ import LastPageIcon from "@mui/icons-material/LastPage";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useTranslation } from "react-i18next";
+import { formatValue } from "../utils/valueFormatter";
 
 const DataTable = ({
     columns,
@@ -129,6 +130,11 @@ const DataTable = ({
 
     const totalPages = Math.ceil(totalRecords / rowsPerPage);
 
+    // **Format cell values based on column type**
+    const formatCellValue = (value, column) => {
+        return formatValue(value, column.type);
+    };
+
     return (
         <Paper sx={{ p: 2 }}>
             {loading ? (
@@ -180,10 +186,10 @@ const DataTable = ({
                                                     {/* If column is marked as editLink, render as link */}
                                                     {column.editLink ? (
                                                         <RouterLink to={`${row.id}/edit`} style={{ textDecoration: "none" }}>
-                                                            {row[column.field]}
+                                                            {formatCellValue(row[column.field], column)}
                                                         </RouterLink>
                                                     ) : (
-                                                        row[column.field]
+                                                        formatCellValue(row[column.field], column)
                                                     )}
                                                 </TableCell>
                                             ))}
@@ -304,7 +310,7 @@ const DataTable = ({
                                         )}
                                     />
                                     <DatePicker
-                                        label={t("filter_by", { column: t(activeFilterColumn) })}
+                                        label={t("max_date", { column: t(activeFilterColumn) })}
                                         value={tempMaxDate}
                                         onChange={(date) => setTempMaxDate(date)}
                                         renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
