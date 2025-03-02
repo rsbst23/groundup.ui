@@ -62,6 +62,9 @@ const theme = createTheme({
                 root: {
                     width: "100%",
                     boxShadow: 2,
+                    height: "64px", // Force fixed height
+                    minHeight: "64px",
+                    maxHeight: "64px",
                     backgroundColor: "#3a856a",
                     color: "#ffffff",
                     "&:hover": {
@@ -73,6 +76,9 @@ const theme = createTheme({
         MuiToolbar: {
             styleOverrides: {
                 root: {
+                    height: "64px", // Fix height to avoid expansion
+                    minHeight: "64px",
+                    maxHeight: "64px",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",

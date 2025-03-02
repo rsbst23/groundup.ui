@@ -1,28 +1,38 @@
-import { Drawer, List, ListItem, ListItemText } from "@mui/material";
+import { useState } from "react";
+import { Drawer, List, ListItem, ListItemText, ListItemIcon, IconButton, Tooltip } from "@mui/material";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import getNavigationConfig from "../../config/navigationConfig"; // Use function to get translated config
+import getNavigationConfig from "../../config/navigationConfig";
 import { useTranslation } from "react-i18next";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const drawerWidth = 240;
-const topBarHeight = 64; // TopBar height
+const collapsedWidth = 56; // Sidebar width when collapsed
+const topBarHeight = 64;
 
-const Sidebar = () => {
-    const { t } = useTranslation(); // Localization hook
+const Sidebar = ({ mobileOpen, onDrawerToggle }) => {
+    const { t } = useTranslation();
     const location = useLocation();
-    const navigationConfig = getNavigationConfig(t); // Pass t() to get translated labels
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-    // Sort paths by length (longest first) to ensure the most specific match is selected
+    const [collapsed, setCollapsed] = useState(false);
+    const [showCollapseButton, setShowCollapseButton] = useState(false);
+
+    const navigationConfig = getNavigationConfig(t);
+
     const activeMainSection = Object.values(navigationConfig)
         .sort((a, b) => b.path.length - a.path.length)
         .find((section) => {
-            const dynamicPathMatch = section.path.replace(/:\w+/g, "[^/]+"); // Convert :id to regex pattern
+            const dynamicPathMatch = section.path.replace(/:\w+/g, "[^/]+");
             const regex = new RegExp(`^${dynamicPathMatch}`);
             return regex.test(location.pathname);
         });
 
     const sidebarItems = activeMainSection?.sidebar || [];
 
-    // ** Determine the single active item (deepest match wins) **
     let activeItemPath = null;
     sidebarItems.forEach((item) => {
         item.highlightOn.forEach((path) => {
@@ -30,41 +40,84 @@ const Sidebar = () => {
             const regex = new RegExp(`^${dynamicMatch}`);
             if (regex.test(location.pathname)) {
                 if (!activeItemPath || path.length > activeItemPath.length) {
-                    activeItemPath = path; // Select the deepest matching path
+                    activeItemPath = path;
                 }
             }
         });
     });
 
+    const handleCollapseToggle = () => {
+        setCollapsed(!collapsed);
+    };
+
     return (
         <Drawer
-            variant="permanent"
+            variant={isMobile ? "temporary" : "permanent"}
+            open={isMobile ? mobileOpen : true}
+            onClose={onDrawerToggle}
+            ModalProps={{ keepMounted: true }}
             sx={{
-                width: drawerWidth,
+                width: collapsed ? collapsedWidth : drawerWidth,
                 flexShrink: 0,
                 [`& .MuiDrawer-paper`]: {
-                    width: drawerWidth,
+                    width: collapsed ? collapsedWidth : drawerWidth,
                     boxSizing: "border-box",
-                    top: `${topBarHeight}px`, // Start under TopBar
-                    height: `calc(100vh - ${topBarHeight}px)`, // Fill rest of viewport
+                    top: `${topBarHeight}px`,
+                    height: `calc(100vh - ${topBarHeight}px)`,
                     backgroundColor: "background.default",
                     borderRight: "1px solid #ddd",
+                    overflowX: "hidden",
+                    transition: "width 0.3s ease-in-out",
                 },
             }}
+            onMouseEnter={() => setShowCollapseButton(true)}
+            onMouseLeave={() => setShowCollapseButton(false)}
         >
+            {/* Collapse Button (only on large screens) */}
+            {!isMobile && showCollapseButton && (
+                <IconButton
+                    onClick={handleCollapseToggle}
+                    sx={{
+                        position: "absolute",
+                        right: "-16px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        backgroundColor: "white",
+                        border: "1px solid #ddd",
+                        zIndex: 1,
+                        transition: "opacity 0.2s ease-in-out",
+                        "&:hover": { backgroundColor: "#f0f0f0" },
+                    }}
+                >
+                    {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                </IconButton>
+            )}
+
             <List>
                 {sidebarItems.map((item) => {
-                    const isSelected = item.highlightOn.includes(activeItemPath); // Now only one item is selected
+                    const isSelected = item.highlightOn.includes(activeItemPath);
+                    const IconComponent = item.icon;
 
                     return (
-                        <ListItem
-                            key={item.path}
-                            component={RouterLink}
-                            to={item.path.replace(":id", "39")} // Replace with sample ID
-                            className={`sidebar-item ${isSelected ? "selected" : ""}`}
-                        >
-                            <ListItemText primary={t(item.label)} />
-                        </ListItem>
+                        <Tooltip title={collapsed ? t(item.label) : ""} placement="right" arrow key={item.path}>
+                            <ListItem
+                                component={RouterLink}
+                                to={item.path.replace(":id", "39")}
+                                className={`sidebar-item ${isSelected ? "selected" : ""}`}
+                                onClick={isMobile ? onDrawerToggle : undefined}
+                                sx={{
+                                    justifyContent: collapsed ? "center" : "flex-start",
+                                    paddingLeft: collapsed ? 2 : 3,
+                                }}
+                            >
+                                {IconComponent && (
+                                    <ListItemIcon sx={{ minWidth: collapsed ? "unset" : 40 }}>
+                                        <IconComponent fontSize="medium" />
+                                    </ListItemIcon>
+                                )}
+                                {!collapsed && <ListItemText primary={t(item.label)} />}
+                            </ListItem>
+                        </Tooltip>
                     );
                 })}
             </List>

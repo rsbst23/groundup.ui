@@ -3,25 +3,30 @@ import { Box, CssBaseline } from "@mui/material";
 import Sidebar from "../navigation/Sidebar";
 import TopBar from "../navigation/TopBar";
 import { PageProvider } from "../../contexts/PageContext";
+import { useState } from "react";
 
 const topBarHeight = 64; // Height of TopBar
-const sidebarWidth = 240;
 
 const ApplicationLayout = () => {
+    const [mobileOpen, setMobileOpen] = useState(false);
+
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen);
+    };
+
     return (
         <PageProvider>
             <Box sx={{ display: "flex", width: "100vw", height: "100vh" }}>
                 <CssBaseline />
 
-                {/* Sidebar - Stays fixed on the left */}
-                <Sidebar />
+                {/* Sidebar - Collapses on small screens */}
+                <Sidebar mobileOpen={mobileOpen} onDrawerToggle={handleDrawerToggle} />
 
                 {/* Main Content Area */}
                 <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
-                    {/* Top Navigation Bar - Fixed at the top */}
                     <TopBar />
 
-                    {/* Scrollable Page Content */}
+                    {/* Pass handleDrawerToggle to PageLayout via Outlet context */}
                     <Box
                         component="main"
                         sx={{
@@ -33,7 +38,7 @@ const ApplicationLayout = () => {
                             backgroundColor: "background.default",
                         }}
                     >
-                        <Outlet />
+                        <Outlet context={{ handleDrawerToggle }} />
                     </Box>
                 </Box>
             </Box>
