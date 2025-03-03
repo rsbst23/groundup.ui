@@ -27,5 +27,7 @@
     "category_name": "Category Name",
     "add_category": "Add Category",
     "created_date": "Created Date",
-    "administration_description": "Manage your system settings and configurations here."
+    "administration_description": "Manage your system settings and configurations here.",
+    "of": "of",
+    "items": "items"
 }

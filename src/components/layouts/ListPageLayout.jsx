@@ -22,7 +22,7 @@ const ListPageLayout = ({ title, actions, loading, error, children }) => {
     return (
         <Paper sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography variant="h5">{t(title)}</Typography>
+                <Typography variant="h5">{title}</Typography>
                 <Box>{actions}</Box>
             </Box>
 

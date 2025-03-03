@@ -115,7 +115,7 @@ const Sidebar = ({ mobileOpen, onDrawerToggle }) => {
                                         <IconComponent fontSize="medium" />
                                     </ListItemIcon>
                                 )}
-                                {!collapsed && <ListItemText primary={t(item.label)} />}
+                                {!collapsed && <ListItemText primary={item.label} />}
                             </ListItem>
                         </Tooltip>
                     );

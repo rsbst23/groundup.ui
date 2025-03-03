@@ -17,7 +17,7 @@ const getNavigationConfig = () => ({
         path: "/application/administration",
         sidebar: [
             { label: i18next.t("administration"), path: "/application/administration", highlightOn: ["/application/administration"], icon: AdminPanelSettingsIcon },
-            { label: i18next.t("inventory_categories"), path: "/application/administration/inventorycategories", highlightOn: ["/application/administration/inventorycategories", "/application/administration/inventorycategories/edit"], icon: CategoryIcon }
+            { label: "inventory_categories", path: "/application/administration/inventorycategories", highlightOn: ["/application/administration/inventorycategories", "/application/administration/inventorycategories/edit"], icon: CategoryIcon }
         ],
     },
     inventoryCategoryAdd: {
@@ -25,7 +25,7 @@ const getNavigationConfig = () => ({
         path: "/application/administration/inventorycategories/add",
         sidebar: [
             { label: i18next.t("administration"), path: "/application/administration", highlightOn: ["/application/administration"], icon: AdminPanelSettingsIcon },
-            { label: i18next.t("inventory_categories"), path: "/application/administration/inventorycategories", highlightOn: ["/application/administration/inventorycategories", "/application/administration/inventorycategories/edit"], icon: CategoryIcon }
+            { label: "inventory_categories", path: "/application/administration/inventorycategories", highlightOn: ["/application/administration/inventorycategories", "/application/administration/inventorycategories/edit"], icon: CategoryIcon }
         ],
     },
     inventoryCategoryEdit: {

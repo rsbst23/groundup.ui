@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { parseValue } from "../utils/parseValue";
 
 const useFormState = ({ fetchAction, submitAction, successRedirect, id, isEditing, dataSelector }) => {
     const dispatch = useDispatch();
@@ -41,13 +42,18 @@ const useFormState = ({ fetchAction, submitAction, successRedirect, id, isEditin
         }
     }, [dispatch, id, isEditing, existingData]);
 
-    // Fix: Restore handleChange to make the text box editable
     const handleChange = (event) => {
-        const { name, value } = event.target;
-        setValues((prev) => ({ ...prev, [name]: value }));
+        const { name, value, type } = event.target;
+
+        // Determine field type for parsing
+        const columnType = type === "number" ? "number" : "text"; // Default to text if unknown
+
+        setValues((prev) => ({
+            ...prev,
+            [name]: parseValue(value, columnType)
+        }));
     };
 
-    // Fix: Restore validation
     const validate = () => {
         let newErrors = {};
         Object.keys(values).forEach((key) => {

@@ -155,7 +155,7 @@ const DataTable = ({
                                                 direction={sortBy === column.field ? sortDirection : "asc"}
                                                 onClick={() => onSort(column.field)}
                                             >
-                                                {t(column.label)}
+                                                {column.label}
                                             </TableSortLabel>
                                             {column.filterable && (
                                                 <IconButton size="small" onClick={(event) => handleFilterIconClick(event, column.field)}>
@@ -310,7 +310,7 @@ const DataTable = ({
                                         )}
                                     />
                                     <DatePicker
-                                        label={t("max_date", { column: t(activeFilterColumn) })}
+                                        label={t("max_date", { column: activeFilterColumn })}
                                         value={tempMaxDate}
                                         onChange={(date) => setTempMaxDate(date)}
                                         renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}

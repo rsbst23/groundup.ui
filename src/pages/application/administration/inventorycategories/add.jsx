@@ -38,6 +38,7 @@ const AddInventoryCategory = () => {
             <TextField
                 label={t("category_name")}
                 name="name"
+                type="text"
                 value={form.values.name}
                 onChange={form.handleChange}
                 error={!!form.errors.name}
