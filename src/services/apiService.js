@@ -10,7 +10,7 @@ const request = async (url, options = {}) => {
             // Throw structured API response if available, otherwise fallback to statusText
             throw {
                 success: false,
-                message: data?.message || `Request failed: ${response.statusText}`,
+                message: data?.message || data?.Message || `Request failed: ${response.statusText}`,
                 errors: data?.errors || [],
             };
         }
