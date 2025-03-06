@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import {
     AppBar,
@@ -7,8 +7,11 @@ import {
     Menu,
     MenuItem,
     Button,
+    IconButton,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { useAuth } from "../../contexts/AuthContext";
 
 const navigationItems = [
     { label: "Home", path: "/application" },
@@ -17,18 +20,16 @@ const navigationItems = [
 
 const TopBar = () => {
     const location = useLocation();
-    const [anchorEl, setAnchorEl] = useState(null);
+    const { user, logout } = useAuth(); // Get user state from AuthContext
 
-    const activeItem =
-        [...navigationItems].sort((a, b) => b.path.length - a.path.length) // Sort by path length descending
-            .find((item) => location.pathname.startsWith(item.path)) || navigationItems[0];
+    // Debugging: Check when TopBar re-renders
+    useEffect(() => {
+        console.log("TopBar re-rendered, user state:", user);
+    }, [user]);
 
-    const handleMenuOpen = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
+    const handleLogout = async () => {
+        await logout();
+        console.log("User logged out, clearing state.");
     };
 
     return (
@@ -48,27 +49,26 @@ const TopBar = () => {
                     Ground Up
                 </Typography>
 
-                <Button
-                    color="inherit"
-                    onClick={handleMenuOpen}
-                    endIcon={<ArrowDropDownIcon />}
-                    sx={{ textTransform: "none", fontSize: "1rem" }}
-                >
-                    {activeItem.label}
-                </Button>
-                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                    {navigationItems.map((item) => (
-                        <MenuItem
-                            key={item.path}
-                            component={RouterLink}
-                            to={item.path}
-                            selected={location.pathname.startsWith(item.path)}
-                            onClick={handleMenuClose}
-                        >
-                            {item.label}
-                        </MenuItem>
-                    ))}
-                </Menu>
+                {user ? (
+                    <>
+                        <IconButton color="inherit" sx={{ marginLeft: "auto" }}>
+                            <AccountCircleIcon />
+                        </IconButton>
+                        <Menu open={Boolean(user)}>
+                            <MenuItem disabled>{user.fullName || user.email}</MenuItem>
+                            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                        </Menu>
+                    </>
+                ) : (
+                    <Button
+                        color="inherit"
+                        component={RouterLink}
+                        to="/login"
+                        sx={{ marginLeft: "auto" }}
+                    >
+                        Login
+                    </Button>
+                )}
             </Toolbar>
         </AppBar>
     );

@@ -11,18 +11,21 @@ import theme from "./styles/theme";
 import "./styles/index.css";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { AuthProvider } from "./contexts/AuthContext";
 
 createRoot(document.getElementById("root")).render(
   /*<StrictMode>*/
     <Provider store={store}>
-        <ThemeProvider theme={theme}>
-            <CssBaseline /> {/* Reset browser styles */}
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <BrowserRouter>
-                <Router />
-            </BrowserRouter>
-            </LocalizationProvider>
-        </ThemeProvider>
+        <AuthProvider>
+            <ThemeProvider theme={theme}>
+                <CssBaseline /> {/* Reset browser styles */}
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <BrowserRouter>
+                        <Router />
+                    </BrowserRouter>
+                </LocalizationProvider>
+            </ThemeProvider>
+        </AuthProvider>
     </Provider>
   /*</StrictMode>*/
 );
