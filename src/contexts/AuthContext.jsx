@@ -1,68 +1,149 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import apiService from "../services/apiService";
 
-const AuthContext = createContext();
+// Create context outside the component to ensure it's stable
+const AuthContext = createContext(null);
 
+// AuthProvider with stable context and better state management
 export const AuthProvider = ({ children }) => {
-    console.log("AuthProvider is mounted");
+    console.log("[AuthProvider] Initializing");
 
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    // Use a more complete state object instead of separate variables
+    const [authState, setAuthState] = useState({
+        user: null,
+        loading: true,
+        initialized: false
+    });
 
-    // Fetch current user on page load
-    useEffect(() => {
-        console.log("Fetching user in AuthContext useEffect");
-
-        apiService.get("/auth/me")
-            .then((response) => {
-                console.log("Fetched user data in AuthContext:", response);
-                if (response.success) {
-                    setUser(() => {
-                        console.log("Updating user state in AuthContext:", response.data);
-                        return response.data;
-                    });
-                }
-            })
-            .catch(() => setUser(null))
-            .finally(() => setLoading(false));
+    // Update auth state in a single place
+    const updateAuthState = useCallback((newState) => {
+        console.log("[AuthProvider] Updating auth state:", newState);
+        setAuthState(prev => ({ ...prev, ...newState }));
     }, []);
 
+    // Initial fetch of user data
+    useEffect(() => {
+        if (authState.initialized) return;
+
+        console.log("[AuthProvider] Running initial user fetch");
+
+        const fetchUser = async () => {
+            try {
+                const response = await apiService.get("/auth/me");
+                console.log("[AuthProvider] Initial user fetch response:", response);
+
+                if (response.success) {
+                    updateAuthState({
+                        user: response.data,
+                        loading: false,
+                        initialized: true
+                    });
+                } else {
+                    updateAuthState({
+                        user: null,
+                        loading: false,
+                        initialized: true
+                    });
+                }
+            } catch (error) {
+                console.error("[AuthProvider] Error fetching initial user:", error);
+                updateAuthState({
+                    user: null,
+                    loading: false,
+                    initialized: true
+                });
+            }
+        };
+
+        fetchUser();
+    }, [updateAuthState, authState.initialized]);
+
+    // Login handler
     const login = async (credentials) => {
-        console.log("login() in AuthContext called with credentials:", credentials); // Debugging log
+        console.log("[AuthProvider] Login called with:", credentials);
+        updateAuthState({ loading: true });
 
         try {
-            const response = await apiService.post("/auth/login", credentials);
-            console.log("Login Response from API:", response); // Debug API response
+            // Step 1: Login
+            const loginResponse = await apiService.post("/auth/login", credentials);
+            console.log("[AuthProvider] Login response:", loginResponse);
 
+            if (!loginResponse.success) {
+                updateAuthState({ loading: false });
+                return { success: false, message: loginResponse.message || "Login failed" };
+            }
+
+            // Step 2: Get user data
             const userData = await apiService.get("/auth/me");
-            console.log("User Data after login:", userData);
+            console.log("[AuthProvider] User data after login:", userData);
 
-            setUser(null); 
+            if (userData.success) {
+                // Important: Update state in a single operation
+                updateAuthState({
+                    user: userData.data,
+                    loading: false
+                });
+                return { success: true };
+            } else {
+                updateAuthState({ loading: false });
+                return { success: false, message: "Failed to get user details" };
+            }
+        } catch (error) {
+            console.error("[AuthProvider] Login error:", error);
+            updateAuthState({ loading: false });
+            return { success: false, message: error.message || "Login failed" };
+        }
+    };
 
-            setTimeout(() => {
-                setUser(userData.data); // Force React to detect state change
-                console.log("User state updated in AuthContext:", userData.data);
-            }, 100);
+    // Logout handler
+    const logout = async () => {
+        console.log("[AuthProvider] Logout called");
+        updateAuthState({ loading: true });
+
+        try {
+            await apiService.post("/auth/logout");
+            console.log("[AuthProvider] Logout successful");
+
+            updateAuthState({
+                user: null,
+                loading: false
+            });
 
             return { success: true };
         } catch (error) {
-            console.error("Login error in AuthContext:", error);
+            console.error("[AuthProvider] Logout error:", error);
+            updateAuthState({ loading: false });
             return { success: false, message: error.message };
         }
     };
 
+    // Debug - log state changes
+    useEffect(() => {
+        console.log("[AuthProvider] Auth state changed:", authState);
+    }, [authState]);
 
-    const logout = async () => {
-        await apiService.post("/auth/logout");
-        console.log("User logged out, clearing state.");
-        setUser(null);
+    // Prepare value object once to avoid unnecessary re-renders
+    const contextValue = {
+        user: authState.user,
+        loading: authState.loading,
+        login,
+        logout
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-export const useAuth = () => useContext(AuthContext);
+// Custom hook with error checking
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (context === null) {
+        console.error("[useAuth] Auth context is null! Did you forget to wrap your app with AuthProvider?");
+        // Return a default value to prevent crashes
+        return { user: null, loading: false, login: () => { }, logout: () => { } };
+    }
+    return context;
+};

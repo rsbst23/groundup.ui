@@ -54,10 +54,10 @@ const useFormState = ({ fetchAction, submitAction, successRedirect, id, isEditin
         }));
     };
 
-    const validate = () => {
+    const validate = (dataToValidate = values) => {
         let newErrors = {};
-        Object.keys(values).forEach((key) => {
-            if (!values[key]) {
+        Object.keys(dataToValidate).forEach((key) => {
+            if (!dataToValidate[key]) {
                 newErrors[key] = "This field is required";
             }
         });
@@ -65,18 +65,25 @@ const useFormState = ({ fetchAction, submitAction, successRedirect, id, isEditin
         return Object.keys(newErrors).length === 0;
     };
 
-    // Fix: Restore form submission handling
     const handleSubmit = async (event) => {
         if (event) event.preventDefault(); // Prevent default form submission
-
         setApiError(null);
 
-        if (!validate()) {
+        // Create a trimmed copy of the values for submission
+        const trimmedValues = Object.fromEntries(
+            Object.entries(values).map(([key, value]) => {
+                // Only trim string values
+                return [key, typeof value === 'string' ? value.trim() : value];
+            })
+        );
+
+        if (!validate(trimmedValues)) {
             return;
         }
 
         try {
-            const response = await dispatch(submitAction(values)).unwrap();
+            // Use the trimmed values for submission
+            const response = await dispatch(submitAction(trimmedValues)).unwrap();
             if (!response.success) {
                 setApiError(response.message || "An error occurred.");
                 return;

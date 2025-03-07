@@ -1,35 +1,60 @@
-import { AppBar, Toolbar, Typography, Button, Box, Container } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../contexts/AuthContext";
+import { UserMenu } from "../utils/auth-navigation-utils";
 
 const MainNav = () => {
     const { t } = useTranslation();
+    const { user } = useAuth();
 
     return (
         <AppBar position="static" sx={{ color: "#ffffff", bgcolor: "primary.main" }}>
-            <Container maxWidth="xl">
-                <Toolbar>
-                    {/* Left-aligned logo */}
-                    <Typography
-                        variant="h6"
-                        component={Link}
-                        to="/"
-                        sx={{ textDecoration: "none", color: "#ffffff", fontWeight: "bold", "&:hover": { color: "white", textDecoration: "underline" } }}
-                    >
-                        {t("app_name")}
-                    </Typography>
+            {/* Removed Container to be consistent with TopBar */}
+            <Toolbar sx={{ px: { xs: 2, sm: 3 } }}> {/* Custom padding to control indentation */}
+                {/* Left-aligned logo */}
+                <Typography
+                    variant="h6"
+                    component={Link}
+                    to="/"
+                    sx={{
+                        textDecoration: "none",
+                        color: "#ffffff",
+                        "&:hover": {
+                            color: "white",
+                            textDecoration: "underline"
+                        }
+                    }}
+                >
+                    {t("app_name")}
+                </Typography>
 
-                    {/* Right-aligned buttons */}
-                    <Box sx={{ display: "flex", gap: 2 }}>
-                        <Button component={Link} to="/public/login" color="inherit">
-                            {t("login")}
-                        </Button>
-                        <Button component={Link} to="/application" color="inherit">
-                            {t("enter_app")}
-                        </Button>
-                    </Box>
-                </Toolbar>
-            </Container>
+                {/* Right-aligned content */}
+                <Box sx={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 2 }}>
+                    {user ? (
+                        <UserMenu color="inherit" textColor="#ffffff" />
+                    ) : (
+                        <>
+                            <Button
+                                component={Link}
+                                to="/public/login"
+                                color="inherit"
+                                variant="text"
+                            >
+                                {t("login")}
+                            </Button>
+                            <Button
+                                component={Link}
+                                to="/application"
+                                color="inherit"
+                                variant="text"
+                            >
+                                {t("enter_app")}
+                            </Button>
+                        </>
+                    )}
+                </Box>
+            </Toolbar>
         </AppBar>
     );
 };

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useAuth } from "../../contexts/AuthContext"; // Use AuthContext instead of Redux
+import { useState, useEffect } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, Container, Typography, CircularProgress, Alert } from "@mui/material";
 
@@ -8,27 +8,41 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth(); // Use login function from AuthContext
+    const { login, user } = useAuth(); // Also get the user to see updates
     const navigate = useNavigate();
+
+    // Debug: Watch for user state changes in Login component
+    useEffect(() => {
+        console.log("[Login] User state changed:", user);
+    }, [user]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        console.log("[Login] Starting login process with:", { email, password });
 
-        console.log("Submitting login form with:", { email, password }); // Debugging
+        try {
+            const result = await login({ email, password });
+            console.log("[Login] Login result:", result);
 
-        const result = await login({ email, password }); // Use AuthContext login
-
-        if (result.success) {
-            console.log("Login successful, navigating to /");
-            navigate("/"); // Redirect to dashboard on success
-        } else {
-            console.error("Login failed:", result.message);
-            setError(result.message);
+            if (result.success) {
+                console.log("[Login] Login successful, will navigate to /");
+                // Add a small delay to ensure state propagation
+                setTimeout(() => {
+                    console.log("[Login] Navigating to / now. Current user state:", user);
+                    navigate("/");
+                }, 500);
+            } else {
+                console.error("[Login] Login failed:", result.message);
+                setError(result.message);
+            }
+        } catch (error) {
+            console.error("[Login] Exception during login:", error);
+            setError("An unexpected error occurred");
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     return (

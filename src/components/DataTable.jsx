@@ -107,19 +107,16 @@ const DataTable = ({
         if (!activeFilterColumn) return;
         const colDef = columns.find((c) => c.field === activeFilterColumn);
         const filterType = colDef?.filterType || "text";
-        let newFilters;
+        let newFilters = { ...filters };
+
         if (filterType === "date") {
-            newFilters = {
-                ...filters,
-                [`MinFilters[${activeFilterColumn}]`]: null,
-                [`MaxFilters[${activeFilterColumn}]`]: null,
-            };
+            newFilters[`MinFilters[${activeFilterColumn}]`] = null;
+            newFilters[`MaxFilters[${activeFilterColumn}]`] = null;
         } else {
-            newFilters = {
-                ...filters,
-                [activeFilterColumn]: "",
-            };
+            // Use null instead of empty string to ensure it's filtered out
+            newFilters[activeFilterColumn] = null;
         }
+
         onFilterApply(newFilters);
         handleFilterClose();
     };
@@ -327,12 +324,37 @@ const DataTable = ({
                                     onChange={(event) => setTempTextFilter(event.target.value)}
                                 />
                             )}
-                            <Button onClick={applyFilter} variant="contained" color="primary">
-                                {t("apply_filter")}
-                            </Button>
-                            <Button onClick={clearFilter} color="secondary">
-                                {t("clear_filter")}
-                            </Button>
+                            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between' }}>
+                                <Button
+                                    onClick={applyFilter}
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{
+                                        flex: 1,
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                >
+                                    {t("apply_filter")}
+                                </Button>
+                                <Button
+                                    onClick={clearFilter}
+                                    variant="outlined"
+                                    sx={{
+                                        flex: 1,
+                                        whiteSpace: 'nowrap',
+                                        backgroundColor: 'transparent',
+                                        color: '#3a856a',
+                                        borderColor: '#3a856a',
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(58, 133, 106, 0.1)',
+                                            borderColor: '#3a856a',
+                                            color: '#3a856a'
+                                        }
+                                    }}
+                                >
+                                    {t("clear_filter")}
+                                </Button>
+                            </Box>
                         </Paper>
                     </Popover>
                 </>

@@ -43,8 +43,53 @@ const theme = createTheme({
                         backgroundColor: "#1f7456",
                         color: "#ffffff",
                     },
+                    // Add focus state styling to fix outline issues
+                    "&:focus": {
+                        outline: "none",
+                        boxShadow: "none",
+                    },
+                    "&.Mui-focusVisible": {
+                        outline: "none",
+                        boxShadow: "none",
+                    }
+                },
+                // Add a variant for transparent buttons (like in navigation)
+                text: {
+                    backgroundColor: "transparent",
+                    color: "inherit",
+                    boxShadow: "none",
+                    "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        boxShadow: "none",
+                    },
+                    "&:focus": {
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        outline: "none",
+                        boxShadow: "none",
+                        border: "none",
+                    },
                 }
             },
+            variants: [
+                {
+                    props: { color: "inherit", variant: "text" },
+                    style: {
+                        backgroundColor: "transparent",
+                        color: "inherit",
+                        boxShadow: "none",
+                        "&:hover": {
+                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            boxShadow: "none",
+                        },
+                        "&:focus": {
+                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            outline: "none",
+                            boxShadow: "none",
+                            border: "none",
+                        },
+                    }
+                }
+            ]
         },
         MuiLink: {
             styleOverrides: {
@@ -92,6 +137,27 @@ const theme = createTheme({
                     borderRight: "1px solid #ddd",
                 },
             },
+        },
+        MuiMenu: {
+            styleOverrides: {
+                paper: {
+                    borderRadius: "4px",
+                    minWidth: "150px",
+                    boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.2)"
+                }
+            }
+        },
+        MuiMenuItem: {
+            styleOverrides: {
+                root: {
+                    "&.Mui-selected": {
+                        backgroundColor: "rgba(58, 133, 106, 0.1)"
+                    },
+                    "&.Mui-selected:hover": {
+                        backgroundColor: "rgba(58, 133, 106, 0.2)"
+                    }
+                }
+            }
         },
         MuiListItem: {
             styleOverrides: {

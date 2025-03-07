@@ -22,6 +22,6 @@ export const parseValue = (value, type = "text") => {
             return value === "true" || value === true ? true : false;
         case "text":
         default:
-            return value.trim();
+            return value;
     }
 };
