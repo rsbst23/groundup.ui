@@ -52,5 +52,7 @@
     "created_date": "Created Date",
     "administration_description": "Manage your system settings and configurations here.",
     "of": "of",
-    "items": "items"
+    "items": "items",
+    "reset_filters": "Reset Filters",
+    "export": "Export"
 }
