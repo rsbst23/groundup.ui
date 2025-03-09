@@ -6,7 +6,12 @@ import useTableConfig from "../../../../hooks/useTableConfig";
 import DataTable from "../../../../components/DataTable";
 import ListPageLayout from "../../../../components/layouts/ListPageLayout";
 import { usePage } from "../../../../contexts/PageContext";
-import { fetchInventoryCategories, removeInventoryCategory } from "../../../../store/inventoryCategoriesSlice";
+import {
+    fetchInventoryCategories,
+    removeInventoryCategory,
+    exportInventoryCategoriesData
+} from "../../../../store/inventoryCategoriesSlice";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 const InventoryCategoriesList = () => {
     const { t } = useTranslation();
@@ -42,11 +47,12 @@ const InventoryCategoriesList = () => {
         },
     ];
 
-    // Use the table configuration hook
+    // Use the table configuration hook with the export action
     const tableProps = useTableConfig({
         tableOptions: {
             fetchAction: fetchInventoryCategories,
             removeAction: removeInventoryCategory,
+            exportAction: exportInventoryCategoriesData,
             dataSelector: (state) => ({
                 items: state.inventoryCategories.categories,
                 loading: state.inventoryCategories.loading,
@@ -60,42 +66,20 @@ const InventoryCategoriesList = () => {
         translationPrefix: ""
     });
 
-    // Define additional actions for the table
+    // Define additional actions for the table with export options
     const additionalActions = useMemo(() => [
-        //{
-        //    id: 'import',
-        //    label: t("import_categories"),
-        //    icon: <UploadFileIcon fontSize="small" />,
-        //    onClick: () => {
-        //        console.log('Import categories clicked');
-        //    }
-        //},
-        //{ divider: true },
-        //{
-        //    id: 'export-csv',
-        //    label: t("export_csv"),
-        //    icon: <FileDownloadIcon fontSize="small" />,
-        //    onClick: () => {
-        //        tableProps.exportData('csv');
-        //    }
-        //},
-        //{
-        //    id: 'export-excel',
-        //    label: t("export_excel"),
-        //    icon: <FileDownloadIcon fontSize="small" />,
-        //    onClick: () => {
-        //        tableProps.exportData('excel');
-        //    }
-        //},
-        //{ divider: true },
-        //{
-        //    id: 'settings',
-        //    label: t("category_settings"),
-        //    icon: <SettingsIcon fontSize="small" />,
-        //    onClick: () => {
-        //        console.log('Category settings clicked');
-        //    }
-        //}
+        {
+            id: 'export-csv',
+            label: t("export_csv"),
+            icon: <FileDownloadIcon fontSize="small" />,
+            onClick: () => tableProps.exportData('csv')
+        },
+        {
+            id: 'export-json',
+            label: t("export_json"),
+            icon: <FileDownloadIcon fontSize="small" />,
+            onClick: () => tableProps.exportData('json')
+        }
     ], [t, tableProps]);
 
     return (
@@ -112,7 +96,7 @@ const InventoryCategoriesList = () => {
             showDetailedErrors={process.env.NODE_ENV !== 'production'}
             tableState={tableProps}
             onResetFilters={tableProps.resetFilters}
-            onExport={() => tableProps.exportData('default')}
+            onExport={() => tableProps.exportData('csv')} // Use the hook's exportData method
             additionalActions={additionalActions}
             showTableActions={true}
         >

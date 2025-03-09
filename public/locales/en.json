@@ -54,5 +54,8 @@
     "of": "of",
     "items": "items",
     "reset_filters": "Reset Filters",
-    "export": "Export"
+    "export": "Export",
+    "more_actions": "More Actions",
+    "export_csv": "Download csv",
+    "export_json": "Download json"
 }

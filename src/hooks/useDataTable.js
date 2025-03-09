@@ -10,6 +10,7 @@ import { cleanFilters, applyFilter, createQueryParams } from '../utils/tableFilt
 const useDataTable = ({
     fetchAction,
     removeAction,
+    exportAction = null, // New parameter for the export action
     dataSelector,
     defaultSort = 'id',
     defaultSortDirection = 'asc',
@@ -145,12 +146,23 @@ const useDataTable = ({
         setPage(0);
     }, []);
 
-    // Export data with current filters
-    const exportData = useCallback((exportType = 'default') => {
-        const params = createQueryParams(tableState);
-        console.log(`Export data as ${exportType} with params:`, params);
+    // Enhanced exportData function that uses the provided exportAction if available
+    const exportData = useCallback((format = 'csv') => {
+        const params = {
+            format,
+            filters,
+            sortBy,
+            sortDirection
+        };
+
+        // If an export action was provided, dispatch it with the params
+        if (exportAction) {
+            dispatch(exportAction(params));
+        }
+
+        // Always return the params for cases where the component needs them
         return params;
-    }, [tableState]);
+    }, [dispatch, exportAction, filters, sortBy, sortDirection]);
 
     // FIX: Use refs to track previous state and prevent infinite loops
     const lastStateRef = useRef({
@@ -225,7 +237,7 @@ const useDataTable = ({
         applyFilter: applyTableFilter,
         clearFilter,
         resetFilters,
-        exportData,
+        exportData, // Enhanced export function
 
         // UI state setters
         setTempTextFilter,

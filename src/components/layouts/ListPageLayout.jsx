@@ -97,14 +97,7 @@ const ListPageLayout = ({
                                 </Tooltip>
                             )}
 
-                            {/* Export */}
-                            {onExport && (
-                                <Tooltip title={t("export")}>
-                                    <IconButton onClick={onExport} color="primary">
-                                        <FileDownloadIcon />
-                                    </IconButton>
-                                </Tooltip>
-                            )}
+                           
 
                             {/* Additional actions menu */}
                             {additionalActions && additionalActions.length > 0 && (

@@ -5,8 +5,41 @@ import {
     createInventoryCategory,
     updateInventoryCategory,
     deleteInventoryCategory,
+    exportInventoryCategories
 } from "../services/inventoryCategoryService";
 import { normalizeError } from "../utils/errorUtils";
+
+// Add export thunk to existing slice
+export const exportInventoryCategoriesData = createAsyncThunk(
+    "inventoryCategories/export",
+    async ({ format = 'csv', filters = {}, sortBy = 'name', sortDirection = 'asc' } = {}, { rejectWithValue }) => {
+        try {
+            // Call the service function to get the blob
+            const blob = await exportInventoryCategories(format, filters, sortBy, sortDirection);
+
+            // Create a download link
+            const url = URL.createObjectURL(blob);
+
+            // Determine filename from Content-Disposition header or use a default
+            const filename = `inventory-categories-${new Date().toISOString().split('T')[0]}.${format}`;
+
+            // Create download element
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+
+            // Clean up
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            return { success: true };
+        } catch (error) {
+            return rejectWithValue(normalizeError(error));
+        }
+    }
+);
 
 // Fetch all categories with pagination
 export const fetchInventoryCategories = createAsyncThunk(
@@ -247,7 +280,21 @@ const inventoryCategoriesSlice = createSlice({
             .addCase(removeInventoryCategory.rejected, (state, action) => {
                 state.deletingId = null;
                 state.error = action.payload;
-            });
+            })
+
+            // Export Categories
+            .addCase(exportInventoryCategoriesData.pending, (state) => {
+                state.exporting = true;
+                state.error = null;
+            })
+            .addCase(exportInventoryCategoriesData.fulfilled, (state) => {
+                state.exporting = false;
+                state.error = null;
+            })
+            .addCase(exportInventoryCategoriesData.rejected, (state, action) => {
+                state.exporting = false;
+                state.error = action.payload;
+            })
     },
 });
 
