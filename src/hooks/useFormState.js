@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { parseValue } from "../utils/parseValue";
 import { normalizeError, logError, createFormValidationErrors } from "../utils/errorUtils";
+import * as yup from "yup";
 
 /**
  * Custom hook for managing form state including validation and error handling
@@ -14,7 +15,9 @@ import { normalizeError, logError, createFormValidationErrors } from "../utils/e
  * @param {string|number} config.id - ID of the item to fetch (for edit forms)
  * @param {boolean} config.isEditing - Whether this is an edit form
  * @param {Function} config.dataSelector - Redux selector to get data for the form
- * @param {Function} config.validate - Custom validation function
+ * @param {Object} config.validationSchema - Yup validation schema
+ * @param {Function} config.onBeforeSubmit - Function to run before submission
+ * @param {Object} config.initialValues - Initial values for the form (for create forms)
  * @returns {Object} Form state and handlers
  */
 const useFormState = ({
@@ -24,14 +27,17 @@ const useFormState = ({
     id,
     isEditing,
     dataSelector,
-    validate
+    validationSchema,
+    onBeforeSubmit,
+    initialValues = {}
 }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const successRedirectRef = useRef(successRedirect); // Persist successRedirect
+    const successRedirectRef = useRef(successRedirect);
 
-    const [values, setValues] = useState({});
+    const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
     const [apiError, setApiError] = useState(null);
     const [loading, setLoading] = useState(isEditing);
     const [initialized, setInitialized] = useState(false);
@@ -63,7 +69,7 @@ const useFormState = ({
                         logError(context, normalizedError);
                         setApiError(normalizedError);
                         setLoading(false);
-                        setInitialized(true); // Ensure cancel button works
+                        setInitialized(true);
                     });
             } else {
                 setInitialized(true);
@@ -73,8 +79,70 @@ const useFormState = ({
         }
     }, [dispatch, id, isEditing, existingData, fetchAction, initialized]);
 
+    // Validate a single field
+    const validateField = async (name, value) => {
+        if (!validationSchema || !validationSchema.fields[name]) return null;
+
+        try {
+            await yup.reach(validationSchema, name).validate(value);
+            return null;
+        } catch (error) {
+            return error.message;
+        }
+    };
+
+    // Validate the entire form
+    const validateForm = async (dataToValidate = values) => {
+        if (!validationSchema) return true;
+
+        try {
+            await validationSchema.validate(dataToValidate, { abortEarly: false });
+            setErrors({});
+            return true;
+        } catch (validationError) {
+            const newErrors = {};
+
+            if (validationError.inner) {
+                validationError.inner.forEach(error => {
+                    newErrors[error.path] = error.message;
+                });
+            }
+
+            setErrors(newErrors);
+            return false;
+        }
+    };
+
+    // Handle input blur for field-level validation
+    // This will mark fields as touched and show validation errors
+    // but won't prevent navigation between fields
+    const handleBlur = async (event) => {
+        const { name } = event.target;
+
+        // Mark the field as touched
+        setTouched(prev => ({
+            ...prev,
+            [name]: true
+        }));
+
+        // Validate and update errors, but don't prevent the blur event
+        const fieldError = await validateField(name, values[name]);
+        if (fieldError) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: fieldError
+            }));
+        } else if (errors[name]) {
+            setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors[name];
+                return newErrors;
+            });
+        }
+    };
+
     // Handle form field changes
-    const handleChange = (event) => {
+    const handleChange = async (event) => {
         const { name, value, type, checked } = event.target;
 
         // Handle different input types
@@ -92,30 +160,22 @@ const useFormState = ({
             [name]: parsedValue
         }));
 
-        // Clear field-specific error when user edits the field
-        if (errors[name]) {
-            setErrors((prev) => {
-                const newErrors = { ...prev };
-                delete newErrors[name];
-                return newErrors;
-            });
-        }
-    };
-
-    // Default validation function
-    const defaultValidate = (dataToValidate = values) => {
-        let newErrors = {};
-
-        // Basic required field validation
-        Object.entries(dataToValidate).forEach(([key, value]) => {
-            // Skip validation for non-required fields or fields with values
-            if (value === null || value === undefined || value === '') {
-                newErrors[key] = "This field is required";
+        // Validate field if it has been touched
+        if (touched[name]) {
+            const fieldError = await validateField(name, parsedValue);
+            if (fieldError) {
+                setErrors(prev => ({
+                    ...prev,
+                    [name]: fieldError
+                }));
+            } else if (errors[name]) {
+                setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors[name];
+                    return newErrors;
+                });
             }
-        });
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        }
     };
 
     // Handle form submission
@@ -134,15 +194,33 @@ const useFormState = ({
                 })
             );
 
-            // Run validation - either custom or default
-            const isValid = validate ? validate(trimmedValues) : defaultValidate(trimmedValues);
+            // Mark all fields as touched for validation
+            const allTouched = Object.keys(trimmedValues).reduce((acc, key) => {
+                acc[key] = true;
+                return acc;
+            }, {});
+            setTouched(allTouched);
+
+            // Run validation
+            const isValid = await validateForm(trimmedValues);
             if (!isValid) {
                 setSubmitting(false);
-                return;
+                // Show a more user-friendly message when validation fails
+                setApiError({
+                    message: "Please correct the highlighted fields before submitting",
+                    details: "There are validation errors in the form"
+                });
+                return { success: false, error: { message: "Validation failed" } };
             }
 
-            // Use the trimmed values for submission
-            const response = await dispatch(submitAction(trimmedValues)).unwrap();
+            // Run onBeforeSubmit hook if provided
+            let dataToSubmit = trimmedValues;
+            if (onBeforeSubmit) {
+                dataToSubmit = onBeforeSubmit(trimmedValues);
+            }
+
+            // Submit the form
+            const response = await dispatch(submitAction(dataToSubmit)).unwrap();
 
             // Handle successful submission
             setSubmitting(false);
@@ -155,7 +233,10 @@ const useFormState = ({
             // Check for validation errors from the API
             if (normalizedError.statusCode === 400 && normalizedError.data) {
                 const fieldErrors = createFormValidationErrors(normalizedError);
-                setErrors(fieldErrors);
+                setErrors(prev => ({
+                    ...prev,
+                    ...fieldErrors
+                }));
             }
 
             setApiError(normalizedError);
@@ -173,40 +254,92 @@ const useFormState = ({
 
     // Reset form to initial values or empty
     const resetForm = () => {
-        setValues(existingData || {});
+        setValues(existingData || initialValues);
         setErrors({});
+        setTouched({});
         setApiError(null);
     };
 
     // Set individual field value
-    const setFieldValue = (name, value) => {
+    const setFieldValue = async (name, value, shouldValidate = true) => {
         setValues(prev => ({
             ...prev,
             [name]: value
         }));
 
-        // Clear field error if it exists
-        if (errors[name]) {
-            setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[name];
-                return newErrors;
-            });
+        if (shouldValidate && touched[name]) {
+            const fieldError = await validateField(name, value);
+            if (fieldError) {
+                setErrors(prev => ({
+                    ...prev,
+                    [name]: fieldError
+                }));
+            } else if (errors[name]) {
+                setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors[name];
+                    return newErrors;
+                });
+            }
         }
+    };
+
+    // Set multiple field values at once
+    const setMultipleFields = async (fieldsObject, shouldValidate = true) => {
+        setValues(prev => ({
+            ...prev,
+            ...fieldsObject
+        }));
+
+        if (shouldValidate) {
+            const newValues = { ...values, ...fieldsObject };
+            validateForm(newValues);
+        }
+    };
+
+    // Helper functions for form status
+    const isFieldValid = (fieldName) => {
+        return !(touched[fieldName] && errors[fieldName]);
+    };
+
+    const hasErrors = () => {
+        return Object.keys(errors).length > 0;
+    };
+
+    const touchAllFields = () => {
+        const allTouched = Object.keys(values).reduce((acc, key) => {
+            acc[key] = true;
+            return acc;
+        }, {});
+        setTouched(allTouched);
+    };
+
+    const clearErrors = () => {
+        setErrors({});
     };
 
     return {
         values,
         errors,
+        touched,
         apiError,
         handleChange,
+        handleBlur,
         handleSubmit,
         handleCancel,
         resetForm,
         setFieldValue,
+        setMultipleFields,
+        validateField,
+        validateForm,
         initialized,
         loading,
-        submitting
+        submitting,
+        // Additional helper functions
+        isFieldValid,
+        hasErrors,
+        touchAllFields,
+        clearErrors
     };
 };
 

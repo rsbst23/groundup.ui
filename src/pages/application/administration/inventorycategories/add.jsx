@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import * as yup from "yup";
 import FormPageLayout from "../../../../components/layouts/FormPageLayout";
 import useFormState from "../../../../hooks/useFormState";
 import { addInventoryCategory } from "../../../../store/inventoryCategoriesSlice";
@@ -10,27 +11,24 @@ const AddInventoryCategory = () => {
     const { t } = useTranslation();
     const { setPageConfig } = usePage();
 
-    // Custom validation function
-    const validateForm = (values) => {
-        const errors = {};
+    // Define validation schema using Yup
+    const validationSchema = yup.object({
+        name: yup
+            .string()
+            .required(t("error_field_required"))
+            .trim()
+            .max(100, t("error_field_too_long", { max: 100 }))
+    });
 
-        if (!values.name || values.name.trim() === '') {
-            errors.name = t("error_field_required");
-        } else if (values.name.length > 100) {
-            errors.name = t("error_field_too_long", { max: 100 });
-        }
-
-        return Object.keys(errors).length === 0;
-    };
-
-    // Initialize form state with improved error handling
+    // Initialize form state with Yup validation
     const form = useFormState({
         fetchAction: null,
         submitAction: addInventoryCategory,
         successRedirect: "../",
         id: null,
         isEditing: false,
-        validate: validateForm
+        validationSchema,
+        initialValues: { name: '' }
     });
 
     useEffect(() => {
@@ -48,7 +46,7 @@ const AddInventoryCategory = () => {
             onSave={form.handleSubmit}
             onCancel={form.handleCancel}
             error={form.apiError}
-            showDetailedErrors={process.env.NODE_ENV !== 'production'} // Show detailed errors in development
+            showDetailedErrors={process.env.NODE_ENV !== 'production'}
         >
             <TextField
                 label={t("category_name")}
@@ -56,8 +54,15 @@ const AddInventoryCategory = () => {
                 type="text"
                 value={form.values.name || ''}
                 onChange={form.handleChange}
-                error={!!form.errors.name}
-                helperText={form.errors.name || ''}
+                onBlur={form.handleBlur}
+                // Show error only if field is touched
+                error={form.touched.name && !!form.errors.name}
+                // Show helper text for errors or required indicator
+                helperText={(form.touched.name && form.errors.name) || t('field_required')}
+                FormHelperTextProps={{
+                    // Only show error style when there's an actual error
+                    error: form.touched.name && !!form.errors.name
+                }}
                 fullWidth
                 required
                 autoFocus

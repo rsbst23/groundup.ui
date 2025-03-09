@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { TextField } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import * as yup from "yup";
 import FormPageLayout from "../../../../../components/layouts/FormPageLayout";
 import useFormState from "../../../../../hooks/useFormState";
 import { editInventoryCategory, fetchInventoryCategoryById } from "../../../../../store/inventoryCategoriesSlice";
@@ -12,6 +13,25 @@ const EditInventoryCategory = () => {
     const { setPageConfig } = usePage();
     const { id } = useParams();
 
+    // Define validation schema using Yup
+    const validationSchema = yup.object({
+        name: yup
+            .string()
+            .required(t("error_field_required"))
+            .trim()
+            .max(100, t("error_field_too_long", { max: 100 }))
+    });
+
+    const form = useFormState({
+        fetchAction: fetchInventoryCategoryById,
+        submitAction: editInventoryCategory,
+        successRedirect: "/application/administration/inventorycategories",
+        id,
+        isEditing: true,
+        dataSelector: (state) => state.inventoryCategories.categories.find((c) => c.id === parseInt(id, 10)),
+        validationSchema
+    });
+
     useEffect(() => {
         setPageConfig({
             title: t("edit_category"),
@@ -21,29 +41,6 @@ const EditInventoryCategory = () => {
             ],
         });
     }, [setPageConfig, location.pathname, t]);
-
-    // Custom validation function
-    const validateForm = (values) => {
-        const errors = {};
-
-        if (!values.name || values.name.trim() === '') {
-            errors.name = t("error_field_required");
-        } else if (values.name.length > 100) {
-            errors.name = t("error_field_too_long", { max: 100 });
-        }
-
-        return Object.keys(errors).length === 0;
-    };
-
-    const form = useFormState({
-        fetchAction: fetchInventoryCategoryById,
-        submitAction: editInventoryCategory,
-        successRedirect: "/application/administration/inventorycategories",
-        id,
-        isEditing: true,
-        dataSelector: (state) => state.inventoryCategories.categories.find((c) => c.id === parseInt(id, 10)),
-        validate: validateForm
-    });
 
     // Show loading state while fetching data
     if (form.loading || !form.initialized) {
@@ -56,7 +53,7 @@ const EditInventoryCategory = () => {
             onSave={form.handleSubmit}
             onCancel={form.handleCancel}
             error={form.apiError}
-            showDetailedErrors={process.env.NODE_ENV !== 'production'} // Show detailed errors in development
+            showDetailedErrors={process.env.NODE_ENV !== 'production'}
         >
             <TextField
                 label={t("category_name")}
@@ -64,8 +61,15 @@ const EditInventoryCategory = () => {
                 type="text"
                 value={form.values.name || ''}
                 onChange={form.handleChange}
-                error={!!form.errors.name}
-                helperText={form.errors.name}
+                onBlur={form.handleBlur}
+                // Show error only if field is touched
+                error={form.touched.name && !!form.errors.name}
+                // Show helper text for errors or required indicator
+                helperText={(form.touched.name && form.errors.name) || t('field_required')}
+                FormHelperTextProps={{
+                    // Only show error style when there's an actual error
+                    error: form.touched.name && !!form.errors.name
+                }}
                 fullWidth
                 required
                 disabled={form.submitting}
