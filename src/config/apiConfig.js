@@ -1,3 +1,4 @@
-const API_BASE_URL = "https://localhost:5001/api";
+// src/config/apiConfig.js
+import { API_URL } from '../constants/api';
 
-export default API_BASE_URL;
+export default API_URL;

@@ -1,30 +1,18 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { PAGINATION, TABLE } from "../constants/pagination";
 
-const useTableData = ({ fetchAction, removeAction, dataSelector, defaultSort = "Name" }) => {
+const useTableData = ({ fetchAction, removeAction, dataSelector, defaultSort = TABLE.DEFAULT_SORT_FIELD }) => {
     const dispatch = useDispatch();
-
-    // **Fix: Ensure selectedData is always structured correctly**
-    //const selectedData = useSelector((state) => {
-    //    const data = dataSelector(state) || {}; // Ensure `data` is at least an empty object
-
-    //    return {
-    //        items: Array.isArray(data.items) ? data.items : [], // Ensure items is always an array
-    //        loading: data.loading ?? false, // Ensure loading is a boolean
-    //        error: data.error ?? null, // Ensure error is null or a string
-    //        totalRecords: data.totalRecords ?? 0, // Ensure totalRecords is always a number
-    //    };
-    //});
 
     const selectedData = useSelector(useMemo(() => dataSelector, []), (prev, next) => JSON.stringify(prev) === JSON.stringify(next));
 
-
     const firstFetchComplete = useRef(false);
     const [initialLoading, setInitialLoading] = useState(true);
-    const [page, setPage] = useState(0); // UI uses 0-based, API uses 1-based
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [page, setPage] = useState(PAGINATION.DEFAULT_PAGE);
+    const [rowsPerPage, setRowsPerPage] = useState(PAGINATION.DEFAULT_PAGE_SIZE);
     const [sortBy, setSortBy] = useState(defaultSort);
-    const [sortDirection, setSortDirection] = useState("asc");
+    const [sortDirection, setSortDirection] = useState(PAGINATION.DEFAULT_SORT_DIRECTION);
     const [filters, setFilters] = useState({});
     const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
@@ -47,7 +35,10 @@ const useTableData = ({ fetchAction, removeAction, dataSelector, defaultSort = "
                 fetchAction({
                     pageNumber: page + 1,
                     pageSize: rowsPerPage,
-                    sortBy: sortDirection === "desc" ? `-${sortBy}` : sortBy,
+                    // Capitalize the first letter of sortBy
+                    sortBy: sortDirection === "desc"
+                        ? `-${sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}`
+                        : sortBy.charAt(0).toUpperCase() + sortBy.slice(1),
                     filters,
                 })
             ).unwrap();
@@ -63,7 +54,7 @@ const useTableData = ({ fetchAction, removeAction, dataSelector, defaultSort = "
             setSortDirection(sortDirection === "asc" ? "desc" : "asc");
         } else {
             setSortBy(column);
-            setSortDirection("asc");
+            setSortDirection(PAGINATION.DEFAULT_SORT_DIRECTION);
         }
         setHasUserInteracted(true);
     };

@@ -51,7 +51,7 @@ const FormPageLayout = ({ title, children, onSave, onCancel, error, loading }) =
                         <Button type="submit" variant="contained" color="primary">
                             {t("save")}
                         </Button>
-                        <Button onClick={onCancel} color="secondary">
+                        <Button onClick={onCancel} color="secondary cancel-button">
                             {t("cancel")}
                         </Button>
                     </Box>

@@ -30,10 +30,12 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useTranslation } from "react-i18next";
 import { formatValue } from "../utils/valueFormatter";
+import { PAGINATION, TABLE } from "../constants/pagination";
 
 const DataTable = ({
     columns,
     data = [], // Default empty array prevents errors
+    items, // Add support for items prop
     loading,
     error,
     totalRecords,
@@ -58,6 +60,9 @@ const DataTable = ({
     // For date filters (min/max):
     const [tempMinDate, setTempMinDate] = useState(null);
     const [tempMaxDate, setTempMaxDate] = useState(null);
+
+    // Use data or items prop, whichever is provided
+    const displayData = items || data;
 
     // When a filter icon is clicked, record which column is active and load any existing filter value.
     const handleFilterIconClick = (event, column) => {
@@ -141,7 +146,7 @@ const DataTable = ({
             ) : (
                 <>
                     {/* Scrollable table with a sticky header */}
-                    <TableContainer sx={{ maxHeight: "500px" }}>
+                    <TableContainer sx={{ maxHeight: TABLE.MAX_HEIGHT }}>
                         <Table stickyHeader>
                             <TableHead>
                                 <TableRow>
@@ -168,8 +173,8 @@ const DataTable = ({
                             </TableHead>
 
                             <TableBody>
-                                {data.length > 0 ? (
-                                    data.map((row) => (
+                                {displayData.length > 0 ? (
+                                    displayData.map((row) => (
                                         <TableRow
                                             key={row.id}
                                             sx={{
@@ -220,7 +225,7 @@ const DataTable = ({
                                 value={rowsPerPage}
                                 onChange={onRowsPerPageChange}
                             >
-                                {[10, 25, 50, 100].map((size) => (
+                                {PAGINATION.PAGE_SIZE_OPTIONS.map((size) => (
                                     <MenuItem key={size} value={size}>
                                         {size}
                                     </MenuItem>

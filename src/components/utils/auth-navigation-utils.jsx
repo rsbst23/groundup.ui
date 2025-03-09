@@ -17,7 +17,6 @@ export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
     };
 
     const handleLogout = async () => {
-        console.log("[UserMenu] Logout clicked");
         await logout();
         handleMenuClose();
     };

@@ -48,14 +48,12 @@ const EditBook = () => {
     if (!title.trim() || !author.trim()) return;
 
     const payload = { id, title: title.trim(), author: author.trim() };
-    console.log("Updating book:", payload);
 
     const resultAction = await dispatch(editBook(payload));
 
     if (editBook.fulfilled.match(resultAction)) {
       navigate("../../");
     } else {
-      console.error("Update failed:", resultAction.error);
     }
   };
 

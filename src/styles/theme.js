@@ -51,6 +51,19 @@ const theme = createTheme({
                     "&.Mui-focusVisible": {
                         outline: "none",
                         boxShadow: "none",
+                    },
+                    // Style for cancel buttons
+                    "&.cancel-button": {
+                        backgroundColor: "transparent",
+                        color: "#3a856a",
+                        borderColor: "#3a856a",
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        "&:hover": {
+                            backgroundColor: "rgba(58, 133, 106, 0.1)",
+                            color: "#3a856a",
+                            borderColor: "#3a856a",
+                        }
                     }
                 },
                 // Add a variant for transparent buttons (like in navigation)
@@ -68,6 +81,29 @@ const theme = createTheme({
                         boxShadow: "none",
                         border: "none",
                     },
+                    // Style for cancel buttons with text variant
+                    "&.cancel-button": {
+                        color: "#3a856a",
+                        "&:hover": {
+                            backgroundColor: "rgba(58, 133, 106, 0.1)",
+                            color: "#3a856a",
+                        }
+                    }
+                },
+                // Add specific styling for outlined variant
+                outlined: {
+                    backgroundColor: "transparent",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    "&.cancel-button": {
+                        color: "#3a856a",
+                        borderColor: "#3a856a",
+                        "&:hover": {
+                            backgroundColor: "rgba(58, 133, 106, 0.1)",
+                            color: "#3a856a",
+                            borderColor: "#3a856a",
+                        }
+                    }
                 }
             },
             variants: [

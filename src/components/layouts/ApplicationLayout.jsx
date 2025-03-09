@@ -4,8 +4,7 @@ import Sidebar from "../navigation/Sidebar";
 import TopBar from "../navigation/TopBar";
 import { PageProvider } from "../../contexts/PageContext";
 import { useState } from "react";
-
-const topBarHeight = 64; // Height of TopBar
+import { LAYOUT } from "../../constants/ui";
 
 const ApplicationLayout = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -34,7 +33,7 @@ const ApplicationLayout = () => {
                             pl: 3,
                             pr: 3,
                             pb: 3,
-                            mt: `${topBarHeight}px`,
+                            mt: `${LAYOUT.TOP_BAR_HEIGHT}px`,
                             backgroundColor: "background.default",
                         }}
                     >

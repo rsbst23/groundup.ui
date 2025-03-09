@@ -6,8 +6,6 @@ const AuthContext = createContext(null);
 
 // AuthProvider with stable context and better state management
 export const AuthProvider = ({ children }) => {
-    console.log("[AuthProvider] Initializing");
-
     // Use a more complete state object instead of separate variables
     const [authState, setAuthState] = useState({
         user: null,
@@ -17,7 +15,6 @@ export const AuthProvider = ({ children }) => {
 
     // Update auth state in a single place
     const updateAuthState = useCallback((newState) => {
-        console.log("[AuthProvider] Updating auth state:", newState);
         setAuthState(prev => ({ ...prev, ...newState }));
     }, []);
 
@@ -25,12 +22,9 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         if (authState.initialized) return;
 
-        console.log("[AuthProvider] Running initial user fetch");
-
         const fetchUser = async () => {
             try {
                 const response = await apiService.get("/auth/me");
-                console.log("[AuthProvider] Initial user fetch response:", response);
 
                 if (response.success) {
                     updateAuthState({
@@ -60,13 +54,11 @@ export const AuthProvider = ({ children }) => {
 
     // Login handler
     const login = async (credentials) => {
-        console.log("[AuthProvider] Login called with:", credentials);
         updateAuthState({ loading: true });
 
         try {
             // Step 1: Login
             const loginResponse = await apiService.post("/auth/login", credentials);
-            console.log("[AuthProvider] Login response:", loginResponse);
 
             if (!loginResponse.success) {
                 updateAuthState({ loading: false });
@@ -75,7 +67,6 @@ export const AuthProvider = ({ children }) => {
 
             // Step 2: Get user data
             const userData = await apiService.get("/auth/me");
-            console.log("[AuthProvider] User data after login:", userData);
 
             if (userData.success) {
                 // Important: Update state in a single operation
@@ -89,7 +80,6 @@ export const AuthProvider = ({ children }) => {
                 return { success: false, message: "Failed to get user details" };
             }
         } catch (error) {
-            console.error("[AuthProvider] Login error:", error);
             updateAuthState({ loading: false });
             return { success: false, message: error.message || "Login failed" };
         }
@@ -97,12 +87,10 @@ export const AuthProvider = ({ children }) => {
 
     // Logout handler
     const logout = async () => {
-        console.log("[AuthProvider] Logout called");
         updateAuthState({ loading: true });
 
         try {
             await apiService.post("/auth/logout");
-            console.log("[AuthProvider] Logout successful");
 
             updateAuthState({
                 user: null,
@@ -111,7 +99,6 @@ export const AuthProvider = ({ children }) => {
 
             return { success: true };
         } catch (error) {
-            console.error("[AuthProvider] Logout error:", error);
             updateAuthState({ loading: false });
             return { success: false, message: error.message };
         }
@@ -119,7 +106,6 @@ export const AuthProvider = ({ children }) => {
 
     // Debug - log state changes
     useEffect(() => {
-        console.log("[AuthProvider] Auth state changed:", authState);
     }, [authState]);
 
     // Prepare value object once to avoid unnecessary re-renders

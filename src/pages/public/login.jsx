@@ -13,24 +13,19 @@ const Login = () => {
 
     // Debug: Watch for user state changes in Login component
     useEffect(() => {
-        console.log("[Login] User state changed:", user);
     }, [user]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        console.log("[Login] Starting login process with:", { email, password });
 
         try {
             const result = await login({ email, password });
-            console.log("[Login] Login result:", result);
 
             if (result.success) {
-                console.log("[Login] Login successful, will navigate to /");
                 // Add a small delay to ensure state propagation
                 setTimeout(() => {
-                    console.log("[Login] Navigating to / now. Current user state:", user);
                     navigate("/");
                 }, 500);
             } else {

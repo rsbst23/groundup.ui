@@ -7,10 +7,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-
-const drawerWidth = 240;
-const collapsedWidth = 56; // Sidebar width when collapsed
-const topBarHeight = 64;
+import { LAYOUT, ANIMATION } from "../../constants/ui";
 
 const Sidebar = ({ mobileOpen, onDrawerToggle }) => {
     const { t } = useTranslation();
@@ -57,17 +54,17 @@ const Sidebar = ({ mobileOpen, onDrawerToggle }) => {
             onClose={onDrawerToggle}
             ModalProps={{ keepMounted: true }}
             sx={{
-                width: collapsed ? collapsedWidth : drawerWidth,
+                width: collapsed ? LAYOUT.SIDEBAR_COLLAPSED_WIDTH : LAYOUT.SIDEBAR_WIDTH,
                 flexShrink: 0,
                 [`& .MuiDrawer-paper`]: {
-                    width: collapsed ? collapsedWidth : drawerWidth,
+                    width: collapsed ? LAYOUT.SIDEBAR_COLLAPSED_WIDTH : LAYOUT.SIDEBAR_WIDTH,
                     boxSizing: "border-box",
-                    top: `${topBarHeight}px`,
-                    height: `calc(100vh - ${topBarHeight}px)`,
+                    top: `${LAYOUT.TOP_BAR_HEIGHT}px`,
+                    height: `calc(100vh - ${LAYOUT.TOP_BAR_HEIGHT}px)`,
                     backgroundColor: "background.default",
                     borderRight: "1px solid #ddd",
                     overflowX: "hidden",
-                    transition: "width 0.3s ease-in-out",
+                    transition: `width ${ANIMATION.TRANSITION_DURATION} ease-in-out`,
                 },
             }}
             onMouseEnter={() => setShowCollapseButton(true)}
@@ -85,7 +82,7 @@ const Sidebar = ({ mobileOpen, onDrawerToggle }) => {
                         backgroundColor: "white",
                         border: "1px solid #ddd",
                         zIndex: 1,
-                        transition: "opacity 0.2s ease-in-out",
+                        transition: `opacity ${ANIMATION.TRANSITION_DURATION} ease-in-out`,
                         "&:hover": { backgroundColor: "#f0f0f0" },
                     }}
                 >

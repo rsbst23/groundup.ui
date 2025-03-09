@@ -36,10 +36,14 @@ const InventoryCategoriesList = () => {
         defaultSort: "name",
     });
 
+    console.log("tableProps:", tableProps);
+
     const columns = [
         { field: "name", label: t("category_name"), filterable: true, filterType: "text", editLink: true },
         { field: "createdDate", label: t("created_date"), filterable: true, filterType: "date", type: "date" },
     ];
+
+    const dataTableProps = { ...tableProps, items: tableProps.data };
 
     return (
         <ListPageLayout
@@ -52,7 +56,8 @@ const InventoryCategoriesList = () => {
             loading={tableProps.loading}
             error={tableProps.error}
         >
-            <DataTable {...tableProps} columns={columns} />
+            {/* Use dataTableProps instead of tableProps */}
+            <DataTable {...dataTableProps} columns={columns} />
         </ListPageLayout>
     );
 };

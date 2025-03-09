@@ -1,4 +1,5 @@
 import API_BASE_URL from "../config/apiConfig";
+import { HTTP_METHODS } from "../constants/api";
 
 // Build query string from parameters
 const buildQueryString = ({ pageNumber, pageSize, sortBy, filters = {}, searchTerm }) => {
@@ -29,8 +30,6 @@ const request = async (url, options = {}) => {
     // Ensure url is properly formatted
     const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
 
-    console.log(`[ApiService] Making API request: ${options.method || 'GET'} ${fullUrl}`, options);
-
     try {
         const response = await fetch(fullUrl, {
             credentials: "include", // Ensures cookies are sent
@@ -44,11 +43,9 @@ const request = async (url, options = {}) => {
         let data = null;
         if (isJsonResponse) {
             data = await response.json();
-            console.log(`[ApiService] Parsed JSON response from ${fullUrl}:`, data);
         }
 
         if (!response.ok) {
-            console.error(`[ApiService] Request failed: ${fullUrl}`, data || response.statusText);
             throw {
                 success: false,
                 message:
@@ -61,7 +58,6 @@ const request = async (url, options = {}) => {
 
         return data;
     } catch (error) {
-        console.error(`[ApiService] Error during ${fullUrl} request:`, error);
         throw {
             success: false,
             message: error.message || "Network error. Please try again.",
@@ -73,21 +69,15 @@ const request = async (url, options = {}) => {
 const apiService = {
     // Base methods for authentication
     get: async (resource) => {
-        console.log(`[ApiService] GET request for ${resource}`);
-        const result = await request(`${resource}`);
-        console.log(`[ApiService] GET ${resource} completed with result:`, result);
-        return result;
+        return request(`${resource}`);
     },
 
     post: async (resource, data) => {
-        console.log(`[ApiService] POST request for ${resource} with data:`, data);
-        const result = await request(`${resource}`, {
-            method: "POST",
+        return request(`${resource}`, {
+            method: HTTP_METHODS.POST,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
         });
-        console.log(`[ApiService] POST ${resource} completed with result:`, result);
-        return result;
     },
 
     // Resource-specific methods for inventory management
@@ -110,21 +100,21 @@ const apiService = {
 
     create: async (resource, data) =>
         request(`/${resource}`, {
-            method: "POST",
+            method: HTTP_METHODS.POST,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
         }),
 
     update: async (resource, id, data) =>
         request(`/${resource}/${id}`, {
-            method: "PUT",
+            method: HTTP_METHODS.PUT,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id, ...data }),
         }),
 
     delete: async (resource, id) =>
         request(`/${resource}/${id}`, {
-            method: "DELETE",
+            method: HTTP_METHODS.DELETE,
         }),
 };
 

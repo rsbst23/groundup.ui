@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 
 const RESOURCE = "inventory-categories";
 
-export const getInventoryCategories = (pageNumber = 1, pageSize = 10, sortBy = "Name", filters = {}) => {
+export const getInventoryCategories = (pageNumber = 1, pageSize = 10, sortBy = "name", filters = {}) => {
     return apiService.getList(RESOURCE, { pageNumber, pageSize, sortBy, filters });
 };
 
