@@ -1,6 +1,22 @@
 import API_BASE_URL from "../config/apiConfig";
 import { logError } from '../utils/errorUtils';
 
+/**
+ * Dispatches an API error event for the interceptor to catch
+ * @param {object} error - The error object
+ */
+const dispatchApiError = (error) => {
+    if (error?.statusCode === 401) {
+        // Create a custom event with the error details
+        const event = new CustomEvent('api-error', {
+            detail: error
+        });
+
+        // Dispatch the event
+        window.dispatchEvent(event);
+    }
+};
+
 // Build query string from parameters
 const buildQueryString = ({ pageNumber, pageSize, sortBy, sortDirection, filters = {}, searchTerm, format, exportAll }) => {
     const queryParams = [];
@@ -43,10 +59,36 @@ const request = async (url, options = {}, returnBlob = false) => {
     const context = `ApiService:${options.method || 'GET'}:${url}`;
 
     try {
-        const response = await fetch(fullUrl, {
-            credentials: "include", // Ensures cookies are sent
+        // IMPORTANT: Always include these options for authentication to work
+        const requestOptions = {
+            credentials: "include", // Critical for sending cookies with every request
             ...options,
-        });
+            headers: {
+                ...options.headers
+            }
+        };
+
+        // Log request for debugging (optional)
+        console.debug(`Fetching ${fullUrl} with credentials: ${requestOptions.credentials}`);
+
+        const response = await fetch(fullUrl, requestOptions);
+
+        // Handle 401 Unauthorized by redirecting to login
+        if (response.status === 401) {
+            console.warn("Unauthorized access, redirecting to login");
+
+            // You can either redirect to login page
+            // window.location.href = '/login';
+
+            // Or throw a specific error that your UI can handle
+            throw {
+                success: false,
+                message: "Your session has expired. Please login again.",
+                errors: ["Session expired"],
+                statusCode: 401,
+                errorCode: "AUTH_REQUIRED"
+            };
+        }
 
         if (!response.ok) {
             // Try to parse error as JSON if possible
@@ -89,6 +131,7 @@ const request = async (url, options = {}, returnBlob = false) => {
     } catch (error) {
         // If error is already in our format, just pass it through
         if (error.success === false && error.statusCode) {
+            dispatchApiError(error);
             throw error;
         }
 
@@ -101,6 +144,7 @@ const request = async (url, options = {}, returnBlob = false) => {
         };
 
         logError(context, errorObj);
+        dispatchApiError(errorObj);
         throw errorObj;
     }
 };
@@ -197,40 +241,11 @@ const apiService = {
 
         const queryString = queryParams.join("&");
 
-        // Make request and get blob response
-        const response = await fetch(`${API_BASE_URL}/${resource}/export?${queryString}`, {
+        // Use our standardized request function
+        return request(`/${resource}/export?${queryString}`, {
             method: "GET",
-            headers: { "Accept": "application/octet-stream" },
-            credentials: "include" // Ensures cookies are sent
-        });
-
-        if (!response.ok) {
-            // Try to parse error as JSON if possible
-            let errorData = null;
-            try {
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.includes("application/json")) {
-                    errorData = await response.json();
-                }
-            } catch (parseError) {
-                // Ignore JSON parsing errors
-            }
-
-            // Create standardized error object
-            const errorObj = {
-                success: false,
-                message: errorData?.message || errorData?.error || `Export failed: ${response.statusText}`,
-                errors: errorData?.errors || [],
-                statusCode: response.status,
-                data: errorData
-            };
-
-            logError(`ApiService:GET:${resource}/export`, errorObj);
-            throw errorObj;
-        }
-
-        // Return the blob
-        return await response.blob();
+            headers: { "Accept": "application/octet-stream" }
+        }, true);
     }
 };
 

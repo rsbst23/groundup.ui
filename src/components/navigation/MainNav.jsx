@@ -37,7 +37,7 @@ const MainNav = () => {
                         <>
                             <Button
                                 component={Link}
-                                to="/public/login"
+                                to="/login"
                                 color="inherit"
                                 variant="text"
                                 className="nav-button" // Add this class to remove border

@@ -12,20 +12,22 @@ import "./styles/index.css";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { AuthProvider } from "./contexts/AuthContext";
+import ApiErrorInterceptor from "./components/ApiErrorInterceptor"; // Add this import
 
 createRoot(document.getElementById("root")).render(
-  /*<StrictMode>*/
+    /*<StrictMode>*/
     <Provider store={store}>
-        <AuthProvider>
-            <ThemeProvider theme={theme}>
-                <CssBaseline /> {/* Reset browser styles */}
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <BrowserRouter>
+        <BrowserRouter>
+            <AuthProvider>
+                <ApiErrorInterceptor /> {/* Add the interceptor here */}
+                <ThemeProvider theme={theme}>
+                    <CssBaseline /> {/* Reset browser styles */}
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <Router />
-                    </BrowserRouter>
-                </LocalizationProvider>
-            </ThemeProvider>
-        </AuthProvider>
+                    </LocalizationProvider>
+                </ThemeProvider>
+            </AuthProvider>
+        </BrowserRouter>
     </Provider>
-  /*</StrictMode>*/
+    /*</StrictMode>*/
 );

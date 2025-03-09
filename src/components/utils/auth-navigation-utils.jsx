@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { Menu, MenuItem, IconButton, Typography } from "@mui/material";
+import { Menu, MenuItem, IconButton, Typography, Divider } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // Reusable user menu component to be shared between TopBar and MainNav
 export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
     const [anchorEl, setAnchorEl] = useState(null);
+    const navigate = useNavigate();
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -16,18 +20,21 @@ export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
         setAnchorEl(null);
     };
 
-    const handleLogout = async () => {
-        await logout();
+    const handleNavigation = (path) => {
         handleMenuClose();
+        navigate(path);
     };
 
     if (!user) return null;
+
+    // Display username if available, otherwise fallback to email
+    const displayName = user.username || user.email;
 
     return (
         <>
             <div style={{ display: "flex", alignItems: "center" }}>
                 <Typography variant="body2" sx={{ mr: 1, color: textColor }}>
-                    {user.fullName || user.email}
+                    {displayName}
                 </Typography>
                 <IconButton
                     color={color}
@@ -66,7 +73,19 @@ export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
                 }}
             >
                 <MenuItem disabled>{user.fullName || user.email}</MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                <Divider />
+                <MenuItem onClick={() => handleNavigation("/profile")}>
+                    <AccountCircleIcon fontSize="small" sx={{ mr: 1 }} />
+                    Profile
+                </MenuItem>
+                <MenuItem onClick={() => handleNavigation("/settings")}>
+                    <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
+                    Settings
+                </MenuItem>
+                <MenuItem onClick={() => handleNavigation("/logout")}>
+                    <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
+                    Logout
+                </MenuItem>
             </Menu>
         </>
     );

@@ -3,11 +3,11 @@ import generatedRoutes from "~react-pages";
 import PublicLayout from "./components/layouts/PublicLayout";
 import ApplicationLayout from "./components/layouts/ApplicationLayout";
 import PageLayout from "./components/layouts/PageLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-
+// Filter routes
 const publicRoutes = generatedRoutes.filter(route => !route.path?.startsWith("application"));
-
-const applicationRoutes = generatedRoutes.filter((route) => route.path.startsWith("application"));
+const applicationRoutes = generatedRoutes.filter((route) => route.path?.startsWith("application"));
 
 const routesWithLayout = [
     // Public Pages (Wrapped in PublicLayout)
@@ -16,13 +16,18 @@ const routesWithLayout = [
         children: publicRoutes,
     },
 
-    // Application Pages (Wrapped in ApplicationLayout)
+    // Application Pages (Wrapped in ApplicationLayout with ProtectedRoute)
     {
         element: <ApplicationLayout />,
         children: [
             {
-                element: <PageLayout />,
-                children: applicationRoutes, // All application pages go here
+                element: <ProtectedRoute />, // Add protection at this level for all app routes
+                children: [
+                    {
+                        element: <PageLayout />,
+                        children: applicationRoutes,
+                    },
+                ],
             },
         ],
     },
