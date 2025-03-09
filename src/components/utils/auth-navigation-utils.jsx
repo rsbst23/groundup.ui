@@ -34,6 +34,19 @@ export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
                     onClick={handleMenuOpen}
                     aria-controls="user-menu"
                     aria-haspopup="true"
+                    className="nav-button" // Add the nav-button class
+                    sx={{
+                        '&:focus': {
+                            outline: 'none',
+                            boxShadow: 'none',
+                        },
+                        '&.MuiIconButton-root': {
+                            border: 'none',
+                        },
+                        '&.MuiIconButton-root:hover': {
+                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        }
+                    }}
                 >
                     <AccountCircleIcon />
                 </IconButton>

@@ -40,6 +40,7 @@ const MainNav = () => {
                                 to="/public/login"
                                 color="inherit"
                                 variant="text"
+                                className="nav-button" // Add this class to remove border
                             >
                                 {t("login")}
                             </Button>
@@ -48,6 +49,7 @@ const MainNav = () => {
                                 to="/application"
                                 color="inherit"
                                 variant="text"
+                                className="nav-button" // Add this class to remove border
                             >
                                 {t("enter_app")}
                             </Button>

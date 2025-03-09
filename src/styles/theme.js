@@ -74,6 +74,19 @@ const theme = createTheme({
                         backgroundColor: "rgba(0, 0, 0, 0.12)",
                         color: "rgba(0, 0, 0, 0.26)",
                         borderColor: "rgba(0, 0, 0, 0.12)",
+                    },
+                    // Navigation button style - new class for header/nav buttons
+                    "&.nav-button": {
+                        border: "none",
+                        backgroundColor: "transparent",
+                        "&:hover": {
+                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            border: "none"
+                        },
+                        "&:focus": {
+                            border: "none",
+                            boxShadow: "none"
+                        }
                     }
                 },
                 // Add a variant for transparent buttons (like in navigation)
@@ -81,7 +94,7 @@ const theme = createTheme({
                     backgroundColor: "transparent",
                     color: "inherit",
                     boxShadow: "none",
-                    // Add visible border even for text variant
+                    // Keep the border for general text buttons
                     border: "1px solid rgba(255, 255, 255, 0.23)",
                     "&:hover": {
                         backgroundColor: "rgba(255, 255, 255, 0.1)",
@@ -104,6 +117,19 @@ const theme = createTheme({
                             backgroundColor: "rgba(58, 133, 106, 0.1)",
                             color: "#3a856a",
                             borderColor: "#3a856a",
+                        }
+                    },
+                    // Specific override for navigation text buttons
+                    "&.nav-button": {
+                        border: "none",
+                        "&:hover": {
+                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            border: "none"
+                        },
+                        "&:focus": {
+                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            border: "none",
+                            boxShadow: "none"
                         }
                     }
                 },
@@ -128,6 +154,14 @@ const theme = createTheme({
                             color: "#3a856a",
                             borderColor: "#3a856a",
                         }
+                    },
+                    // Navigation outlined buttons
+                    "&.nav-button": {
+                        border: "none",
+                        "&:hover": {
+                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            border: "none"
+                        }
                     }
                 },
                 // Add specific styling for contained variant
@@ -135,6 +169,15 @@ const theme = createTheme({
                     border: "1px solid #2d6953",
                     "&:hover": {
                         borderColor: "#1a5f45",
+                    },
+                    // Navigation contained buttons (if any)
+                    "&.nav-button": {
+                        border: "none",
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        "&:hover": {
+                            backgroundColor: "rgba(255, 255, 255, 0.2)",
+                            border: "none"
+                        }
                     }
                 }
             },
@@ -159,6 +202,17 @@ const theme = createTheme({
                             boxShadow: "0 0 0 3px rgba(0, 0, 0, 0.1)",
                             border: "1px solid rgba(0, 0, 0, 0.5)",
                         },
+                        "&.nav-button": {
+                            border: "none",
+                            "&:hover": {
+                                border: "none",
+                                backgroundColor: "rgba(255, 255, 255, 0.1)"
+                            },
+                            "&:focus": {
+                                border: "none",
+                                boxShadow: "none"
+                            }
+                        }
                     }
                 },
                 {
@@ -167,6 +221,9 @@ const theme = createTheme({
                         border: "1px solid #2d6953",
                         "&:hover": {
                             borderColor: "#1a5f45",
+                        },
+                        "&.nav-button": {
+                            border: "none"
                         }
                     }
                 },
@@ -176,6 +233,9 @@ const theme = createTheme({
                         border: "1px solid #b36800",
                         "&:hover": {
                             borderColor: "#804a00",
+                        },
+                        "&.nav-button": {
+                            border: "none"
                         }
                     }
                 }

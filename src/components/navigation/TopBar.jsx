@@ -66,7 +66,7 @@ const TopBar = () => {
                     {t("app_name")}
                 </Typography>
 
-                {/* Navigation Menu - Using theme styles */}
+                {/* Navigation Menu - Using theme styles and the nav-button class */}
                 <Button
                     color="inherit"
                     variant="text"
@@ -75,6 +75,7 @@ const TopBar = () => {
                     sx={{ fontSize: "1rem" }}
                     disableRipple
                     disableElevation
+                    className="nav-button" // Add this class to remove border
                 >
                     {activeItem.label}
                 </Button>
@@ -110,6 +111,7 @@ const TopBar = () => {
                         variant="text"
                         component={RouterLink}
                         to="/login"
+                        className="nav-button" // Add this class to remove border
                     >
                         {t("login")}
                     </Button>
