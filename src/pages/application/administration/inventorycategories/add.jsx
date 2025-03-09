@@ -7,16 +7,30 @@ import { addInventoryCategory } from "../../../../store/inventoryCategoriesSlice
 import { usePage } from "../../../../contexts/PageContext";
 
 const AddInventoryCategory = () => {
-    const { t } = useTranslation(); // Hook for translations
+    const { t } = useTranslation();
     const { setPageConfig } = usePage();
 
-    // Correct useFormState call
+    // Custom validation function
+    const validateForm = (values) => {
+        const errors = {};
+
+        if (!values.name || values.name.trim() === '') {
+            errors.name = t("error_field_required");
+        } else if (values.name.length > 100) {
+            errors.name = t("error_field_too_long", { max: 100 });
+        }
+
+        return Object.keys(errors).length === 0;
+    };
+
+    // Initialize form state with improved error handling
     const form = useFormState({
-        fetchAction: null, // No need to fetch data for new category
+        fetchAction: null,
         submitAction: addInventoryCategory,
         successRedirect: "../",
         id: null,
         isEditing: false,
+        validate: validateForm
     });
 
     useEffect(() => {
@@ -34,17 +48,20 @@ const AddInventoryCategory = () => {
             onSave={form.handleSubmit}
             onCancel={form.handleCancel}
             error={form.apiError}
+            showDetailedErrors={process.env.NODE_ENV !== 'production'} // Show detailed errors in development
         >
             <TextField
                 label={t("category_name")}
                 name="name"
                 type="text"
-                value={form.values.name}
+                value={form.values.name || ''}
                 onChange={form.handleChange}
                 error={!!form.errors.name}
-                helperText={form.errors.name}
+                helperText={form.errors.name || ''}
                 fullWidth
                 required
+                autoFocus
+                disabled={form.submitting}
             />
         </FormPageLayout>
     );

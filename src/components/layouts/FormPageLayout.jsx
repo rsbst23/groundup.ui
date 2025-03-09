@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { Box, Paper, Typography, Button, Container, Alert } from "@mui/material";
+import { Box, Paper, Typography, Button, Container } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import ErrorDisplay from "../common/ErrorDisplay";
 
 /**
  * Generic Form Page Layout for adding/editing records.
@@ -9,10 +10,19 @@ import { useTranslation } from "react-i18next";
  * @param {ReactNode} props.children - The form content.
  * @param {Function} props.onSave - Handler for form submission.
  * @param {Function} props.onCancel - Handler for cancel action.
- * @param {string|null} props.error - An error message (if any).
+ * @param {Error|Object|string} props.error - An error (if any).
+ * @param {boolean} props.showDetailedErrors - Whether to show detailed error information.
  * @param {boolean} props.loading - Show a loading state while fetching data.
  */
-const FormPageLayout = ({ title, children, onSave, onCancel, error, loading }) => {
+const FormPageLayout = ({
+    title,
+    children,
+    onSave,
+    onCancel,
+    error,
+    showDetailedErrors = false,
+    loading
+}) => {
     const { t } = useTranslation();
     const formRef = useRef(null);
 
@@ -33,8 +43,13 @@ const FormPageLayout = ({ title, children, onSave, onCancel, error, loading }) =
                     {t(title)}
                 </Typography>
 
-                {/* Display error message above the form with proper spacing */}
-                {error && <Alert severity="error" sx={{ mb: 2 }}>{String(error)}</Alert>}
+                {/* Use the standardized error display component */}
+                {error && (
+                    <ErrorDisplay
+                        error={error}
+                        showDetails={showDetailedErrors}
+                    />
+                )}
 
                 <Box
                     component="form"

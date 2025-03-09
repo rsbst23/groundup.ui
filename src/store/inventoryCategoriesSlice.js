@@ -6,6 +6,7 @@ import {
     updateInventoryCategory,
     deleteInventoryCategory,
 } from "../services/inventoryCategoryService";
+import { normalizeError } from "../utils/errorUtils";
 
 // Fetch all categories with pagination
 export const fetchInventoryCategories = createAsyncThunk(
@@ -16,10 +17,11 @@ export const fetchInventoryCategories = createAsyncThunk(
 
             // If API returns an error response, reject the promise
             if (!response.success) {
-                return rejectWithValue({
+                return rejectWithValue(normalizeError({
                     message: response.message || "An error occurred while retrieving data.",
                     errors: response.errors || [],
-                });
+                    statusCode: response.statusCode || 500
+                }));
             }
 
             return {
@@ -30,12 +32,12 @@ export const fetchInventoryCategories = createAsyncThunk(
                 totalPages: response.data?.totalPages || 1,
             };
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(normalizeError(error));
         }
     }
 );
 
-// Fetch a single category by ID (Add this function)
+// Fetch a single category by ID
 export const fetchInventoryCategoryById = createAsyncThunk(
     "inventoryCategories/fetchById",
     async (id, { rejectWithValue }) => {
@@ -43,15 +45,16 @@ export const fetchInventoryCategoryById = createAsyncThunk(
             const response = await getInventoryCategoryById(id);
 
             if (!response.success) {
-                return rejectWithValue({
+                return rejectWithValue(normalizeError({
                     message: response.message || "Error retrieving category.",
                     errors: response.errors || [],
-                });
+                    statusCode: response.statusCode || 500
+                }));
             }
 
             return response.data;
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(normalizeError(error));
         }
     }
 );
@@ -61,9 +64,20 @@ export const addInventoryCategory = createAsyncThunk(
     "inventoryCategories/add",
     async (category, { rejectWithValue }) => {
         try {
-            return await createInventoryCategory(category);
+            const response = await createInventoryCategory(category);
+
+            if (!response.success) {
+                return rejectWithValue(normalizeError({
+                    message: response.message || "Error creating category.",
+                    errors: response.errors || [],
+                    statusCode: response.statusCode || 500,
+                    data: response.data
+                }));
+            }
+
+            return response;
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(normalizeError(error));
         }
     }
 );
@@ -71,11 +85,23 @@ export const addInventoryCategory = createAsyncThunk(
 // Edit an existing category
 export const editInventoryCategory = createAsyncThunk(
     "inventoryCategories/edit",
-    async ({ id, name }, { rejectWithValue }) => {
+    async (categoryData, { rejectWithValue }) => {
         try {
-            return await updateInventoryCategory(id, { id, name });
+            const { id, ...data } = categoryData;
+            const response = await updateInventoryCategory(id, data);
+
+            if (!response.success) {
+                return rejectWithValue(normalizeError({
+                    message: response.message || "Error updating category.",
+                    errors: response.errors || [],
+                    statusCode: response.statusCode || 500,
+                    data: response.data
+                }));
+            }
+
+            return response.data;
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(normalizeError(error));
         }
     }
 );
@@ -85,10 +111,19 @@ export const removeInventoryCategory = createAsyncThunk(
     "inventoryCategories/remove",
     async (id, { rejectWithValue }) => {
         try {
-            await deleteInventoryCategory(id);
+            const response = await deleteInventoryCategory(id);
+
+            if (!response.success) {
+                return rejectWithValue(normalizeError({
+                    message: response.message || "Error deleting category.",
+                    errors: response.errors || [],
+                    statusCode: response.statusCode || 500
+                }));
+            }
+
             return id;
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(normalizeError(error));
         }
     }
 );
@@ -106,15 +141,18 @@ const inventoryCategoriesSlice = createSlice({
         totalRecords: 0,
         totalPages: 1,
     },
-    reducers: {},
+    reducers: {
+        // Add a reducer to clear errors
+        clearErrors: (state) => {
+            state.error = null;
+        }
+    },
     extraReducers: (builder) => {
         builder
             // Fetch Categories
             .addCase(fetchInventoryCategories.pending, (state) => {
-                if (!state.loading) { // Prevent multiple pending states triggering another fetch
-                    state.loading = true;
-                    state.error = null;
-                }
+                state.loading = true;
+                state.error = null;
             })
             .addCase(fetchInventoryCategories.fulfilled, (state, action) => {
                 state.loading = false;
@@ -123,6 +161,7 @@ const inventoryCategoriesSlice = createSlice({
                 state.pageSize = action.payload.pageSize;
                 state.totalRecords = action.payload.totalRecords;
                 state.totalPages = action.payload.totalPages;
+                state.error = null;
             })
             .addCase(fetchInventoryCategories.rejected, (state, action) => {
                 state.loading = false;
@@ -137,10 +176,15 @@ const inventoryCategoriesSlice = createSlice({
             .addCase(fetchInventoryCategoryById.fulfilled, (state, action) => {
                 state.loading = false;
                 const category = action.payload;
-                const existingCategory = state.categories.find((c) => c.id === category.id);
-                if (!existingCategory) {
+                const existingIndex = state.categories.findIndex((c) => c.id === category.id);
+
+                if (existingIndex !== -1) {
+                    state.categories[existingIndex] = category;
+                } else {
                     state.categories.push(category);
                 }
+
+                state.error = null;
             })
             .addCase(fetchInventoryCategoryById.rejected, (state, action) => {
                 state.loading = false;
@@ -158,11 +202,11 @@ const inventoryCategoriesSlice = createSlice({
                 // Ensure we're accessing the `data` property from the API response
                 const newCategory = action.payload.data || action.payload;
 
-                if (newCategory.id) {
+                if (newCategory && newCategory.id) {
                     state.categories.push(newCategory);
-                } else {
-                    console.error("New category is missing an ID:", newCategory);
                 }
+
+                state.error = null;
             })
             .addCase(addInventoryCategory.rejected, (state, action) => {
                 state.loading = false;
@@ -176,8 +220,14 @@ const inventoryCategoriesSlice = createSlice({
             })
             .addCase(editInventoryCategory.fulfilled, (state, action) => {
                 state.loading = false;
-                const index = state.categories.findIndex((c) => c.id === action.payload.id);
-                if (index !== -1) state.categories[index] = action.payload;
+                const updatedCategory = action.payload;
+
+                const existingIndex = state.categories.findIndex((c) => c.id === updatedCategory.id);
+                if (existingIndex !== -1) {
+                    state.categories[existingIndex] = updatedCategory;
+                }
+
+                state.error = null;
             })
             .addCase(editInventoryCategory.rejected, (state, action) => {
                 state.loading = false;
@@ -187,10 +237,12 @@ const inventoryCategoriesSlice = createSlice({
             // Remove Category
             .addCase(removeInventoryCategory.pending, (state, action) => {
                 state.deletingId = action.meta.arg; // Store ID of category being deleted
+                state.error = null;
             })
             .addCase(removeInventoryCategory.fulfilled, (state, action) => {
                 state.deletingId = null;
                 state.categories = state.categories.filter((c) => c.id !== action.payload);
+                state.error = null;
             })
             .addCase(removeInventoryCategory.rejected, (state, action) => {
                 state.deletingId = null;
@@ -199,4 +251,5 @@ const inventoryCategoriesSlice = createSlice({
     },
 });
 
+export const { clearErrors } = inventoryCategoriesSlice.actions;
 export default inventoryCategoriesSlice.reducer;

@@ -39,18 +39,22 @@ const theme = createTheme({
                     textTransform: "none",
                     backgroundColor: "#3a856a",
                     color: "#ffffff",
+                    // Add visible border by default
+                    border: "1px solid #2d6953",
                     "&:hover": {
                         backgroundColor: "#1f7456",
                         color: "#ffffff",
+                        // Maintain visible border on hover
+                        borderColor: "#1a5f45",
                     },
                     // Add focus state styling to fix outline issues
                     "&:focus": {
                         outline: "none",
-                        boxShadow: "none",
+                        boxShadow: "0 0 0 3px rgba(58, 133, 106, 0.3)",
                     },
                     "&.Mui-focusVisible": {
                         outline: "none",
-                        boxShadow: "none",
+                        boxShadow: "0 0 0 3px rgba(58, 133, 106, 0.3)",
                     },
                     // Style for cancel buttons
                     "&.cancel-button": {
@@ -64,6 +68,12 @@ const theme = createTheme({
                             color: "#3a856a",
                             borderColor: "#3a856a",
                         }
+                    },
+                    // Disabled state
+                    "&.Mui-disabled": {
+                        backgroundColor: "rgba(0, 0, 0, 0.12)",
+                        color: "rgba(0, 0, 0, 0.26)",
+                        borderColor: "rgba(0, 0, 0, 0.12)",
                     }
                 },
                 // Add a variant for transparent buttons (like in navigation)
@@ -71,22 +81,29 @@ const theme = createTheme({
                     backgroundColor: "transparent",
                     color: "inherit",
                     boxShadow: "none",
+                    // Add visible border even for text variant
+                    border: "1px solid rgba(255, 255, 255, 0.23)",
                     "&:hover": {
                         backgroundColor: "rgba(255, 255, 255, 0.1)",
                         boxShadow: "none",
+                        // Ensure text remains visible on hover
+                        color: "#ffffff",
+                        borderColor: "rgba(255, 255, 255, 0.5)",
                     },
                     "&:focus": {
                         backgroundColor: "rgba(255, 255, 255, 0.1)",
                         outline: "none",
-                        boxShadow: "none",
-                        border: "none",
+                        boxShadow: "0 0 0 3px rgba(255, 255, 255, 0.2)",
+                        border: "1px solid rgba(255, 255, 255, 0.5)",
                     },
                     // Style for cancel buttons with text variant
                     "&.cancel-button": {
                         color: "#3a856a",
+                        borderColor: "rgba(58, 133, 106, 0.5)",
                         "&:hover": {
                             backgroundColor: "rgba(58, 133, 106, 0.1)",
                             color: "#3a856a",
+                            borderColor: "#3a856a",
                         }
                     }
                 },
@@ -95,6 +112,14 @@ const theme = createTheme({
                     backgroundColor: "transparent",
                     borderWidth: "1px",
                     borderStyle: "solid",
+                    borderColor: "#3a856a", // Ensure border is always visible
+                    color: "#3a856a",
+                    "&:hover": {
+                        backgroundColor: "rgba(58, 133, 106, 0.1)",
+                        borderColor: "#3a856a",
+                        // Ensure text remains visible on hover
+                        color: "#3a856a",
+                    },
                     "&.cancel-button": {
                         color: "#3a856a",
                         borderColor: "#3a856a",
@@ -103,6 +128,13 @@ const theme = createTheme({
                             color: "#3a856a",
                             borderColor: "#3a856a",
                         }
+                    }
+                },
+                // Add specific styling for contained variant
+                contained: {
+                    border: "1px solid #2d6953",
+                    "&:hover": {
+                        borderColor: "#1a5f45",
                     }
                 }
             },
@@ -113,16 +145,38 @@ const theme = createTheme({
                         backgroundColor: "transparent",
                         color: "inherit",
                         boxShadow: "none",
+                        border: "1px solid rgba(0, 0, 0, 0.23)",
                         "&:hover": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            backgroundColor: "rgba(0, 0, 0, 0.04)",
                             boxShadow: "none",
+                            borderColor: "rgba(0, 0, 0, 0.5)",
+                            // Ensure text color remains visible on hover
+                            color: "inherit",
                         },
                         "&:focus": {
-                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            backgroundColor: "rgba(0, 0, 0, 0.04)",
                             outline: "none",
-                            boxShadow: "none",
-                            border: "none",
+                            boxShadow: "0 0 0 3px rgba(0, 0, 0, 0.1)",
+                            border: "1px solid rgba(0, 0, 0, 0.5)",
                         },
+                    }
+                },
+                {
+                    props: { color: "primary", variant: "contained" },
+                    style: {
+                        border: "1px solid #2d6953",
+                        "&:hover": {
+                            borderColor: "#1a5f45",
+                        }
+                    }
+                },
+                {
+                    props: { color: "secondary", variant: "contained" },
+                    style: {
+                        border: "1px solid #b36800",
+                        "&:hover": {
+                            borderColor: "#804a00",
+                        }
                     }
                 }
             ]

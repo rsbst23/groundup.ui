@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Button } from "@mui/material";
-import { useTranslation } from "react-i18next"; // Import i18next translation
+import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
 import useTableData from "../../../../hooks/useTableData";
 import DataTable from "../../../../components/DataTable";
@@ -8,9 +8,8 @@ import ListPageLayout from "../../../../components/layouts/ListPageLayout";
 import { usePage } from "../../../../contexts/PageContext";
 import { fetchInventoryCategories, removeInventoryCategory } from "../../../../store/inventoryCategoriesSlice";
 
-// Define columns for the data table
 const InventoryCategoriesList = () => {
-    const { t } = useTranslation(); // Hook for translations
+    const { t } = useTranslation();
     const { setPageConfig } = usePage();
 
     // Set page-specific configuration
@@ -34,16 +33,13 @@ const InventoryCategoriesList = () => {
             totalRecords: state.inventoryCategories.totalRecords,
         }),
         defaultSort: "name",
+        contextName: "InventoryCategories"
     });
-
-    console.log("tableProps:", tableProps);
 
     const columns = [
         { field: "name", label: t("category_name"), filterable: true, filterType: "text", editLink: true },
         { field: "createdDate", label: t("created_date"), filterable: true, filterType: "date", type: "date" },
     ];
-
-    const dataTableProps = { ...tableProps, items: tableProps.data };
 
     return (
         <ListPageLayout
@@ -55,9 +51,10 @@ const InventoryCategoriesList = () => {
             }
             loading={tableProps.loading}
             error={tableProps.error}
+            contextName={tableProps.contextName}
+            showDetailedErrors={process.env.NODE_ENV !== 'production'} // Show detailed errors in development
         >
-            {/* Use dataTableProps instead of tableProps */}
-            <DataTable {...dataTableProps} columns={columns} />
+            <DataTable {...tableProps} columns={columns} />
         </ListPageLayout>
     );
 };
