@@ -3,10 +3,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { CircularProgress, Box } from '@mui/material';
 
 const ProtectedRoute = ({ requiredPermission }) => {
-    const { user, loading, hasPermission } = useAuth();
+    const { user, loading, isAuthenticated, initialized, hasPermission } = useAuth();
     const outletContext = useOutletContext(); // Get the context from parent
 
-    if (loading) {
+    // Show loading indicator while Keycloak is initializing
+    if (loading || !initialized) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                 <CircularProgress />
@@ -14,10 +15,12 @@ const ProtectedRoute = ({ requiredPermission }) => {
         );
     }
 
-    if (!user) {
+    // If not authenticated, redirect to login page
+    if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
     }
 
+    // If a specific permission is required and user doesn't have it
     if (requiredPermission && !hasPermission(requiredPermission)) {
         return <Navigate to="/unauthorized" replace />;
     }

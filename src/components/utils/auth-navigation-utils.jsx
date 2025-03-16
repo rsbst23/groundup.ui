@@ -6,9 +6,9 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-// Reusable user menu component to be shared between TopBar and MainNav
+// UserMenu component with Keycloak integration
 export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
 
@@ -25,10 +25,17 @@ export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
         navigate(path);
     };
 
+    const handleLogout = () => {
+        handleMenuClose();
+        // Redirect back to home page after logout
+        logout(window.location.origin);
+    };
+
     if (!user) return null;
 
-    // Display username if available, otherwise fallback to email
-    const displayName = user.username || user.email;
+    // Get display name from Keycloak user object
+    // Fallback options to ensure we always display something
+    const displayName = user.name || user.username || user.email || 'User';
 
     return (
         <>
@@ -41,7 +48,7 @@ export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
                     onClick={handleMenuOpen}
                     aria-controls="user-menu"
                     aria-haspopup="true"
-                    className="nav-button" // Add the nav-button class
+                    className="nav-button"
                     sx={{
                         '&:focus': {
                             outline: 'none',
@@ -72,7 +79,14 @@ export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
                     horizontal: 'right',
                 }}
             >
-                <MenuItem disabled>{user.fullName || user.email}</MenuItem>
+                <MenuItem disabled>
+                    {user.email || user.username || 'User'}
+                    {user.roles && user.roles.length > 0 && (
+                        <Typography variant="caption" sx={{ display: 'block', mt: 0.5, color: 'gray' }}>
+                            Roles: {user.roles.join(', ')}
+                        </Typography>
+                    )}
+                </MenuItem>
                 <Divider />
                 <MenuItem onClick={() => handleNavigation("/profile")}>
                     <AccountCircleIcon fontSize="small" sx={{ mr: 1 }} />
@@ -82,7 +96,7 @@ export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
                     <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
                     Settings
                 </MenuItem>
-                <MenuItem onClick={() => handleNavigation("/logout")}>
+                <MenuItem onClick={handleLogout}>
                     <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
                     Logout
                 </MenuItem>
@@ -91,8 +105,8 @@ export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
     );
 };
 
-// Utility function to check authentication status
+// Utility function that uses useAuth hook
 export const isAuthenticated = () => {
-    const { user } = useAuth();
-    return !!user;
+    const { isAuthenticated } = useAuth();
+    return isAuthenticated;
 };

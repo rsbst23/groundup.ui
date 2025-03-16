@@ -1,113 +1,91 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import authService from '../services/authService';
-import { useNavigate } from 'react-router-dom';
+import keycloakService from '../services/keycloakService';
 
 // Create context
 const AuthContext = createContext();
 
 // Create provider
 export const AuthProvider = ({ children }) => {
+    const [initialized, setInitialized] = useState(false);
+    const [authenticated, setAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
 
-    // Function to load the user's information
-    const loadUser = async () => {
-        try {
-            setLoading(true);
-            const response = await authService.getUser();
-
-            if (response.success && response.data) {
-                setUser(response.data);
-            } else {
-                // Clear user if response was not successful
-                setUser(null);
-            }
-
-            setError(null);
-        } catch (err) {
-            console.error('Failed to load user:', err);
-            setUser(null);
-            setError(err.message || 'Failed to authenticate');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Load user on initial mount
+    // Initialize Keycloak on component mount
     useEffect(() => {
-        loadUser();
+        const initAuth = async () => {
+            try {
+                setLoading(true);
+                // Initialize Keycloak but don't force login
+                const isAuthenticated = await keycloakService.initKeycloak();
+                setAuthenticated(isAuthenticated);
+
+                if (isAuthenticated) {
+                    const userInfo = keycloakService.getUserInfo();
+                    setUser(userInfo);
+                }
+
+                setInitialized(true);
+                setError(null);
+            } catch (err) {
+                console.error('Failed to initialize authentication:', err);
+                setError('Failed to initialize authentication');
+                setAuthenticated(false);
+                setUser(null);
+
+                // Even if initialization fails, mark as initialized
+                // so the app can still render public pages
+                setInitialized(true);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        initAuth();
     }, []);
 
-    // Login function
-    const login = async (credentials) => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            const response = await authService.login(credentials);
-
-            if (response.success) {
-                await loadUser();
-                return true;
-            } else {
-                setError(response.message || 'Login failed');
-                return false;
-            }
-        } catch (err) {
-            setError(err.message || 'Login failed');
-            return false;
-        } finally {
-            setLoading(false);
-        }
+    // Login function - only called explicitly when needed
+    const login = (redirectUri) => {
+        keycloakService.login(redirectUri);
     };
 
     // Logout function
-    const logout = async () => {
-        try {
-            setLoading(true);
-            await authService.logout();
-            setUser(null);
-            navigate('/login');
-        } catch (err) {
-            console.error('Logout error:', err);
-            // Even if there's an error, clear the user state
-            setUser(null);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Handle unauthorized errors
-    const handleUnauthorized = () => {
-        setUser(null);
-        navigate('/login', { state: { message: 'Your session has expired. Please log in again.' } });
+    const logout = (redirectUri) => {
+        keycloakService.logout(redirectUri);
     };
 
     // Check if user has a specific permission
     const hasPermission = (permission) => {
-        if (!user || !user.roles) return false;
+        if (!authenticated || !user) return false;
 
-        // Implement your permission checking logic here
-        // This is a simple example - you might want to adjust based on how permissions are stored
-        if (user.roles.includes('Admin')) return true; // Admin has all permissions
+        // Check if user has admin role
+        if (user.roles.includes('admin')) return true;
 
-        // For other roles, you would check specific permissions
-        // This would typically involve checking against a mapping of roles to permissions
-        return false;
+        // Check for specific role/permission
+        return user.roles.includes(permission);
+    };
+
+    // Handle unauthorized errors from API
+    const handleUnauthorized = () => {
+        // Force refresh token, if that fails Keycloak will redirect to login
+        keycloakService.updateToken(0).catch(() => {
+            // Token refresh failed, Keycloak will handle redirection
+            console.log('Session expired, redirecting to login');
+        });
     };
 
     const value = {
+        initialized,
         user,
         loading,
         error,
         login,
         logout,
-        loadUser,
-        handleUnauthorized,
         hasPermission,
-        isAuthenticated: !!user,
+        handleUnauthorized,
+        isAuthenticated: authenticated,
+        keycloak: keycloakService.keycloak, // Expose Keycloak instance if needed
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,33 +1,26 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import authService from "../services/authService";
 
-// Async Thunks
+// Placeholder thunks during transition to Keycloak
 export const loginUser = createAsyncThunk(
     "auth/login",
-    async (credentials, { rejectWithValue }) => {
-        try {
-            await authService.login(credentials); // Log in
-
-            // Fetch user details
-            const userResponse = await authService.getUser();
-            if (!userResponse.success) throw new Error("User not found after login");
-
-            return { user: userResponse.data };
-        } catch (error) {
-            return rejectWithValue(error.message || "Login failed");
-        }
+    async () => {
+        console.warn('Redux login action is being transitioned to Keycloak');
+        return {
+            user: {
+                id: 'placeholder',
+                name: 'Temporary User',
+                email: 'placeholder@example.com',
+                roles: ['Admin']
+            }
+        };
     }
 );
 
 export const logoutUser = createAsyncThunk(
     "auth/logout",
-    async (_, { rejectWithValue }) => {
-        try {
-            await authService.logout();
-            return {}; // Reset state
-        } catch (error) {
-            return rejectWithValue(error);
-        }
+    async () => {
+        console.warn('Redux logout action is being transitioned to Keycloak');
+        return {};
     }
 );
 
@@ -35,8 +28,14 @@ export const logoutUser = createAsyncThunk(
 const authSlice = createSlice({
     name: "auth",
     initialState: {
-        user: null,
-        isAuthenticated: false,
+        // Always authenticated during transition
+        user: {
+            id: 'placeholder',
+            name: 'Temporary User',
+            email: 'placeholder@example.com',
+            roles: ['Admin']
+        },
+        isAuthenticated: true,
         loading: false,
         error: null,
     },
@@ -57,8 +56,8 @@ const authSlice = createSlice({
                 state.error = action.payload?.message || "Login failed";
             })
             .addCase(logoutUser.fulfilled, (state) => {
-                state.user = null;
-                state.isAuthenticated = false;
+                // During transition, stay authenticated
+                state.isAuthenticated = true;
             });
     },
 });

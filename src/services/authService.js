@@ -1,85 +1,47 @@
-import API_BASE_URL from "../config/apiConfig";
-
 const authService = {
-    login: async ({ identifier, password }) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ identifier, password }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Login failed");
+    login: async () => {
+        console.warn('Auth service login is being transitioned to Keycloak');
+        // Return success response
+        return {
+            success: true,
+            message: 'Login operation disabled during Keycloak transition',
+            data: {
+                token: 'placeholder-token',
             }
-
-            return response.json();
-        } catch (error) {
-            console.error('Auth service login error:', error);
-            throw error;
-        }
+        };
     },
 
-    register: async ({ email, username, password, fullName }) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/auth/register`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, username, password, fullName }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || "Registration failed");
-            }
-
-            return data;
-        } catch (error) {
-            console.error('Auth service register error:', error);
-            throw error;
-        }
+    register: async () => {
+        console.warn('Auth service register is being transitioned to Keycloak');
+        // Return success response
+        return {
+            success: true,
+            message: 'Registration operation disabled during Keycloak transition'
+        };
     },
 
     logout: async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/auth/logout`, {
-                method: "POST",
-                credentials: "include",
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Logout failed");
-            }
-
-            return response.json();
-        } catch (error) {
-            console.error('Auth service logout error:', error);
-            throw error;
-        }
+        console.warn('Auth service logout is being transitioned to Keycloak');
+        // Return success response
+        return {
+            success: true,
+            message: 'Logout operation disabled during Keycloak transition'
+        };
     },
 
     getUser: async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/auth/me`, {
-                method: "GET",
-                credentials: "include", // Ensure cookies are sent
-            });
-
-            if (!response.ok && response.status !== 401) {
-                // We handle 401 gracefully since it just means the user isn't logged in
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to get user data");
+        console.warn('Auth service getUser is being transitioned to Keycloak');
+        // Return a placeholder user
+        return {
+            success: true,
+            data: {
+                id: 'placeholder',
+                name: 'Temporary User',
+                email: 'placeholder@example.com',
+                username: 'placeholder',
+                roles: ['Admin']
             }
-
-            return response.json();
-        } catch (error) {
-            console.error('Auth service getUser error:', error);
-            throw error;
-        }
+        };
     },
 };
 

@@ -1,5 +1,6 @@
 import API_BASE_URL from "../config/apiConfig";
 import { logError } from '../utils/errorUtils';
+import keycloakService from './keycloakService';
 
 /**
  * Dispatches an API error event for the interceptor to catch
@@ -46,7 +47,31 @@ const buildQueryString = ({ pageNumber, pageSize, sortBy, sortDirection, filters
 };
 
 /**
- * Standardized request function with consistent error handling
+ * Gets authorization headers with Keycloak token if available
+ * @returns {Object} Headers object with authorization if authenticated
+ */
+const getAuthHeaders = async () => {
+    let headers = {
+        'Content-Type': 'application/json'
+    };
+
+    // Add Keycloak token if authenticated
+    if (keycloakService.isAuthenticated()) {
+        try {
+            // Ensure token is valid (refresh if needed)
+            const token = await keycloakService.updateToken(30);
+            headers['Authorization'] = `Bearer ${token}`;
+        } catch (error) {
+            console.error('Failed to get valid token for request:', error);
+            // Continue without token - the API will return 401 and trigger a login
+        }
+    }
+
+    return headers;
+};
+
+/**
+ * Standardized request function with consistent error handling and Keycloak authentication
  * @param {string} url - The URL to request
  * @param {Object} options - Fetch options
  * @param {boolean} returnBlob - Whether to return a blob instead of JSON
@@ -59,35 +84,38 @@ const request = async (url, options = {}, returnBlob = false) => {
     const context = `ApiService:${options.method || 'GET'}:${url}`;
 
     try {
-        // IMPORTANT: Always include these options for authentication to work
+        // Get authorization headers with token
+        const authHeaders = await getAuthHeaders();
+
+        // IMPORTANT: Include auth headers but keep custom headers if provided
         const requestOptions = {
-            credentials: "include", // Critical for sending cookies with every request
             ...options,
             headers: {
+                ...authHeaders,
                 ...options.headers
             }
         };
 
         // Log request for debugging (optional)
-        console.debug(`Fetching ${fullUrl} with credentials: ${requestOptions.credentials}`);
+        console.debug(`Fetching ${fullUrl}`);
 
         const response = await fetch(fullUrl, requestOptions);
 
-        // Handle 401 Unauthorized by redirecting to login
+        // Handle 401 Unauthorized - let Keycloak handle the redirect
         if (response.status === 401) {
-            console.warn("Unauthorized access, redirecting to login");
+            console.warn("Unauthorized access");
 
-            // You can either redirect to login page
-            // window.location.href = '/login';
-
-            // Or throw a specific error that your UI can handle
-            throw {
+            // Dispatch API error event for the interceptor
+            const errorObj = {
                 success: false,
                 message: "Your session has expired. Please login again.",
                 errors: ["Session expired"],
                 statusCode: 401,
                 errorCode: "AUTH_REQUIRED"
             };
+
+            dispatchApiError(errorObj);
+            throw errorObj;
         }
 
         if (!response.ok) {
@@ -150,7 +178,7 @@ const request = async (url, options = {}, returnBlob = false) => {
 };
 
 const apiService = {
-    // Base methods for authentication
+    // Base methods for API access
     get: async (resource) => {
         return await request(`${resource}`);
     },
@@ -158,7 +186,6 @@ const apiService = {
     post: async (resource, data) => {
         return await request(`${resource}`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
         });
     },
@@ -185,14 +212,12 @@ const apiService = {
     create: async (resource, data) =>
         request(`/${resource}`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
         }),
 
     update: async (resource, id, data) =>
         request(`/${resource}/${id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id, ...data }),
         }),
 
@@ -241,10 +266,16 @@ const apiService = {
 
         const queryString = queryParams.join("&");
 
-        // Use our standardized request function
+        // Get authorization headers with token
+        const headers = await getAuthHeaders();
+
+        // Use our standardized request function with Accept header for blob
         return request(`/${resource}/export?${queryString}`, {
             method: "GET",
-            headers: { "Accept": "application/octet-stream" }
+            headers: {
+                ...headers,
+                "Accept": "application/octet-stream"
+            }
         }, true);
     }
 };

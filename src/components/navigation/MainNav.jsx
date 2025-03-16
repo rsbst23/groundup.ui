@@ -6,7 +6,13 @@ import { UserMenu } from "../utils/auth-navigation-utils";
 
 const MainNav = () => {
     const { t } = useTranslation();
-    const { user } = useAuth();
+    const { user, isAuthenticated, login } = useAuth();
+
+    // Handle login button click - redirect to Keycloak
+    const handleLogin = () => {
+        // Keep it simple for debugging - just redirect to home
+        login(window.location.origin);
+    };
 
     return (
         <AppBar position="static" sx={{ color: "#ffffff", bgcolor: "primary.main" }}>
@@ -31,13 +37,12 @@ const MainNav = () => {
 
                 {/* Right-aligned content */}
                 <Box sx={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 2 }}>
-                    {user ? (
+                    {isAuthenticated ? (
                         <UserMenu color="inherit" textColor="#ffffff" />
                     ) : (
                         <>
                             <Button
-                                component={Link}
-                                to="/login"
+                                onClick={handleLogin} // Use handleLogin instead of navigating to /login
                                 color="inherit"
                                 variant="text"
                                 className="nav-button" // Add this class to remove border

@@ -1,43 +1,19 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, Button, Paper, CircularProgress, Alert } from "@mui/material";
-import LogoutIcon from "@mui/icons-material/Logout";
-import CancelIcon from "@mui/icons-material/Cancel";
+import { Box, Typography, Paper, Alert } from "@mui/material";
 
 const Logout = () => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const { logout, user, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
-    // If not logged in, redirect to login page
+    // Redirect to home on mount
     useEffect(() => {
-        if (!isAuthenticated && !loading) {
-            navigate("/login");
-        }
-    }, [isAuthenticated, navigate, loading]);
+        // Short delay to allow reading the message
+        const timer = setTimeout(() => {
+            navigate('/');
+        }, 3000);
 
-    const handleLogout = async () => {
-        setLoading(true);
-        try {
-            await logout();
-            // The redirection will happen automatically via the effect
-        } catch (error) {
-            console.error("Logout failed:", error);
-            setError("Failed to log out. Please try again.");
-            setLoading(false);
-        }
-    };
-
-    const handleCancel = () => {
-        navigate(-1); // Go back to the previous page
-    };
-
-    // If not authenticated and not in the process of logging out, show nothing (will redirect)
-    if (!isAuthenticated && !loading) {
-        return null;
-    }
+        return () => clearTimeout(timer);
+    }, [navigate]);
 
     return (
         <Box
@@ -58,48 +34,17 @@ const Logout = () => {
                 }}
             >
                 <Typography variant="h5" component="h1" gutterBottom>
-                    Are you sure you want to log out?
+                    Authentication System Update
                 </Typography>
 
-                {user && (
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                        You are currently logged in as <strong>{user.email}</strong>
-                    </Typography>
-                )}
+                <Alert severity="info" sx={{ mb: 3 }}>
+                    The authentication system is being updated to use Keycloak.
+                    During this transition, logout functionality is disabled.
+                </Alert>
 
-                {error && (
-                    <Alert severity="error" sx={{ mb: 3 }}>
-                        {error}
-                    </Alert>
-                )}
-
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: 2,
-                        mt: 2,
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<LogoutIcon />}
-                        onClick={handleLogout}
-                        disabled={loading}
-                    >
-                        {loading ? <CircularProgress size={24} /> : "Confirm Logout"}
-                    </Button>
-
-                    <Button
-                        variant="outlined"
-                        startIcon={<CancelIcon />}
-                        onClick={handleCancel}
-                        disabled={loading}
-                    >
-                        Cancel
-                    </Button>
-                </Box>
+                <Typography variant="body1">
+                    You will be redirected to the home page automatically...
+                </Typography>
             </Paper>
         </Box>
     );
