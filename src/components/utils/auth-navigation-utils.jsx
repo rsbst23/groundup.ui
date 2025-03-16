@@ -81,11 +81,6 @@ export const UserMenu = ({ color = "inherit", textColor = "inherit" }) => {
             >
                 <MenuItem disabled>
                     {user.email || user.username || 'User'}
-                    {user.roles && user.roles.length > 0 && (
-                        <Typography variant="caption" sx={{ display: 'block', mt: 0.5, color: 'gray' }}>
-                            Roles: {user.roles.join(', ')}
-                        </Typography>
-                    )}
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={() => handleNavigation("/profile")}>

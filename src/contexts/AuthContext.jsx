@@ -17,7 +17,6 @@ export const AuthProvider = ({ children }) => {
         const initAuth = async () => {
             try {
                 setLoading(true);
-                // Initialize Keycloak but don't force login
                 const isAuthenticated = await keycloakService.initKeycloak();
                 setAuthenticated(isAuthenticated);
 
@@ -33,10 +32,6 @@ export const AuthProvider = ({ children }) => {
                 setError('Failed to initialize authentication');
                 setAuthenticated(false);
                 setUser(null);
-
-                // Even if initialization fails, mark as initialized
-                // so the app can still render public pages
-                setInitialized(true);
             } finally {
                 setLoading(false);
             }
@@ -45,7 +40,7 @@ export const AuthProvider = ({ children }) => {
         initAuth();
     }, []);
 
-    // Login function - only called explicitly when needed
+    // Login function
     const login = (redirectUri) => {
         keycloakService.login(redirectUri);
     };

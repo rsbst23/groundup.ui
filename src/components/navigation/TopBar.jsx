@@ -9,27 +9,29 @@ import {
     MenuItem,
     Button,
     Box,
+    CircularProgress
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useAuth } from "../../contexts/AuthContext";
 import { UserMenu } from "../utils/auth-navigation-utils";
 
-const navigationItems = [
-    { label: "Home", path: "/application" },
-    { label: "Administration", path: "/application/administration" }
-];
-
 const TopBar = () => {
     const { t } = useTranslation();
     const location = useLocation();
-    const { user } = useAuth();
+    const { user, isAuthenticated, loading, login } = useAuth();
 
     // Navigation menu state
     const [navAnchorEl, setNavAnchorEl] = useState(null);
 
+    // Define your navigation items
+    const navigationItems = [
+        { label: "Home", path: "/application" },
+        { label: "Administration", path: "/application/administration" }
+    ];
+
     // Find the active navigation item
     const activeItem =
-        [...navigationItems].sort((a, b) => b.path.length - a.path.length) // Sort by path length descending
+        [...navigationItems].sort((a, b) => b.path.length - a.path.length)
             .find((item) => location.pathname.startsWith(item.path)) || navigationItems[0];
 
     // Navigation menu handlers
@@ -41,12 +43,39 @@ const TopBar = () => {
         setNavAnchorEl(null);
     };
 
+    // Handle login
+    const handleLogin = () => {
+        login(window.location.origin);
+    };
+
+    // Render authentication UI based on state
+    const renderAuthUI = () => {
+        if (loading) {
+            return (
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CircularProgress size={24} color="inherit" sx={{ opacity: 0.7 }} />
+                </Box>
+            );
+        }
+
+        return isAuthenticated ? (
+            <UserMenu />
+        ) : (
+            <Button
+                color="inherit"
+                variant="text"
+                onClick={handleLogin}
+                className="nav-button"
+            >
+                {t("login")}
+            </Button>
+        );
+    };
+
     return (
         <AppBar
             position="fixed"
             sx={{
-                // Removed boxShadow: 0, to allow default shadow 
-                // (which matches the MainNav)
                 zIndex: (theme) => theme.zIndex.drawer + 1
             }}
         >
@@ -66,7 +95,7 @@ const TopBar = () => {
                     {t("app_name")}
                 </Typography>
 
-                {/* Navigation Menu - Using theme styles and the nav-button class */}
+                {/* Navigation Menu */}
                 <Button
                     color="inherit"
                     variant="text"
@@ -75,7 +104,7 @@ const TopBar = () => {
                     sx={{ fontSize: "1rem" }}
                     disableRipple
                     disableElevation
-                    className="nav-button" // Add this class to remove border
+                    className="nav-button"
                 >
                     {activeItem.label}
                 </Button>
@@ -103,19 +132,7 @@ const TopBar = () => {
                 <Box sx={{ flexGrow: 1 }} />
 
                 {/* Authentication UI */}
-                {user ? (
-                    <UserMenu />
-                ) : (
-                    <Button
-                        color="inherit"
-                        variant="text"
-                        component={RouterLink}
-                        to="/login"
-                        className="nav-button" // Add this class to remove border
-                    >
-                        {t("login")}
-                    </Button>
-                )}
+                {renderAuthUI()}
             </Toolbar>
         </AppBar>
     );

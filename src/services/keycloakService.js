@@ -46,11 +46,9 @@ const initKeycloak = () => {
     return new Promise((resolve, reject) => {
         keycloak
             .init({
-                // Only perform minimal initialization without SSO checks
-                onLoad: null, // Don't use onLoad at all 
-                checkLoginIframe: false,
-                promiseType: 'native',
-                enableLogging: false,
+                onLoad: 'check-sso',
+                silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+                pkceMethod: 'S256'
             })
             .then((authenticated) => {
                 console.log('Keycloak initialized, authenticated:', authenticated);
