@@ -100,11 +100,13 @@ export const applyFilter = (currentFilters, column, value, filterType = 'text') 
 export const createQueryParams = (tableState) => {
     const { page, rowsPerPage, sortBy, sortDirection, filters } = tableState;
 
+    // Format sortBy with direction prefix (- for descending)
+    const formattedSortBy = sortDirection === 'desc' ? `-${sortBy}` : sortBy;
+
     return {
         pageNumber: page + 1, // Convert from 0-based to 1-based
         pageSize: rowsPerPage,
-        sortBy,
-        sortDirection,
+        sortBy: formattedSortBy,
         filters: cleanFilters(filters)
     };
 };
