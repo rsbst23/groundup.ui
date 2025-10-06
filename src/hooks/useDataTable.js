@@ -199,10 +199,19 @@ const useDataTable = ({
                 filtersString
             };
 
+            // Create tableState object here to avoid stale closure
+            const currentTableState = {
+                page,
+                rowsPerPage,
+                sortBy,
+                sortDirection,
+                filters
+            };
+
             // Fetch data using the tableFilters utility
-            dispatch(fetchAction(createQueryParams(tableState)));
+            dispatch(fetchAction(createQueryParams(currentTableState)));
         }
-    }, [dispatch, fetchAction, tableState, page, rowsPerPage, sortBy, sortDirection, filters]);
+    }, [dispatch, fetchAction, page, rowsPerPage, sortBy, sortDirection, filters]);
 
     return {
         // Data

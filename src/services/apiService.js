@@ -19,13 +19,12 @@ const dispatchApiError = (error) => {
 };
 
 // Build query string from parameters
-const buildQueryString = ({ pageNumber, pageSize, sortBy, sortDirection, filters = {}, searchTerm, format, exportAll }) => {
+const buildQueryString = ({ pageNumber, pageSize, sortBy, filters = {}, searchTerm, format, exportAll }) => {
     const queryParams = [];
 
     if (pageNumber !== undefined) queryParams.push(`pageNumber=${pageNumber}`);
     if (pageSize !== undefined) queryParams.push(`pageSize=${pageSize}`);
     if (sortBy !== undefined) queryParams.push(`sortBy=${encodeURIComponent(sortBy)}`);
-    if (sortDirection !== undefined) queryParams.push(`sortDirection=${encodeURIComponent(sortDirection)}`);
     if (searchTerm) queryParams.push(`searchTerm=${encodeURIComponent(searchTerm)}`);
     if (format) queryParams.push(`format=${encodeURIComponent(format)}`);
     if (exportAll !== undefined) queryParams.push(`exportAll=${exportAll}`);
@@ -80,7 +79,14 @@ const getAuthHeaders = async () => {
  */
 const request = async (url, options = {}, returnBlob = false) => {
     // Ensure url is properly formatted
-    const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+    let fullUrl;
+    if (url.startsWith('http')) {
+        fullUrl = url;
+    } else {
+        // Remove leading slash from url if API_BASE_URL already ends with /api
+        const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+        fullUrl = `${API_BASE_URL}/${cleanUrl}`;
+    }
     const context = `ApiService:${options.method || 'GET'}:${url}`;
 
     try {
@@ -191,12 +197,11 @@ const apiService = {
     },
 
     // Resource-specific methods for inventory management
-    getList: async (resource, { pageNumber = 1, pageSize = 10, sortBy = "Name", sortDirection = "asc", filters = {}, searchTerm = "" } = {}) => {
+    getList: async (resource, { pageNumber = 1, pageSize = 10, sortBy = "Name", filters = {}, searchTerm = "" } = {}) => {
         const queryParams = {
             pageNumber,
             pageSize,
             sortBy,
-            sortDirection,
             filters,
             searchTerm
         };
