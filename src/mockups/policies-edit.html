@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Policy - Ground Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333333;
+        }
+
+        /* Header */
+        .app-header {
+            background-color: #3a856a;
+            color: #ffffff;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .app-header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: #ffffff;
+            border-right: 1px solid #ddd;
+            padding: 16px 0;
+        }
+
+        .sidebar-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #333333;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-item.selected {
+            background-color: rgba(58, 133, 106, 0.1);
+            color: #3a856a;
+            font-weight: 500;
+        }
+
+        .sidebar-item .material-icons {
+            font-size: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            margin-bottom: 16px;
+            color: #666666;
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb a {
+            color: #666666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #3a856a;
+        }
+
+        .breadcrumb span {
+            margin: 0 8px;
+        }
+
+        /* Page Card */
+        .page-card {
+            margin-bottom: 24px;
+        }
+
+        /* Section Card */
+        .section-card {
+            background-color: #ffffff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-header h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #333333;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .btn-small .material-icons {
+            font-size: 16px;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 16px 0;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666666;
+            font-size: 0.875rem;
+        }
+
+        .form-group label.required::after {
+            content: " *";
+            color: #d32f2f;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3a856a;
+            box-shadow: 0 0 0 1px #3a856a;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-helper-text {
+            margin-top: 4px;
+            font-size: 0.75rem;
+            color: #666666;
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #3a856a;
+            color: #ffffff;
+            border-color: #2d6953;
+        }
+
+        .btn-primary:hover {
+            background-color: #1f7456;
+            border-color: #1a5f45;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #3a856a;
+            border-color: #3a856a;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(58, 133, 106, 0.1);
+        }
+
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 10px 10px 40px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.875rem;
+        }
+
+        .search-box .material-icons {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666666;
+            font-size: 20px;
+        }
+
+        .filter-select {
+            padding: 10px 12px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.875rem;
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+
+        /* Selection Summary */
+        .selection-summary {
+            background-color: #f5f5f5;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .selection-count {
+            font-weight: 500;
+            color: #3a856a;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: #3a856a;
+            cursor: pointer;
+            font-size: 0.875rem;
+            text-decoration: underline;
+            padding: 4px 8px;
+        }
+
+        .btn-text:hover {
+            color: #1f7456;
+        }
+
+        /* Permission Groups */
+        .permission-groups {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .permission-group {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .permission-group-header {
+            background-color: #fafafa;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .permission-group-header:hover {
+            background-color: #f5f5f5;
+        }
+
+        .permission-group-header input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .permission-group-title {
+            flex: 1;
+            font-weight: 500;
+            color: #333333;
+        }
+
+        .permission-group-count {
+            font-size: 0.875rem;
+            color: #666666;
+        }
+
+        .permission-group-content {
+            padding: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 12px;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .permission-item:hover {
+            background-color: #fafafa;
+        }
+
+        .permission-item.selected {
+            border-color: #3a856a;
+            background-color: #f1f8f4;
+        }
+
+        .permission-item input[type="checkbox"] {
+            margin-top: 2px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .permission-info {
+            flex: 1;
+        }
+
+        .permission-name {
+            font-weight: 500;
+            color: #333333;
+            margin-bottom: 4px;
+            font-size: 0.875rem;
+        }
+
+        .permission-description {
+            font-size: 0.75rem;
+            color: #666666;
+            line-height: 1.4;
+        }
+
+        /* Material Icons */
+        .material-icons {
+            font-size: 20px;
+        }
+
+        .material-icons.small {
+            font-size: 16px;
+        }
+    </style>
+    <script>
+        function togglePermission(checkbox) {
+            const item = checkbox.closest('.permission-item');
+            if (checkbox.checked) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+            updateSelectionCount();
+        }
+
+        function togglePermissionItem(item, event) {
+            if (event.target.type === 'checkbox') {
+                return;
+            }
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            togglePermission(checkbox);
+        }
+
+        function toggleGroup(groupCheckbox) {
+            const groupContent = groupCheckbox.closest('.permission-group').querySelector('.permission-group-content');
+            const checkboxes = groupContent.querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = groupCheckbox.checked;
+                togglePermission(checkbox);
+            });
+        }
+
+        function updateSelectionCount() {
+            const checkboxes = document.querySelectorAll('.policy-card input[type="checkbox"]:checked');
+            const count = checkboxes.length;
+            document.getElementById('selectionCount').textContent = count + ' permission' + (count !== 1 ? 's' : '') + ' assigned';
+        }
+
+        function selectAll() {
+            const checkboxes = document.querySelectorAll('.policy-card input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                if (checkbox.closest('.policy-card').style.display !== 'none') {
+                    checkbox.checked = true;
+                    togglePolicy(checkbox);
+                }
+            });
+        }
+
+        function deselectAll() {
+            const checkboxes = document.querySelectorAll('.policy-card input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                togglePolicy(checkbox);
+            });
+        }
+
+        function filterPolicies(searchTerm) {
+            const groups = document.querySelectorAll('.permission-group');
+            const term = searchTerm.toLowerCase();
+            
+            groups.forEach(group => {
+                const items = group.querySelectorAll('.permission-item');
+                let visibleCount = 0;
+                
+                items.forEach(item => {
+                    const permissionName = item.querySelector('.permission-name').textContent.toLowerCase();
+                    const permissionDesc = item.querySelector('.permission-description').textContent.toLowerCase();
+                    
+                    if (permissionName.includes(term) || permissionDesc.includes(term)) {
+                        item.style.display = '';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Hide group if no items are visible
+                if (visibleCount === 0 && term !== '') {
+                    group.style.display = 'none';
+                } else {
+                    group.style.display = '';
+                }
+            });
+        }
+
+        function filterByGroup(groupName) {
+            const groups = document.querySelectorAll('.permission-group');
+            
+            groups.forEach(group => {
+                const title = group.querySelector('.permission-group-title').textContent;
+                
+                if (groupName === 'all' || title === groupName) {
+                    group.style.display = '';
+                } else {
+                    group.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            updateSelectionCount();
+            
+            // Make permission items clickable
+            document.querySelectorAll('.permission-item').forEach(item => {
+                item.addEventListener('click', (e) => togglePermissionItem(item, e));
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <h1>Ground Up</h1>
+        <div class="user-info">
+            <span>Rob User</span>
+            <span class="material-icons">account_circle</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <a href="#" class="sidebar-item">
+                <span class="material-icons">dashboard</span>
+                <span>Administration</span>
+            </a>
+            <a href="roles-list.html" class="sidebar-item">
+                <span class="material-icons">admin_panel_settings</span>
+                <span>Roles</span>
+            </a>
+            <a href="policies-list.html" class="sidebar-item selected">
+                <span class="material-icons">policy</span>
+                <span>Policies</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <span class="material-icons">lock</span>
+                <span>Permissions</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <span class="material-icons">people</span>
+                <span>Users</span>
+            </a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="#">Administration</a>
+                <span>/</span>
+                <a href="policies-list.html">Policies</a>
+                <span>/</span>
+                <span>Edit Policy</span>
+            </nav>
+
+            <!-- Page Card -->
+            <div class="page-card">
+                <!-- Policy Details Section -->
+                <div class="section-card">
+                    <div class="page-header">
+                        <h2>Edit Policy - Books Management Policy</h2>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="section-header">
+                        <h3>Policy Details</h3>
+                    </div>
+
+                    <!-- Form -->
+                    <form>
+                        <!-- Policy Name -->
+                        <div class="form-group">
+                            <label for="policyName" class="required">Policy Name</label>
+                            <input 
+                                type="text" 
+                                id="policyName" 
+                                name="policyName" 
+                                value="Books Management Policy"
+                                required
+                            >
+                            <div class="form-helper-text">Field required</div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea 
+                                id="description" 
+                                name="description" 
+                                rows="3"
+                            >Grants permissions to create, read, update, and delete books</textarea>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                Save Details
+                            </button>
+                            <a href="policies-list.html" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Permissions Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Permissions</h3>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <span class="material-icons">search</span>
+                            <input type="text" placeholder="Search permissions..." onkeyup="filterPermissions(this.value)">
+                        </div>
+                        <select class="filter-select" onchange="filterByGroup(this.value)">
+                            <option value="all">All Groups</option>
+                            <option value="Books">Books</option>
+                            <option value="Users">Users</option>
+                            <option value="System">System</option>
+                            <option value="Reports">Reports</option>
+                        </select>
+                    </div>
+
+                    <!-- Selection Summary -->
+                    <div class="selection-summary">
+                        <span id="selectionCount" class="selection-count">0 permissions assigned</span>
+                        <div class="bulk-actions">
+                            <button type="button" class="btn-text" onclick="selectAll()">Select All</button>
+                            <span style="color: #cccccc;">|</span>
+                            <button type="button" class="btn-text" onclick="deselectAll()">Deselect All</button>
+                        </div>
+                    </div>
+
+                    <!-- Permission Groups -->
+                    <form>
+                        <div class="permission-groups">
+                            <!-- Books Group -->
+                            <div class="permission-group">
+                                <div class="permission-group-header">
+                                    <input type="checkbox" id="group-books" onchange="toggleGroup(this)">
+                                    <label for="group-books" class="permission-group-title">Books</label>
+                                    <span class="permission-group-count">4 permissions</span>
+                                </div>
+                                <div class="permission-group-content">
+                                    <div class="permission-item selected">
+                                        <input type="checkbox" id="perm-books-create" checked onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">books.create</div>
+                                            <div class="permission-description">Create new books in the system</div>
+                                        </div>
+                                    </div>
+                                    <div class="permission-item selected">
+                                        <input type="checkbox" id="perm-books-read" checked onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">books.read</div>
+                                            <div class="permission-description">View book details and listings</div>
+                                        </div>
+                                    </div>
+                                    <div class="permission-item selected">
+                                        <input type="checkbox" id="perm-books-update" checked onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">books.update</div>
+                                            <div class="permission-description">Edit existing book information</div>
+                                        </div>
+                                    </div>
+                                    <div class="permission-item selected">
+                                        <input type="checkbox" id="perm-books-delete" checked onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">books.delete</div>
+                                            <div class="permission-description">Remove books from the system</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Users Group -->
+                            <div class="permission-group">
+                                <div class="permission-group-header">
+                                    <input type="checkbox" id="group-users" onchange="toggleGroup(this)">
+                                    <label for="group-users" class="permission-group-title">Users</label>
+                                    <span class="permission-group-count">5 permissions</span>
+                                </div>
+                                <div class="permission-group-content">
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm-users-create" onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">users.create</div>
+                                            <div class="permission-description">Create new user accounts</div>
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm-users-read" onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">users.read</div>
+                                            <div class="permission-description">View user information</div>
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm-users-update" onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">users.update</div>
+                                            <div class="permission-description">Modify user details and settings</div>
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm-users-delete" onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">users.delete</div>
+                                            <div class="permission-description">Delete user accounts</div>
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm-users-assign-roles" onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">users.assign_roles</div>
+                                            <div class="permission-description">Assign and manage user roles</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- System Group -->
+                            <div class="permission-group">
+                                <div class="permission-group-header">
+                                    <input type="checkbox" id="group-system" onchange="toggleGroup(this)">
+                                    <label for="group-system" class="permission-group-title">System</label>
+                                    <span class="permission-group-count">3 permissions</span>
+                                </div>
+                                <div class="permission-group-content">
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm-system-config" onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">system.configuration</div>
+                                            <div class="permission-description">Access system configuration settings</div>
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm-system-audit" onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">system.audit_logs</div>
+                                            <div class="permission-description">View system audit logs and history</div>
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm-system-backup" onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">system.backup</div>
+                                            <div class="permission-description">Perform system backups</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reports Group -->
+                            <div class="permission-group">
+                                <div class="permission-group-header">
+                                    <input type="checkbox" id="group-reports" onchange="toggleGroup(this)">
+                                    <label for="group-reports" class="permission-group-title">Reports</label>
+                                    <span class="permission-group-count">2 permissions</span>
+                                </div>
+                                <div class="permission-group-content">
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm-reports-view" onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">reports.view</div>
+                                            <div class="permission-description">Access and view reports</div>
+                                        </div>
+                                    </div>
+                                    <div class="permission-item">
+                                        <input type="checkbox" id="perm-reports-export" onchange="togglePermission(this)">
+                                        <div class="permission-info">
+                                            <div class="permission-name">reports.export</div>
+                                            <div class="permission-description">Export reports to various formats</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                Save Permissions
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

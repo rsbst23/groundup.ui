@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Dashboard - Ground Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333333;
+        }
+
+        /* Header */
+        .app-header {
+            background-color: #3a856a;
+            color: #ffffff;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .app-header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: #ffffff;
+            border-right: 1px solid #ddd;
+            padding: 16px 0;
+        }
+
+        .sidebar-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #333333;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-item.selected {
+            background-color: rgba(58, 133, 106, 0.1);
+            color: #3a856a;
+            font-weight: 500;
+        }
+
+        .sidebar-item .material-icons {
+            font-size: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            margin-bottom: 16px;
+            color: #666666;
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb a {
+            color: #666666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #3a856a;
+        }
+
+        .breadcrumb span {
+            margin: 0 8px;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #666666;
+            font-size: 0.875rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background-color: #ffffff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: #666666;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon.blue {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .stat-icon.green {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .stat-icon.purple {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .stat-icon.orange {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #333333;
+            margin-bottom: 4px;
+        }
+
+        .stat-description {
+            font-size: 0.75rem;
+            color: #999999;
+        }
+
+        /* Section Grid */
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* Card */
+        .card {
+            background-color: #ffffff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #333333;
+        }
+
+        .card-action {
+            color: #3a856a;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-action:hover {
+            text-decoration: underline;
+        }
+
+        /* List */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item-content {
+            flex: 1;
+        }
+
+        .list-item-title {
+            font-weight: 500;
+            color: #333333;
+            margin-bottom: 4px;
+        }
+
+        .list-item-subtitle {
+            font-size: 0.75rem;
+            color: #999999;
+        }
+
+        .list-item-value {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #333333;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge.active {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge.inactive {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .badge.warning {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        /* Activity Timeline */
+        .activity-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 12px;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activity-icon .material-icons {
+            font-size: 16px;
+            color: #666666;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 0.875rem;
+            color: #333333;
+            margin-bottom: 2px;
+        }
+
+        .activity-user {
+            font-weight: 500;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: #999999;
+        }
+
+        /* Chart Placeholder */
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(to top, #e8f5e9 0%, #f5f5f5 100%);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999999;
+            font-size: 0.875rem;
+        }
+
+        /* Material Icons */
+        .material-icons {
+            font-size: 20px;
+        }
+
+        .material-icons.small {
+            font-size: 16px;
+        }
+
+        /* Full Width Section */
+        .full-width-section {
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <h1>Ground Up</h1>
+        <div class="user-info">
+            <span>Rob User</span>
+            <span class="material-icons">account_circle</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <a href="#" class="sidebar-item selected">
+                <span class="material-icons">dashboard</span>
+                <span>Administration</span>
+            </a>
+            <a href="roles-list.html" class="sidebar-item">
+                <span class="material-icons">admin_panel_settings</span>
+                <span>Roles</span>
+            </a>
+            <a href="policies-list.html" class="sidebar-item">
+                <span class="material-icons">policy</span>
+                <span>Policies</span>
+            </a>
+            <a href="permissions-list.html" class="sidebar-item">
+                <span class="material-icons">lock</span>
+                <span>Permissions</span>
+            </a>
+            <a href="users-list.html" class="sidebar-item">
+                <span class="material-icons">people</span>
+                <span>Users</span>
+            </a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="#">Administration</a>
+                <span>/</span>
+                <span>Security Dashboard</span>
+            </nav>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h2>Security Dashboard</h2>
+                <p class="page-subtitle">Overview of roles, policies, permissions, and user access</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Total Users</span>
+                        <div class="stat-icon blue">
+                            <span class="material-icons">people</span>
+                        </div>
+                    </div>
+                    <div class="stat-value">42</div>
+                    <div class="stat-description">8 active today</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Active Roles</span>
+                        <div class="stat-icon green">
+                            <span class="material-icons">admin_panel_settings</span>
+                        </div>
+                    </div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-description">12 total assignments</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Policies</span>
+                        <div class="stat-icon purple">
+                            <span class="material-icons">policy</span>
+                        </div>
+                    </div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-description">35 permissions total</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Permissions</span>
+                        <div class="stat-icon orange">
+                            <span class="material-icons">lock</span>
+                        </div>
+                    </div>
+                    <div class="stat-value">35</div>
+                    <div class="stat-description">Across 2 categories</div>
+                </div>
+            </div>
+
+            <!-- Section Grid -->
+            <div class="section-grid">
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Activity</h3>
+                        <a href="#" class="card-action">
+                            View All
+                            <span class="material-icons small">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div class="activity-timeline">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <span class="material-icons">person_add</span>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">
+                                    <span class="activity-user">Rob User</span> created user <span class="activity-user">Emily Davis</span>
+                                </div>
+                                <div class="activity-time">2 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <span class="material-icons">admin_panel_settings</span>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">
+                                    <span class="activity-user">Rob User</span> assigned role <span class="activity-user">Manager</span>
+                                </div>
+                                <div class="activity-time">5 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <span class="material-icons">policy</span>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">
+                                    <span class="activity-user">Rob User</span> updated policy <span class="activity-user">Books Management Policy</span>
+                                </div>
+                                <div class="activity-time">1 day ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <span class="material-icons">lock</span>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">
+                                    <span class="activity-user">Rob User</span> created permission <span class="activity-user">reports.export</span>
+                                </div>
+                                <div class="activity-time">2 days ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <span class="material-icons">edit</span>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">
+                                    <span class="activity-user">Rob User</span> modified role <span class="activity-user">Administrator</span>
+                                </div>
+                                <div class="activity-time">3 days ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Status -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">User Status</h3>
+                        <a href="users-list.html" class="card-action">
+                            Manage Users
+                            <span class="material-icons small">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Active Users</div>
+                                <div class="list-item-subtitle">Currently enabled accounts</div>
+                            </div>
+                            <div class="list-item-value">38</div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Inactive Users</div>
+                                <div class="list-item-subtitle">Disabled accounts</div>
+                            </div>
+                            <div class="list-item-value">4</div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Pending Verification</div>
+                                <div class="list-item-subtitle">Email not verified</div>
+                            </div>
+                            <div class="list-item-value">3</div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Admin Users</div>
+                                <div class="list-item-subtitle">System role: ADMIN</div>
+                            </div>
+                            <div class="list-item-value">5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Grid -->
+            <div class="section-grid">
+                <!-- Role Distribution -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Role Distribution</h3>
+                        <a href="roles-list.html" class="card-action">
+                            Manage Roles
+                            <span class="material-icons small">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Administrator</div>
+                                <div class="list-item-subtitle">20 permissions</div>
+                            </div>
+                            <div class="list-item-value">5</div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Manager</div>
+                                <div class="list-item-subtitle">7 permissions</div>
+                            </div>
+                            <div class="list-item-value">12</div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Employee</div>
+                                <div class="list-item-subtitle">2 permissions</div>
+                            </div>
+                            <div class="list-item-value">18</div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Viewer</div>
+                                <div class="list-item-subtitle">2 permissions</div>
+                            </div>
+                            <div class="list-item-value">7</div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Books Manager</div>
+                                <div class="list-item-subtitle">4 permissions</div>
+                            </div>
+                            <div class="list-item-value">4</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Policies -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Top Policies</h3>
+                        <a href="policies-list.html" class="card-action">
+                            View All
+                            <span class="material-icons small">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Full System Access Policy</div>
+                                <div class="list-item-subtitle">20 permissions • 1 role</div>
+                            </div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Books Management Policy</div>
+                                <div class="list-item-subtitle">4 permissions • 2 roles</div>
+                            </div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Reports Access Policy</div>
+                                <div class="list-item-subtitle">3 permissions • 1 role</div>
+                            </div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">Basic Read Access Policy</div>
+                                <div class="list-item-subtitle">2 permissions • 1 role</div>
+                            </div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">View Only Policy</div>
+                                <div class="list-item-subtitle">2 permissions • 1 role</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Width Chart -->
+            <div class="full-width-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">User Activity (Last 30 Days)</h3>
+                    </div>
+                    <div class="chart-placeholder">
+                        Chart: User login activity over time
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

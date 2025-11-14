@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Role - Ground Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333333;
+        }
+
+        /* Header */
+        .app-header {
+            background-color: #3a856a;
+            color: #ffffff;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .app-header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: #ffffff;
+            border-right: 1px solid #ddd;
+            padding: 16px 0;
+        }
+
+        .sidebar-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #333333;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-item.selected {
+            background-color: rgba(58, 133, 106, 0.1);
+            color: #3a856a;
+            font-weight: 500;
+        }
+
+        .sidebar-item .material-icons {
+            font-size: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            margin-bottom: 16px;
+            color: #666666;
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb a {
+            color: #666666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #3a856a;
+        }
+
+        .breadcrumb span {
+            margin: 0 8px;
+        }
+
+        /* Page Card */
+        .page-card {
+            margin-bottom: 24px;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 16px 0;
+        }
+
+        /* Section Card */
+        .section-card {
+            background-color: #ffffff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-header h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #333333;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .btn-small .material-icons {
+            font-size: 16px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666666;
+            font-size: 0.875rem;
+        }
+
+        .form-group label.required::after {
+            content: " *";
+            color: #d32f2f;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3a856a;
+            box-shadow: 0 0 0 1px #3a856a;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-helper-text {
+            margin-top: 4px;
+            font-size: 0.75rem;
+            color: #666666;
+        }
+
+        /* Switch/Checkbox */
+        .switch-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .switch {
+            position: relative;
+            width: 42px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #3a856a;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #3a856a;
+            color: #ffffff;
+            border-color: #2d6953;
+        }
+
+        .btn-primary:hover {
+            background-color: #1f7456;
+            border-color: #1a5f45;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #3a856a;
+            border-color: #3a856a;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(58, 133, 106, 0.1);
+        }
+
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 10px 10px 40px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.875rem;
+        }
+
+        .search-box .material-icons {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666666;
+            font-size: 20px;
+        }
+
+        /* Selection Summary */
+        .selection-summary {
+            background-color: #f5f5f5;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .selection-count {
+            font-weight: 500;
+            color: #3a856a;
+        }
+
+        /* Policy Grid */
+        .policy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .policy-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .policy-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .policy-card.selected {
+            border-color: #3a856a;
+            background-color: #f1f8f4;
+        }
+
+        .policy-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .policy-card input[type="checkbox"] {
+            margin-top: 2px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .policy-card-content {
+            flex: 1;
+        }
+
+        .policy-name {
+            font-weight: 500;
+            color: #333333;
+            margin-bottom: 4px;
+        }
+
+        .policy-description {
+            font-size: 0.875rem;
+            color: #666666;
+            line-height: 1.5;
+        }
+
+        .policy-meta {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: #999999;
+        }
+
+        .policy-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .policy-meta-item .material-icons {
+            font-size: 14px;
+        }
+
+        /* Material Icons */
+        .material-icons {
+            font-size: 20px;
+        }
+
+    </style>
+    <script>
+        function togglePolicy(checkbox) {
+            const card = checkbox.closest('.policy-card');
+            if (checkbox.checked) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+            updateSelectionCount();
+        }
+
+        function toggleCardSelection(card, event) {
+            // Don't toggle if clicking the checkbox itself
+            if (event.target.type === 'checkbox') {
+                return;
+            }
+            
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            togglePolicy(checkbox);
+        }
+
+        function updateSelectionCount() {
+            const checkboxes = document.querySelectorAll('.policy-card input[type="checkbox"]:checked');
+            const count = checkboxes.length;
+            document.getElementById('selectionCount').textContent = count + ' policy' + (count !== 1 ? 'ies' : 'y') + ' assigned';
+        }
+
+        function filterPolicies(searchTerm) {
+            const cards = document.querySelectorAll('.policy-card');
+            const term = searchTerm.toLowerCase();
+            
+            cards.forEach(card => {
+                const policyName = card.getAttribute('data-policy-name').toLowerCase();
+                const policyDescription = card.querySelector('.policy-description').textContent.toLowerCase();
+                
+                if (policyName.includes(term) || policyDescription.includes(term)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function openAddPolicyModal() {
+            // This would open a modal or navigate to add policy page
+            alert('This would open a modal or navigate to the Add Policy page');
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            updateSelectionCount();
+            
+            // Make cards clickable (except checkbox)
+            document.querySelectorAll('.policy-card').forEach(card => {
+                card.addEventListener('click', (e) => toggleCardSelection(card, e));
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <h1>Ground Up</h1>
+        <div class="user-info">
+            <span>Rob User</span>
+            <span class="material-icons">account_circle</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <a href="#" class="sidebar-item">
+                <span class="material-icons">dashboard</span>
+                <span>Administration</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <span class="material-icons">category</span>
+                <span>Inventory Categories</span>
+            </a>
+            <a href="#" class="sidebar-item selected">
+                <span class="material-icons">admin_panel_settings</span>
+                <span>Roles</span>
+            </a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="#">Administration</a>
+                <span>/</span>
+                <a href="roles-list.html">Roles</a>
+                <span>/</span>
+                <span>Edit Role</span>
+            </nav>
+
+            <!-- Page Card -->
+            <div class="page-card">
+                <!-- Role Details Section -->
+                <div class="section-card">
+                    <div class="page-header">
+                        <h2>Edit Role - Rob's Role</h2>
+                    </div>
+
+                    <div class="divider"></div>
+                    <div class="section-header">
+                        <h3>Role Details</h3>
+                    </div>
+
+                    <!-- Form -->
+                    <form>
+                        <!-- Role Name -->
+                        <div class="form-group">
+                            <label for="roleName" class="required">Role Name</label>
+                            <input 
+                                type="text" 
+                                id="roleName" 
+                                name="roleName" 
+                                value="Rob's Role"
+                                required
+                            >
+                            <div class="form-helper-text">Field required</div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea 
+                                id="description" 
+                                name="description" 
+                                rows="3"
+                            >A custom role for Rob</textarea>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                Save Details
+                            </button>
+                            <a href="roles-list.html" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Policies Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Policies</h3>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="openAddPolicyModal()">
+                            <span class="material-icons small">add</span>
+                            Add New Policy
+                        </button>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <span class="material-icons">search</span>
+                            <input type="text" placeholder="Search policies..." onkeyup="filterPolicies(this.value)">
+                        </div>
+                    </div>
+
+                    <!-- Selection Summary -->
+                    <div class="selection-summary">
+                        <span id="selectionCount" class="selection-count">2 policies assigned</span>
+                    </div>
+
+                    <!-- Policy Grid -->
+                    <div class="policy-grid">
+                        <!-- Policy Card 1 -->
+                        <div class="policy-card selected" data-policy-name="Books Management Policy">
+                            <div class="policy-card-header">
+                                <input type="checkbox" id="policy1" name="policy1" checked onchange="togglePolicy(this)">
+                                <div class="policy-card-content">
+                                    <div class="policy-name">Books Management Policy</div>
+                                    <div class="policy-description">
+                                        Grants permissions to create, read, update, and delete books. Includes access to book categories and inventory management.
+                                    </div>
+                                    <div class="policy-meta">
+                                        <div class="policy-meta-item">
+                                            <span class="material-icons">lock</span>
+                                            <span>8 permissions</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Policy Card 2 -->
+                        <div class="policy-card" data-policy-name="User Management Policy">
+                            <div class="policy-card-header">
+                                <input type="checkbox" id="policy2" name="policy2" onchange="togglePolicy(this)">
+                                <div class="policy-card-content">
+                                    <div class="policy-name">User Management Policy</div>
+                                    <div class="policy-description">
+                                        Grants permissions to manage users and their roles. Includes creating new users, assigning roles, and managing user profiles.
+                                    </div>
+                                    <div class="policy-meta">
+                                        <div class="policy-meta-item">
+                                            <span class="material-icons">lock</span>
+                                            <span>6 permissions</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Policy Card 3 -->
+                        <div class="policy-card selected" data-policy-name="Reports View Policy">
+                            <div class="policy-card-header">
+                                <input type="checkbox" id="policy3" name="policy3" checked onchange="togglePolicy(this)">
+                                <div class="policy-card-content">
+                                    <div class="policy-name">Reports View Policy</div>
+                                    <div class="policy-description">
+                                        Allows viewing and exporting reports. Users can access all standard reports and export data in various formats.
+                                    </div>
+                                    <div class="policy-meta">
+                                        <div class="policy-meta-item">
+                                            <span class="material-icons">lock</span>
+                                            <span>4 permissions</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Policy Card 4 -->
+                        <div class="policy-card" data-policy-name="System Configuration Policy">
+                            <div class="policy-card-header">
+                                <input type="checkbox" id="policy4" name="policy4" onchange="togglePolicy(this)">
+                                <div class="policy-card-content">
+                                    <div class="policy-name">System Configuration Policy</div>
+                                    <div class="policy-description">
+                                        Grants access to system-level configuration settings. Includes managing organization settings, integrations, and system preferences.
+                                    </div>
+                                    <div class="policy-meta">
+                                        <div class="policy-meta-item">
+                                            <span class="material-icons">lock</span>
+                                            <span>10 permissions</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Policy Card 5 -->
+                        <div class="policy-card" data-policy-name="Inventory Categories Policy">
+                            <div class="policy-card-header">
+                                <input type="checkbox" id="policy5" name="policy5" onchange="togglePolicy(this)">
+                                <div class="policy-card-content">
+                                    <div class="policy-name">Inventory Categories Policy</div>
+                                    <div class="policy-description">
+                                        Provides permissions to manage inventory categories. Create, edit, and delete categories used for organizing inventory items.
+                                    </div>
+                                    <div class="policy-meta">
+                                        <div class="policy-meta-item">
+                                            <span class="material-icons">lock</span>
+                                            <span>5 permissions</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Policy Card 6 -->
+                        <div class="policy-card" data-policy-name="Audit Log Access Policy">
+                            <div class="policy-card-header">
+                                <input type="checkbox" id="policy6" name="policy6" onchange="togglePolicy(this)">
+                                <div class="policy-card-content">
+                                    <div class="policy-name">Audit Log Access Policy</div>
+                                    <div class="policy-description">
+                                        Allows viewing system audit logs and activity history. Users can track changes and monitor system activity.
+                                    </div>
+                                    <div class="policy-meta">
+                                        <div class="policy-meta-item">
+                                            <span class="material-icons">lock</span>
+                                            <span>3 permissions</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <form>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                Save Policies
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Role - Ground Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333333;
+        }
+
+        /* Header */
+        .app-header {
+            background-color: #3a856a;
+            color: #ffffff;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .app-header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: #ffffff;
+            border-right: 1px solid #ddd;
+            padding: 16px 0;
+        }
+
+        .sidebar-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #333333;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-item.selected {
+            background-color: rgba(58, 133, 106, 0.1);
+            color: #3a856a;
+            font-weight: 500;
+        }
+
+        .sidebar-item .material-icons {
+            font-size: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            margin-bottom: 16px;
+            color: #666666;
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb a {
+            color: #666666;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #3a856a;
+        }
+
+        .breadcrumb span {
+            margin: 0 8px;
+        }
+
+        /* Page Card */
+        .page-card {
+            background-color: #ffffff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 24px;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 16px 0;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666666;
+            font-size: 0.875rem;
+        }
+
+        .form-group label.required::after {
+            content: " *";
+            color: #d32f2f;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3a856a;
+            box-shadow: 0 0 0 1px #3a856a;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-helper-text {
+            margin-top: 4px;
+            font-size: 0.75rem;
+            color: #666666;
+        }
+
+        .form-helper-text.error {
+            color: #d32f2f;
+        }
+
+        /* Switch/Checkbox */
+        .switch-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .switch {
+            position: relative;
+            width: 42px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #3a856a;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #3a856a;
+            color: #ffffff;
+            border-color: #2d6953;
+        }
+
+        .btn-primary:hover {
+            background-color: #1f7456;
+            border-color: #1a5f45;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #3a856a;
+            border-color: #3a856a;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(58, 133, 106, 0.1);
+        }
+
+        /* Material Icons */
+        .material-icons {
+            font-size: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <h1>Ground Up</h1>
+        <div class="user-info">
+            <span>Rob User</span>
+            <span class="material-icons">account_circle</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <a href="#" class="sidebar-item">
+                <span class="material-icons">dashboard</span>
+                <span>Administration</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <span class="material-icons">category</span>
+                <span>Inventory Categories</span>
+            </a>
+            <a href="#" class="sidebar-item selected">
+                <span class="material-icons">admin_panel_settings</span>
+                <span>Roles</span>
+            </a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="#">Administration</a>
+                <span>/</span>
+                <a href="roles-list.html">Roles</a>
+                <span>/</span>
+                <span>Add Role</span>
+            </nav>
+
+            <!-- Page Card -->
+            <div class="page-card">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h2>Add Role</h2>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Form -->
+                <form>
+                    <!-- Role Name -->
+                    <div class="form-group">
+                        <label for="roleName" class="required">Role Name</label>
+                        <input 
+                            type="text" 
+                            id="roleName" 
+                            name="roleName" 
+                            placeholder="Enter role name"
+                            required
+                            autofocus
+                        >
+                        <div class="form-helper-text">Field required</div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea 
+                            id="description" 
+                            name="description" 
+                            placeholder="Enter role description"
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            Save
+                        </button>
+                        <a href="roles-list.html" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
