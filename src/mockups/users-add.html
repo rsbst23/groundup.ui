@@ -1,666 +1,677 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Add User - Ground Up</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f5f5f5;
-            color: #333333;
-        }
-
-        /* Header */
-        .app-header {
-            background-color: #3a856a;
-            color: #ffffff;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .app-header h1 {
-            font-size: 1.5rem;
-            font-weight: 500;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Layout */
-        .app-container {
-            display: flex;
-            min-height: calc(100vh - 64px);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background-color: #ffffff;
-            border-right: 1px solid #ddd;
-            padding: 16px 0;
-        }
-
-        .sidebar-item {
-            padding: 12px 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #333333;
-            text-decoration: none;
-            transition: background-color 0.2s;
-        }
-
-        .sidebar-item:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .sidebar-item.selected {
-            background-color: rgba(58, 133, 106, 0.1);
-            color: #3a856a;
-            font-weight: 500;
-        }
-
-        .sidebar-item .material-icons {
-            font-size: 20px;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 24px;
-        }
-
-        /* Breadcrumb */
-        .breadcrumb {
-            margin-bottom: 16px;
-            color: #666666;
-            font-size: 0.875rem;
-        }
-
-        .breadcrumb a {
-            color: #666666;
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover {
-            color: #3a856a;
-        }
-
-        .breadcrumb span {
-            margin: 0 8px;
-        }
-
-        /* Page Card */
-        .page-card {
-            margin-bottom: 24px;
-        }
-
-        /* Section Card */
-        .section-card {
-            background-color: #ffffff;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 24px;
-            margin-bottom: 24px;
-        }
-
-        /* Page Header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .page-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .page-header h2 {
-            font-size: 1.5rem;
-            font-weight: 500;
-        }
-
-        .help-icon {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #e0e0e0;
-            color: #666666;
-            cursor: help;
-            transition: background-color 0.2s;
-            flex-shrink: 0;
-        }
-
-        .help-icon:hover {
-            background-color: #cccccc;
-        }
-
-        .help-icon .material-icons {
-            font-size: 14px;
-        }
-
-        .help-tooltip {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            margin-top: 8px;
-            padding: 12px 16px;
-            background-color: #333333;
-            color: #ffffff;
-            border-radius: 4px;
-            font-size: 0.875rem;
-            line-height: 1.4;
-            white-space: normal;
-            width: 300px;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .help-icon:hover .help-tooltip {
-            opacity: 1;
-        }
-
-        .help-tooltip::before {
-            content: '';
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 6px solid transparent;
-            border-bottom-color: #333333;
-        }
-
-        /* Section Header */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .section-header h3 {
-            font-size: 1.25rem;
-            font-weight: 500;
-            color: #333333;
-        }
-
-        /* Divider */
-        .divider {
-            height: 1px;
-            background-color: #e0e0e0;
-            margin: 16px 0;
-        }
-
-        /* Form */
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        .form-row.single {
-            grid-template-columns: 1fr;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #666666;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .form-group label.required::after {
-            content: " *";
-            color: #d32f2f;
-        }
-
-        .label-text {
-            display: inline;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group input[type="password"],
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cccccc;
-            border-radius: 4px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
-
-        .form-group input[type="text"]:focus,
-        .form-group input[type="email"]:focus,
-        .form-group input[type="password"]:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #3a856a;
-            box-shadow: 0 0 0 1px #3a856a;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-
-
-        /* Checkbox Group */
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .checkbox-item label {
-            margin: 0;
-            cursor: pointer;
-            font-size: 0.875rem;
-        }
-
-        /* Buttons */
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 32px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid;
-            cursor: pointer;
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: none;
-        }
-
-        .btn-primary {
-            background-color: #3a856a;
-            color: #ffffff;
-            border-color: #2d6953;
-        }
-
-        .btn-primary:hover {
-            background-color: #1f7456;
-            border-color: #1a5f45;
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: #3a856a;
-            border-color: #3a856a;
-        }
-
-        .btn-secondary:hover {
-            background-color: rgba(58, 133, 106, 0.1);
-        }
-
-        /* Role Selection */
-        .role-selector {
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .role-option {
-            padding: 12px 16px;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .role-option:last-child {
-            border-bottom: none;
-        }
-
-        .role-option:hover {
-            background-color: #fafafa;
-        }
-
-        .role-option input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            margin-top: 2px;
-            cursor: pointer;
-        }
-
-        .role-option-content {
-            flex: 1;
-        }
-
-        .role-option-name {
-            font-weight: 500;
-            color: #333333;
-            margin-bottom: 4px;
-        }
-
-        .role-option-description {
-            font-size: 0.75rem;
-            color: #666666;
-        }
-
-        /* Radio Group */
-        .radio-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .radio-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-
-        .radio-item input[type="radio"] {
-            width: 18px;
-            height: 18px;
-            margin-top: 2px;
-            cursor: pointer;
-        }
-
-        .radio-item-content {
-            flex: 1;
-        }
-
-        .radio-item label {
-            margin: 0;
-            cursor: pointer;
-            font-weight: 500;
-            color: #333333;
-        }
-
-        /* Material Icons */
-        .material-icons {
-            font-size: 20px;
-        }
-
-        .material-icons.small {
-            font-size: 16px;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Roboto", sans-serif;
+        background-color: #f5f5f5;
+        color: #333333;
+      }
+
+      /* Header */
+      .app-header {
+        background-color: #3a856a;
+        color: #ffffff;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .app-header h1 {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      /* Layout */
+      .app-container {
+        display: flex;
+        min-height: calc(100vh - 64px);
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background-color: #ffffff;
+        border-right: 1px solid #ddd;
+        padding: 16px 0;
+      }
+
+      .sidebar-item {
+        padding: 12px 24px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #333333;
+        text-decoration: none;
+        transition: background-color 0.2s;
+      }
+
+      .sidebar-item:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .sidebar-item.selected {
+        background-color: rgba(58, 133, 106, 0.1);
+        color: #3a856a;
+        font-weight: 500;
+      }
+
+      .sidebar-item .material-icons {
+        font-size: 20px;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        padding: 24px;
+      }
+
+      /* Breadcrumb */
+      .breadcrumb {
+        margin-bottom: 16px;
+        color: #666666;
+        font-size: 0.875rem;
+      }
+
+      .breadcrumb a {
+        color: #666666;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        color: #3a856a;
+      }
+
+      .breadcrumb span {
+        margin: 0 8px;
+      }
+
+      /* Page Card */
+      .page-card {
+        margin-bottom: 24px;
+      }
+
+      /* Section Card */
+      .section-card {
+        background-color: #ffffff;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+
+      /* Page Header */
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .page-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+
+      .help-icon {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        color: #666666;
+        cursor: help;
+        transition: background-color 0.2s;
+        flex-shrink: 0;
+      }
+
+      .help-icon:hover {
+        background-color: #cccccc;
+      }
+
+      .help-icon .material-icons {
+        font-size: 14px;
+      }
+
+      .help-tooltip {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: 8px;
+        padding: 12px 16px;
+        background-color: #333333;
+        color: #ffffff;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        white-space: normal;
+        width: 300px;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .help-icon:hover .help-tooltip {
+        opacity: 1;
+      }
+
+      .help-tooltip::before {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-bottom-color: #333333;
+      }
+
+      /* Section Header */
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .section-header h3 {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: #333333;
+      }
+
+      /* Divider */
+      .divider {
+        height: 1px;
+        background-color: #e0e0e0;
+        margin: 16px 0;
+      }
+
+      /* Form */
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      .form-row.single {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group {
+        margin-bottom: 24px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #666666;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .form-group label.required::after {
+        content: " *";
+        color: #d32f2f;
+      }
+
+      .label-text {
+        display: inline;
+      }
+
+      .form-group input[type="text"],
+      .form-group input[type="email"],
+      .form-group input[type="password"],
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-family: "Roboto", sans-serif;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+      }
+
+      .form-group input[type="text"]:focus,
+      .form-group input[type="email"]:focus,
+      .form-group input[type="password"]:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #3a856a;
+        box-shadow: 0 0 0 1px #3a856a;
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      /* Checkbox Group */
+      .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .checkbox-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      .checkbox-item label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 0.875rem;
+      }
+
+      /* Buttons */
+      .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 32px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid;
+        cursor: pointer;
+        font-family: "Roboto", sans-serif;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: none;
+      }
+
+      .btn-primary {
+        background-color: #3a856a;
+        color: #ffffff;
+        border-color: #2d6953;
+      }
+
+      .btn-primary:hover {
+        background-color: #1f7456;
+        border-color: #1a5f45;
+      }
+
+      .btn-secondary {
+        background-color: transparent;
+        color: #3a856a;
+        border-color: #3a856a;
+      }
+
+      .btn-secondary:hover {
+        background-color: rgba(58, 133, 106, 0.1);
+      }
+
+      /* Role Selection */
+      .role-selector {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .role-option {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .role-option:last-child {
+        border-bottom: none;
+      }
+
+      .role-option:hover {
+        background-color: #fafafa;
+      }
+
+      .role-option input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        cursor: pointer;
+      }
+
+      .role-option-content {
+        flex: 1;
+      }
+
+      .role-option-name {
+        font-weight: 500;
+        color: #333333;
+        margin-bottom: 4px;
+      }
+
+      .role-option-description {
+        font-size: 0.75rem;
+        color: #666666;
+      }
+
+      /* Radio Group */
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .radio-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .radio-item input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        cursor: pointer;
+      }
+
+      .radio-item-content {
+        flex: 1;
+      }
+
+      .radio-item label {
+        margin: 0;
+        cursor: pointer;
+        font-weight: 500;
+        color: #333333;
+      }
+
+      /* Material Icons */
+      .material-icons {
+        font-size: 20px;
+      }
+
+      .material-icons.small {
+        font-size: 16px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Header -->
     <header class="app-header">
-        <h1>Ground Up</h1>
-        <div class="user-info">
-            <span>Rob User</span>
-            <span class="material-icons">account_circle</span>
-        </div>
+      <h1>Ground Up</h1>
+      <div class="user-info">
+        <span>Rob User</span>
+        <span class="material-icons">account_circle</span>
+      </div>
     </header>
 
     <!-- Main Container -->
     <div class="app-container">
-        <!-- Sidebar -->
-        <nav class="sidebar">
-            <a href="#" class="sidebar-item">
-                <span class="material-icons">dashboard</span>
-                <span>Administration</span>
-            </a>
-            <a href="roles-list.html" class="sidebar-item">
-                <span class="material-icons">admin_panel_settings</span>
-                <span>Roles</span>
-            </a>
-            <a href="policies-list.html" class="sidebar-item">
-                <span class="material-icons">policy</span>
-                <span>Policies</span>
-            </a>
-            <a href="permissions-list.html" class="sidebar-item">
-                <span class="material-icons">lock</span>
-                <span>Permissions</span>
-            </a>
-            <a href="users-list.html" class="sidebar-item selected">
-                <span class="material-icons">people</span>
-                <span>Users</span>
-            </a>
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <a href="#" class="sidebar-item">
+          <span class="material-icons">dashboard</span>
+          <span>Administration</span>
+        </a>
+        <a href="roles-list.html" class="sidebar-item">
+          <span class="material-icons">admin_panel_settings</span>
+          <span>Roles</span>
+        </a>
+        <a href="policies-list.html" class="sidebar-item">
+          <span class="material-icons">policy</span>
+          <span>Policies</span>
+        </a>
+        <a href="permissions-list.html" class="sidebar-item">
+          <span class="material-icons">lock</span>
+          <span>Permissions</span>
+        </a>
+        <a href="users-list.html" class="sidebar-item selected">
+          <span class="material-icons">people</span>
+          <span>Users</span>
+        </a>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <a href="#">Administration</a>
+          <span>/</span>
+          <a href="users-list.html">Users</a>
+          <span>/</span>
+          <span>Add User</span>
         </nav>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Breadcrumb -->
-            <nav class="breadcrumb">
-                <a href="#">Administration</a>
-                <span>/</span>
-                <a href="users-list.html">Users</a>
-                <span>/</span>
-                <span>Add User</span>
-            </nav>
-
-            <!-- Page Card -->
-            <div class="page-card">
-                <!-- User Information Section -->
-                <div class="section-card">
-                    <div class="page-header">
-                        <div class="page-title">
-                            <h2>Add User</h2>
-                            <div class="help-icon">
-                                <span class="material-icons">help_outline</span>
-                                <div class="help-tooltip">
-                                    This form will create a new user in Keycloak and set up their profile in the application database. The user will receive an email to set their password.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="divider"></div>
-
-                    <div class="section-header">
-                        <h3>User Information</h3>
-                    </div>
-
-                    <!-- Form -->
-                    <form>
-                        <!-- Name Fields -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="firstName" class="required">
-                                    <span class="label-text">First Name</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="firstName" 
-                                    name="firstName" 
-                                    required
-                                >
-                            </div>
-
-                            <div class="form-group">
-                                <label for="lastName" class="required">
-                                    <span class="label-text">Last Name</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="lastName" 
-                                    name="lastName" 
-                                    required
-                                >
-                            </div>
-                        </div>
-
-                        <!-- Email and Username -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="email" class="required">
-                                    <span class="label-text">Email</span>
-                                    <span class="help-icon">
-                                        <span class="material-icons">help_outline</span>
-                                        <div class="help-tooltip">
-                                            User will receive a verification email at this address
-                                        </div>
-                                    </span>
-                                </label>
-                                <input 
-                                    type="email" 
-                                    id="email" 
-                                    name="email" 
-                                    required
-                                >
-                            </div>
-
-                            <div class="form-group">
-                                <label for="username" class="required">
-                                    <span class="label-text">Username</span>
-                                    <span class="help-icon">
-                                        <span class="material-icons">help_outline</span>
-                                        <div class="help-tooltip">
-                                            Must be unique in Keycloak
-                                        </div>
-                                    </span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="username" 
-                                    name="username" 
-                                    required
-                                >
-                            </div>
-                        </div>
-
-                        <!-- Organization and System Role -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="organization" class="required">
-                                    <span class="label-text">Organization</span>
-                                    <span class="help-icon">
-                                        <span class="material-icons">help_outline</span>
-                                        <div class="help-tooltip">
-                                            User's primary organization assignment
-                                        </div>
-                                    </span>
-                                </label>
-                                <select id="organization" name="organization" required>
-                                    <option value="">Select an organization...</option>
-                                    <option value="main">Main Office</option>
-                                    <option value="east">East Branch</option>
-                                    <option value="west">West Branch</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="required">
-                                    <span class="label-text">System Role</span>
-                                    <span class="help-icon">
-                                        <span class="material-icons">help_outline</span>
-                                        <div class="help-tooltip">
-                                            Keycloak realm role assignment. USER provides standard application access. ADMIN grants full administrative access to Keycloak and system settings.
-                                        </div>
-                                    </span>
-                                </label>
-                                <div class="radio-group">
-                                    <div class="radio-item">
-                                        <input type="radio" id="role-user" name="systemRole" value="USER" checked>
-                                        <label for="role-user">USER</label>
-                                    </div>
-                                    <div class="radio-item">
-                                        <input type="radio" id="role-admin" name="systemRole" value="ADMIN">
-                                        <label for="role-admin">ADMIN</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- User Settings -->
-                        <div class="form-row single">
-                            <div class="form-group">
-                                <label>
-                                    <span class="label-text">Password Settings</span>
-                                    <span class="help-icon">
-                                        <span class="material-icons">help_outline</span>
-                                        <div class="help-tooltip">
-                                            User will set their own password via email. Enabling "Require password change on first login" forces a new password when they first sign in.
-                                        </div>
-                                    </span>
-                                </label>
-                                <div class="checkbox-group">
-                                    <div class="checkbox-item">
-                                        <input type="checkbox" id="sendPasswordEmail" name="sendPasswordEmail" checked>
-                                        <label for="sendPasswordEmail">Send password setup email</label>
-                                    </div>
-                                    <div class="checkbox-item">
-                                        <input type="checkbox" id="temporaryPassword" name="temporaryPassword" checked>
-                                        <label for="temporaryPassword">Require password change on first login</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Form Actions -->
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">
-                                Create User
-                            </button>
-                            <a href="users-list.html" class="btn btn-secondary">
-                                Cancel
-                            </a>
-                        </div>
-                    </form>
+        <!-- Page Card -->
+        <div class="page-card">
+          <!-- User Information Section -->
+          <div class="section-card">
+            <div class="page-header">
+              <div class="page-title">
+                <h2>Add User</h2>
+                <div class="help-icon">
+                  <span class="material-icons">help_outline</span>
+                  <div class="help-tooltip">
+                    This form will create a new user in Keycloak and set up
+                    their profile in the application database. The user will
+                    receive an email to set their password.
+                  </div>
                 </div>
+              </div>
             </div>
-        </main>
+
+            <div class="divider"></div>
+
+            <div class="section-header">
+              <h3>User Information</h3>
+            </div>
+
+            <!-- Form -->
+            <form>
+              <!-- Name Fields -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="firstName" class="required">
+                    <span class="label-text">First Name</span>
+                  </label>
+                  <input type="text" id="firstName" name="firstName" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="lastName" class="required">
+                    <span class="label-text">Last Name</span>
+                  </label>
+                  <input type="text" id="lastName" name="lastName" required />
+                </div>
+              </div>
+
+              <!-- Email and Username -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="email" class="required">
+                    <span class="label-text">Email</span>
+                    <span class="help-icon">
+                      <span class="material-icons">help_outline</span>
+                      <div class="help-tooltip">
+                        User will receive a verification email at this address
+                      </div>
+                    </span>
+                  </label>
+                  <input type="email" id="email" name="email" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="username" class="required">
+                    <span class="label-text">Username</span>
+                    <span class="help-icon">
+                      <span class="material-icons">help_outline</span>
+                      <div class="help-tooltip">Must be unique in Keycloak</div>
+                    </span>
+                  </label>
+                  <input type="text" id="username" name="username" required />
+                </div>
+              </div>
+
+              <!-- Organization and System Role -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="organization" class="required">
+                    <span class="label-text">Organization</span>
+                    <span class="help-icon">
+                      <span class="material-icons">help_outline</span>
+                      <div class="help-tooltip">
+                        User's primary organization assignment
+                      </div>
+                    </span>
+                  </label>
+                  <select id="organization" name="organization" required>
+                    <option value="">Select an organization...</option>
+                    <option value="main">Main Office</option>
+                    <option value="east">East Branch</option>
+                    <option value="west">West Branch</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="required">
+                    <span class="label-text">System Role</span>
+                    <span class="help-icon">
+                      <span class="material-icons">help_outline</span>
+                      <div class="help-tooltip">
+                        Keycloak realm role assignment. USER provides standard
+                        application access. ADMIN grants full administrative
+                        access to Keycloak and system settings.
+                      </div>
+                    </span>
+                  </label>
+                  <div class="radio-group">
+                    <div class="radio-item">
+                      <input
+                        type="radio"
+                        id="role-user"
+                        name="systemRole"
+                        value="USER"
+                        checked
+                      />
+                      <label for="role-user">USER</label>
+                    </div>
+                    <div class="radio-item">
+                      <input
+                        type="radio"
+                        id="role-admin"
+                        name="systemRole"
+                        value="ADMIN"
+                      />
+                      <label for="role-admin">ADMIN</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- User Settings -->
+              <div class="form-row single">
+                <div class="form-group">
+                  <label>
+                    <span class="label-text">Password Settings</span>
+                    <span class="help-icon">
+                      <span class="material-icons">help_outline</span>
+                      <div class="help-tooltip">
+                        User will set their own password via email. Enabling
+                        "Require password change on first login" forces a new
+                        password when they first sign in.
+                      </div>
+                    </span>
+                  </label>
+                  <div class="checkbox-group">
+                    <div class="checkbox-item">
+                      <input
+                        type="checkbox"
+                        id="sendPasswordEmail"
+                        name="sendPasswordEmail"
+                        checked
+                      />
+                      <label for="sendPasswordEmail"
+                        >Send password setup email</label
+                      >
+                    </div>
+                    <div class="checkbox-item">
+                      <input
+                        type="checkbox"
+                        id="temporaryPassword"
+                        name="temporaryPassword"
+                        checked
+                      />
+                      <label for="temporaryPassword"
+                        >Require password change on first login</label
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  Create User
+                </button>
+                <a href="users-list.html" class="btn btn-secondary"> Cancel </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
     </div>
-</body>
+  </body>
 </html>

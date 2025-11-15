@@ -1,925 +1,941 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Users - Ground Up</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f5f5f5;
-            color: #333333;
-        }
-
-        /* Header */
-        .app-header {
-            background-color: #3a856a;
-            color: #ffffff;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .app-header h1 {
-            font-size: 1.5rem;
-            font-weight: 500;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Layout */
-        .app-container {
-            display: flex;
-            min-height: calc(100vh - 64px);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background-color: #ffffff;
-            border-right: 1px solid #ddd;
-            padding: 16px 0;
-        }
-
-        .sidebar-item {
-            padding: 12px 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #333333;
-            text-decoration: none;
-            transition: background-color 0.2s;
-        }
-
-        .sidebar-item:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .sidebar-item.selected {
-            background-color: rgba(58, 133, 106, 0.1);
-            color: #3a856a;
-            font-weight: 500;
-        }
-
-        .sidebar-item .material-icons {
-            font-size: 20px;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 24px;
-        }
-
-        /* Breadcrumb */
-        .breadcrumb {
-            margin-bottom: 16px;
-            color: #666666;
-            font-size: 0.875rem;
-        }
-
-        .breadcrumb a {
-            color: #666666;
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover {
-            color: #3a856a;
-        }
-
-        .breadcrumb span {
-            margin: 0 8px;
-        }
-
-        /* Page Card */
-        .page-card {
-            background-color: #ffffff;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 24px;
-        }
-
-        /* Page Header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .page-header h2 {
-            font-size: 1.5rem;
-            font-weight: 500;
-        }
-
-        .page-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Divider */
-        .divider {
-            height: 1px;
-            background-color: #e0e0e0;
-            margin: 16px 0;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid;
-            cursor: pointer;
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: none;
-        }
-
-        .btn-primary {
-            background-color: #3a856a;
-            color: #ffffff;
-            border-color: #2d6953;
-        }
-
-        .btn-primary:hover {
-            background-color: #1f7456;
-            border-color: #1a5f45;
-        }
-
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: none;
-            background-color: transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-            color: #666666;
-        }
-
-        .icon-btn:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        /* Table Controls */
-        .table-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .items-per-page {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.875rem;
-            color: #666666;
-        }
-
-        .items-per-page select {
-            padding: 6px 8px;
-            border: 1px solid #cccccc;
-            border-radius: 4px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.875rem;
-            background-color: #ffffff;
-            cursor: pointer;
-        }
-
-        /* Table */
-        .table-container {
-            overflow-x: auto;
-            margin-bottom: 16px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background-color: #fafafa;
-        }
-
-        th {
-            text-align: left;
-            padding: 8px 12px;
-            font-weight: 400;
-            color: #666666;
-            background-color: #fafafa;
-            border-bottom: 1px solid #e0e0e0;
-            vertical-align: top;
-        }
-
-        .column-header {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-bottom: 8px;
-        }
-
-        .column-title {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            user-select: none;
-            flex: 1;
-        }
-
-        .column-title:hover {
-            color: #3a856a;
-        }
-
-        .filter-icon {
-            cursor: pointer;
-            color: #999999;
-            font-size: 18px;
-        }
-
-        .filter-icon:hover {
-            color: #3a856a;
-        }
-
-        .column-filter {
-            width: 100%;
-        }
-
-        .column-filter input {
-            width: 100%;
-            padding: 6px 8px;
-            border: 1px solid #cccccc;
-            border-radius: 4px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.75rem;
-        }
-
-        .column-filter input:focus {
-            outline: none;
-            border-color: #3a856a;
-        }
-
-        td {
-            padding: 12px 16px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        tbody tr {
-            transition: background-color 0.2s;
-        }
-
-        tbody tr:hover {
-            background-color: #fafafa;
-        }
-
-        .user-name {
-            font-weight: 500;
-            color: #333333;
-        }
-
-        .user-email {
-            font-size: 0.875rem;
-            color: #666666;
-            margin-top: 2px;
-        }
-
-        /* Status Badge */
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .status-badge.active {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-badge.inactive {
-            background-color: #ffebee;
-            color: #c62828;
-        }
-
-        /* Role Pills */
-        .role-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-
-        .role-pill {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            background-color: #e3f2fd;
-            color: #1565c0;
-            font-weight: 500;
-        }
-
-        .role-pill-more {
-            color: #666666;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        /* Organization Badge */
-        .org-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.875rem;
-            color: #666666;
-        }
-
-        /* Action Buttons */
-        .action-btns {
-            display: flex;
-            gap: 4px;
-        }
-
-        .action-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 4px;
-            border: none;
-            background-color: transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-            color: #666666;
-        }
-
-        .action-btn:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .action-btn .material-icons {
-            font-size: 18px;
-        }
-
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .pagination-info {
-            font-size: 0.875rem;
-            color: #666666;
-        }
-
-        .pagination-controls {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-
-        .page-nav-btn {
-            min-width: 32px;
-            height: 32px;
-            padding: 0 8px;
-            border: none;
-            background-color: transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-            color: #666666;
-            border-radius: 4px;
-        }
-
-        .page-nav-btn:hover:not(:disabled) {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .page-nav-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .page-nav-btn .material-icons {
-            font-size: 18px;
-        }
-
-        .page-number {
-            min-width: 32px;
-            height: 32px;
-            padding: 0 8px;
-            border: none;
-            background-color: transparent;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-            color: #333333;
-            font-size: 0.875rem;
-            border-radius: 4px;
-        }
-
-        .page-number:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .page-number.active {
-            background-color: transparent;
-            color: #3a856a;
-            font-weight: 500;
-        }
-
-        .page-of {
-            font-size: 0.875rem;
-            color: #666666;
-            margin: 0 4px;
-        }
-
-        /* Material Icons */
-        .material-icons {
-            font-size: 20px;
-        }
-
-        .material-icons.small {
-            font-size: 16px;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Roboto", sans-serif;
+        background-color: #f5f5f5;
+        color: #333333;
+      }
+
+      /* Header */
+      .app-header {
+        background-color: #3a856a;
+        color: #ffffff;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .app-header h1 {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      /* Layout */
+      .app-container {
+        display: flex;
+        min-height: calc(100vh - 64px);
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background-color: #ffffff;
+        border-right: 1px solid #ddd;
+        padding: 16px 0;
+      }
+
+      .sidebar-item {
+        padding: 12px 24px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #333333;
+        text-decoration: none;
+        transition: background-color 0.2s;
+      }
+
+      .sidebar-item:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .sidebar-item.selected {
+        background-color: rgba(58, 133, 106, 0.1);
+        color: #3a856a;
+        font-weight: 500;
+      }
+
+      .sidebar-item .material-icons {
+        font-size: 20px;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        padding: 24px;
+      }
+
+      /* Breadcrumb */
+      .breadcrumb {
+        margin-bottom: 16px;
+        color: #666666;
+        font-size: 0.875rem;
+      }
+
+      .breadcrumb a {
+        color: #666666;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        color: #3a856a;
+      }
+
+      .breadcrumb span {
+        margin: 0 8px;
+      }
+
+      /* Page Card */
+      .page-card {
+        background-color: #ffffff;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+      }
+
+      /* Page Header */
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+
+      .page-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      /* Divider */
+      .divider {
+        height: 1px;
+        background-color: #e0e0e0;
+        margin: 16px 0;
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid;
+        cursor: pointer;
+        font-family: "Roboto", sans-serif;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: none;
+      }
+
+      .btn-primary {
+        background-color: #3a856a;
+        color: #ffffff;
+        border-color: #2d6953;
+      }
+
+      .btn-primary:hover {
+        background-color: #1f7456;
+        border-color: #1a5f45;
+      }
+
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s;
+        color: #666666;
+      }
+
+      .icon-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      /* Table Controls */
+      .table-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .items-per-page {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.875rem;
+        color: #666666;
+      }
+
+      .items-per-page select {
+        padding: 6px 8px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-family: "Roboto", sans-serif;
+        font-size: 0.875rem;
+        background-color: #ffffff;
+        cursor: pointer;
+      }
+
+      /* Table */
+      .table-container {
+        overflow-x: auto;
+        margin-bottom: 16px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        background-color: #fafafa;
+      }
+
+      th {
+        text-align: left;
+        padding: 8px 12px;
+        font-weight: 400;
+        color: #666666;
+        background-color: #fafafa;
+        border-bottom: 1px solid #e0e0e0;
+        vertical-align: top;
+      }
+
+      .column-header {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 8px;
+      }
+
+      .column-title {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        user-select: none;
+        flex: 1;
+      }
+
+      .column-title:hover {
+        color: #3a856a;
+      }
+
+      .filter-icon {
+        cursor: pointer;
+        color: #999999;
+        font-size: 18px;
+      }
+
+      .filter-icon:hover {
+        color: #3a856a;
+      }
+
+      .column-filter {
+        width: 100%;
+      }
+
+      .column-filter input {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-family: "Roboto", sans-serif;
+        font-size: 0.75rem;
+      }
+
+      .column-filter input:focus {
+        outline: none;
+        border-color: #3a856a;
+      }
+
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      tbody tr {
+        transition: background-color 0.2s;
+      }
+
+      tbody tr:hover {
+        background-color: #fafafa;
+      }
+
+      .user-name {
+        font-weight: 500;
+        color: #333333;
+      }
+
+      .user-email {
+        font-size: 0.875rem;
+        color: #666666;
+        margin-top: 2px;
+      }
+
+      /* Status Badge */
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+
+      .status-badge.active {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .status-badge.inactive {
+        background-color: #ffebee;
+        color: #c62828;
+      }
+
+      /* Role Pills */
+      .role-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .role-pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        background-color: #e3f2fd;
+        color: #1565c0;
+        font-weight: 500;
+      }
+
+      .role-pill-more {
+        color: #666666;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+
+      /* Organization Badge */
+      .org-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.875rem;
+        color: #666666;
+      }
+
+      /* Action Buttons */
+      .action-btns {
+        display: flex;
+        gap: 4px;
+      }
+
+      .action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s;
+        color: #666666;
+      }
+
+      .action-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .action-btn .material-icons {
+        font-size: 18px;
+      }
+
+      /* Pagination */
+      .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .pagination-info {
+        font-size: 0.875rem;
+        color: #666666;
+      }
+
+      .pagination-controls {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+      }
+
+      .page-nav-btn {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s;
+        color: #666666;
+        border-radius: 4px;
+      }
+
+      .page-nav-btn:hover:not(:disabled) {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .page-nav-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .page-nav-btn .material-icons {
+        font-size: 18px;
+      }
+
+      .page-number {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s;
+        color: #333333;
+        font-size: 0.875rem;
+        border-radius: 4px;
+      }
+
+      .page-number:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .page-number.active {
+        background-color: transparent;
+        color: #3a856a;
+        font-weight: 500;
+      }
+
+      .page-of {
+        font-size: 0.875rem;
+        color: #666666;
+        margin: 0 4px;
+      }
+
+      /* Material Icons */
+      .material-icons {
+        font-size: 20px;
+      }
+
+      .material-icons.small {
+        font-size: 16px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Header -->
     <header class="app-header">
-        <h1>Ground Up</h1>
-        <div class="user-info">
-            <span>Rob User</span>
-            <span class="material-icons">account_circle</span>
-        </div>
+      <h1>Ground Up</h1>
+      <div class="user-info">
+        <span>Rob User</span>
+        <span class="material-icons">account_circle</span>
+      </div>
     </header>
 
     <!-- Main Container -->
     <div class="app-container">
-        <!-- Sidebar -->
-        <nav class="sidebar">
-            <a href="#" class="sidebar-item">
-                <span class="material-icons">dashboard</span>
-                <span>Administration</span>
-            </a>
-            <a href="roles-list.html" class="sidebar-item">
-                <span class="material-icons">admin_panel_settings</span>
-                <span>Roles</span>
-            </a>
-            <a href="policies-list.html" class="sidebar-item">
-                <span class="material-icons">policy</span>
-                <span>Policies</span>
-            </a>
-            <a href="permissions-list.html" class="sidebar-item">
-                <span class="material-icons">lock</span>
-                <span>Permissions</span>
-            </a>
-            <a href="#" class="sidebar-item selected">
-                <span class="material-icons">people</span>
-                <span>Users</span>
-            </a>
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <a href="#" class="sidebar-item">
+          <span class="material-icons">dashboard</span>
+          <span>Administration</span>
+        </a>
+        <a href="roles-list.html" class="sidebar-item">
+          <span class="material-icons">admin_panel_settings</span>
+          <span>Roles</span>
+        </a>
+        <a href="policies-list.html" class="sidebar-item">
+          <span class="material-icons">policy</span>
+          <span>Policies</span>
+        </a>
+        <a href="permissions-list.html" class="sidebar-item">
+          <span class="material-icons">lock</span>
+          <span>Permissions</span>
+        </a>
+        <a href="#" class="sidebar-item selected">
+          <span class="material-icons">people</span>
+          <span>Users</span>
+        </a>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <a href="#">Administration</a>
+          <span>/</span>
+          <span>Users</span>
         </nav>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Breadcrumb -->
-            <nav class="breadcrumb">
-                <a href="#">Administration</a>
-                <span>/</span>
-                <span>Users</span>
-            </nav>
-
-            <!-- Page Card -->
-            <div class="page-card">
-                <!-- Page Header -->
-                <div class="page-header">
-                    <h2>Users</h2>
-                    <div class="page-actions">
-                        <button class="btn btn-primary">
-                            <span class="material-icons small">add</span>
-                            Add User
-                        </button>
-                        <button class="icon-btn" title="More Actions">
-                            <span class="material-icons">more_vert</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="divider"></div>
-
-                <!-- Table Controls -->
-                <div class="table-controls">
-                    <div class="items-per-page">
-                        <span>Items per page</span>
-                        <select>
-                            <option value="10" selected>10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                    </div>
-                    <div class="pagination-info">
-                        1-2 of 8 items
-                    </div>
-                </div>
-
-                <!-- Table -->
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>
-                                    <div class="column-header">
-                                        <div class="column-title">
-                                            <span>Name</span>
-                                            <span class="material-icons small">arrow_upward</span>
-                                        </div>
-                                        <span class="material-icons filter-icon">filter_list</span>
-                                    </div>
-                                    <div class="column-filter">
-                                        <input type="text" placeholder="Filter">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="column-header">
-                                        <div class="column-title">
-                                            <span>Username</span>
-                                            <span class="material-icons small">unfold_more</span>
-                                        </div>
-                                        <span class="material-icons filter-icon">filter_list</span>
-                                    </div>
-                                    <div class="column-filter">
-                                        <input type="text" placeholder="Filter">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="column-header">
-                                        <div class="column-title">
-                                            <span>Organization</span>
-                                            <span class="material-icons small">unfold_more</span>
-                                        </div>
-                                        <span class="material-icons filter-icon">filter_list</span>
-                                    </div>
-                                    <div class="column-filter">
-                                        <input type="text" placeholder="Filter">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="column-header">
-                                        <div class="column-title">
-                                            <span>Roles</span>
-                                            <span class="material-icons small">unfold_more</span>
-                                        </div>
-                                        <span class="material-icons filter-icon">filter_list</span>
-                                    </div>
-                                    <div class="column-filter">
-                                        <input type="text" placeholder="Filter">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="column-header">
-                                        <div class="column-title">
-                                            <span>Status</span>
-                                            <span class="material-icons small">unfold_more</span>
-                                        </div>
-                                        <span class="material-icons filter-icon">filter_list</span>
-                                    </div>
-                                    <div class="column-filter">
-                                        <input type="text" placeholder="Filter">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="column-header">
-                                        <div class="column-title">
-                                            <span>Last Login</span>
-                                            <span class="material-icons small">unfold_more</span>
-                                        </div>
-                                        <span class="material-icons filter-icon">filter_list</span>
-                                    </div>
-                                    <div class="column-filter">
-                                        <input type="text" placeholder="Filter">
-                                    </div>
-                                </th>
-                                <th style="width: 100px;">
-                                    <div class="column-header">
-                                        <div class="column-title">
-                                            <span>Actions</span>
-                                        </div>
-                                    </div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div class="user-name">Robert Smith</div>
-                                    <div class="user-email">robert.smith@example.com</div>
-                                </td>
-                                <td>rsmith</td>
-                                <td>
-                                    <div class="org-badge">
-                                        <span class="material-icons small">business</span>
-                                        <span>Main Office</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="role-pills">
-                                        <span class="role-pill">Administrator</span>
-                                        <span class="role-pill">Manager</span>
-                                    </div>
-                                </td>
-                                <td><span class="status-badge active">Active</span></td>
-                                <td>2025-11-11 09:30</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <button class="action-btn" title="Edit User">
-                                            <span class="material-icons">edit</span>
-                                        </button>
-                                        <button class="action-btn" title="More Actions">
-                                            <span class="material-icons">more_vert</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-name">Jennifer Martinez</div>
-                                    <div class="user-email">jennifer.martinez@example.com</div>
-                                </td>
-                                <td>jmartinez</td>
-                                <td>
-                                    <div class="org-badge">
-                                        <span class="material-icons small">business</span>
-                                        <span>East Branch</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="role-pills">
-                                        <span class="role-pill">Manager</span>
-                                    </div>
-                                </td>
-                                <td><span class="status-badge active">Active</span></td>
-                                <td>2025-11-10 14:22</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <button class="action-btn" title="Edit User">
-                                            <span class="material-icons">edit</span>
-                                        </button>
-                                        <button class="action-btn" title="More Actions">
-                                            <span class="material-icons">more_vert</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-name">Michael Johnson</div>
-                                    <div class="user-email">michael.johnson@example.com</div>
-                                </td>
-                                <td>mjohnson</td>
-                                <td>
-                                    <div class="org-badge">
-                                        <span class="material-icons small">business</span>
-                                        <span>Main Office</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="role-pills">
-                                        <span class="role-pill">Employee</span>
-                                        <span class="role-pill">Viewer</span>
-                                    </div>
-                                </td>
-                                <td><span class="status-badge active">Active</span></td>
-                                <td>2025-11-11 08:15</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <button class="action-btn" title="Edit User">
-                                            <span class="material-icons">edit</span>
-                                        </button>
-                                        <button class="action-btn" title="More Actions">
-                                            <span class="material-icons">more_vert</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-name">Sarah Williams</div>
-                                    <div class="user-email">sarah.williams@example.com</div>
-                                </td>
-                                <td>swilliams</td>
-                                <td>
-                                    <div class="org-badge">
-                                        <span class="material-icons small">business</span>
-                                        <span>West Branch</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="role-pills">
-                                        <span class="role-pill">Manager</span>
-                                        <span class="role-pill">Employee</span>
-                                    </div>
-                                </td>
-                                <td><span class="status-badge active">Active</span></td>
-                                <td>2025-11-09 16:45</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <button class="action-btn" title="Edit User">
-                                            <span class="material-icons">edit</span>
-                                        </button>
-                                        <button class="action-btn" title="More Actions">
-                                            <span class="material-icons">more_vert</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-name">David Brown</div>
-                                    <div class="user-email">david.brown@example.com</div>
-                                </td>
-                                <td>dbrown</td>
-                                <td>
-                                    <div class="org-badge">
-                                        <span class="material-icons small">business</span>
-                                        <span>East Branch</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="role-pills">
-                                        <span class="role-pill">Viewer</span>
-                                    </div>
-                                </td>
-                                <td><span class="status-badge inactive">Inactive</span></td>
-                                <td>2025-10-28 11:00</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <button class="action-btn" title="Edit User">
-                                            <span class="material-icons">edit</span>
-                                        </button>
-                                        <button class="action-btn" title="More Actions">
-                                            <span class="material-icons">more_vert</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-name">Emily Davis</div>
-                                    <div class="user-email">emily.davis@example.com</div>
-                                </td>
-                                <td>edavis</td>
-                                <td>
-                                    <div class="org-badge">
-                                        <span class="material-icons small">business</span>
-                                        <span>Main Office</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="role-pills">
-                                        <span class="role-pill">Administrator</span>
-                                        <span class="role-pill">Manager</span>
-                                        <span class="role-pill-more">+1 more</span>
-                                    </div>
-                                </td>
-                                <td><span class="status-badge active">Active</span></td>
-                                <td>2025-11-11 07:20</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <button class="action-btn" title="Edit User">
-                                            <span class="material-icons">edit</span>
-                                        </button>
-                                        <button class="action-btn" title="More Actions">
-                                            <span class="material-icons">more_vert</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-name">James Wilson</div>
-                                    <div class="user-email">james.wilson@example.com</div>
-                                </td>
-                                <td>jwilson</td>
-                                <td>
-                                    <div class="org-badge">
-                                        <span class="material-icons small">business</span>
-                                        <span>West Branch</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="role-pills">
-                                        <span class="role-pill">Employee</span>
-                                    </div>
-                                </td>
-                                <td><span class="status-badge active">Active</span></td>
-                                <td>2025-11-10 13:10</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <button class="action-btn" title="Edit User">
-                                            <span class="material-icons">edit</span>
-                                        </button>
-                                        <button class="action-btn" title="More Actions">
-                                            <span class="material-icons">more_vert</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-name">Lisa Anderson</div>
-                                    <div class="user-email">lisa.anderson@example.com</div>
-                                </td>
-                                <td>landerson</td>
-                                <td>
-                                    <div class="org-badge">
-                                        <span class="material-icons small">business</span>
-                                        <span>East Branch</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="role-pills">
-                                        <span class="role-pill">Manager</span>
-                                        <span class="role-pill">Employee</span>
-                                    </div>
-                                </td>
-                                <td><span class="status-badge active">Active</span></td>
-                                <td>2025-11-11 10:05</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <button class="action-btn" title="Edit User">
-                                            <span class="material-icons">edit</span>
-                                        </button>
-                                        <button class="action-btn" title="More Actions">
-                                            <span class="material-icons">more_vert</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                <div class="pagination">
-                    <div></div>
-                    <div class="pagination-controls">
-                        <button class="page-nav-btn" disabled title="First page">
-                            <span class="material-icons">first_page</span>
-                        </button>
-                        <button class="page-nav-btn" disabled title="Previous page">
-                            <span class="material-icons">chevron_left</span>
-                        </button>
-                        <button class="page-number active">1</button>
-                        <span class="page-of">of 1</span>
-                        <button class="page-nav-btn" title="Next page">
-                            <span class="material-icons">chevron_right</span>
-                        </button>
-                        <button class="page-nav-btn" title="Last page">
-                            <span class="material-icons">last_page</span>
-                        </button>
-                    </div>
-                </div>
+        <!-- Page Card -->
+        <div class="page-card">
+          <!-- Page Header -->
+          <div class="page-header">
+            <h2>Users</h2>
+            <div class="page-actions">
+              <button class="btn btn-primary">
+                <span class="material-icons small">add</span>
+                Add User
+              </button>
+              <button class="icon-btn" title="More Actions">
+                <span class="material-icons">more_vert</span>
+              </button>
             </div>
-        </main>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Table Controls -->
+          <div class="table-controls">
+            <div class="items-per-page">
+              <span>Items per page</span>
+              <select>
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+            <div class="pagination-info">1-2 of 8 items</div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    <div class="column-header">
+                      <div class="column-title">
+                        <span>Name</span>
+                        <span class="material-icons small">arrow_upward</span>
+                      </div>
+                      <span class="material-icons filter-icon"
+                        >filter_list</span
+                      >
+                    </div>
+                    <div class="column-filter">
+                      <input type="text" placeholder="Filter" />
+                    </div>
+                  </th>
+                  <th>
+                    <div class="column-header">
+                      <div class="column-title">
+                        <span>Username</span>
+                        <span class="material-icons small">unfold_more</span>
+                      </div>
+                      <span class="material-icons filter-icon"
+                        >filter_list</span
+                      >
+                    </div>
+                    <div class="column-filter">
+                      <input type="text" placeholder="Filter" />
+                    </div>
+                  </th>
+                  <th>
+                    <div class="column-header">
+                      <div class="column-title">
+                        <span>Organization</span>
+                        <span class="material-icons small">unfold_more</span>
+                      </div>
+                      <span class="material-icons filter-icon"
+                        >filter_list</span
+                      >
+                    </div>
+                    <div class="column-filter">
+                      <input type="text" placeholder="Filter" />
+                    </div>
+                  </th>
+                  <th>
+                    <div class="column-header">
+                      <div class="column-title">
+                        <span>Roles</span>
+                        <span class="material-icons small">unfold_more</span>
+                      </div>
+                      <span class="material-icons filter-icon"
+                        >filter_list</span
+                      >
+                    </div>
+                    <div class="column-filter">
+                      <input type="text" placeholder="Filter" />
+                    </div>
+                  </th>
+                  <th>
+                    <div class="column-header">
+                      <div class="column-title">
+                        <span>Status</span>
+                        <span class="material-icons small">unfold_more</span>
+                      </div>
+                      <span class="material-icons filter-icon"
+                        >filter_list</span
+                      >
+                    </div>
+                    <div class="column-filter">
+                      <input type="text" placeholder="Filter" />
+                    </div>
+                  </th>
+                  <th>
+                    <div class="column-header">
+                      <div class="column-title">
+                        <span>Last Login</span>
+                        <span class="material-icons small">unfold_more</span>
+                      </div>
+                      <span class="material-icons filter-icon"
+                        >filter_list</span
+                      >
+                    </div>
+                    <div class="column-filter">
+                      <input type="text" placeholder="Filter" />
+                    </div>
+                  </th>
+                  <th style="width: 100px">
+                    <div class="column-header">
+                      <div class="column-title">
+                        <span>Actions</span>
+                      </div>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="user-name">Robert Smith</div>
+                    <div class="user-email">robert.smith@example.com</div>
+                  </td>
+                  <td>rsmith</td>
+                  <td>
+                    <div class="org-badge">
+                      <span class="material-icons small">business</span>
+                      <span>Main Office</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="role-pills">
+                      <span class="role-pill">Administrator</span>
+                      <span class="role-pill">Manager</span>
+                    </div>
+                  </td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td>2025-11-11 09:30</td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn" title="Edit User">
+                        <span class="material-icons">edit</span>
+                      </button>
+                      <button class="action-btn" title="More Actions">
+                        <span class="material-icons">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="user-name">Jennifer Martinez</div>
+                    <div class="user-email">jennifer.martinez@example.com</div>
+                  </td>
+                  <td>jmartinez</td>
+                  <td>
+                    <div class="org-badge">
+                      <span class="material-icons small">business</span>
+                      <span>East Branch</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="role-pills">
+                      <span class="role-pill">Manager</span>
+                    </div>
+                  </td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td>2025-11-10 14:22</td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn" title="Edit User">
+                        <span class="material-icons">edit</span>
+                      </button>
+                      <button class="action-btn" title="More Actions">
+                        <span class="material-icons">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="user-name">Michael Johnson</div>
+                    <div class="user-email">michael.johnson@example.com</div>
+                  </td>
+                  <td>mjohnson</td>
+                  <td>
+                    <div class="org-badge">
+                      <span class="material-icons small">business</span>
+                      <span>Main Office</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="role-pills">
+                      <span class="role-pill">Employee</span>
+                      <span class="role-pill">Viewer</span>
+                    </div>
+                  </td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td>2025-11-11 08:15</td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn" title="Edit User">
+                        <span class="material-icons">edit</span>
+                      </button>
+                      <button class="action-btn" title="More Actions">
+                        <span class="material-icons">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="user-name">Sarah Williams</div>
+                    <div class="user-email">sarah.williams@example.com</div>
+                  </td>
+                  <td>swilliams</td>
+                  <td>
+                    <div class="org-badge">
+                      <span class="material-icons small">business</span>
+                      <span>West Branch</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="role-pills">
+                      <span class="role-pill">Manager</span>
+                      <span class="role-pill">Employee</span>
+                    </div>
+                  </td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td>2025-11-09 16:45</td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn" title="Edit User">
+                        <span class="material-icons">edit</span>
+                      </button>
+                      <button class="action-btn" title="More Actions">
+                        <span class="material-icons">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="user-name">David Brown</div>
+                    <div class="user-email">david.brown@example.com</div>
+                  </td>
+                  <td>dbrown</td>
+                  <td>
+                    <div class="org-badge">
+                      <span class="material-icons small">business</span>
+                      <span>East Branch</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="role-pills">
+                      <span class="role-pill">Viewer</span>
+                    </div>
+                  </td>
+                  <td><span class="status-badge inactive">Inactive</span></td>
+                  <td>2025-10-28 11:00</td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn" title="Edit User">
+                        <span class="material-icons">edit</span>
+                      </button>
+                      <button class="action-btn" title="More Actions">
+                        <span class="material-icons">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="user-name">Emily Davis</div>
+                    <div class="user-email">emily.davis@example.com</div>
+                  </td>
+                  <td>edavis</td>
+                  <td>
+                    <div class="org-badge">
+                      <span class="material-icons small">business</span>
+                      <span>Main Office</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="role-pills">
+                      <span class="role-pill">Administrator</span>
+                      <span class="role-pill">Manager</span>
+                      <span class="role-pill-more">+1 more</span>
+                    </div>
+                  </td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td>2025-11-11 07:20</td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn" title="Edit User">
+                        <span class="material-icons">edit</span>
+                      </button>
+                      <button class="action-btn" title="More Actions">
+                        <span class="material-icons">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="user-name">James Wilson</div>
+                    <div class="user-email">james.wilson@example.com</div>
+                  </td>
+                  <td>jwilson</td>
+                  <td>
+                    <div class="org-badge">
+                      <span class="material-icons small">business</span>
+                      <span>West Branch</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="role-pills">
+                      <span class="role-pill">Employee</span>
+                    </div>
+                  </td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td>2025-11-10 13:10</td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn" title="Edit User">
+                        <span class="material-icons">edit</span>
+                      </button>
+                      <button class="action-btn" title="More Actions">
+                        <span class="material-icons">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="user-name">Lisa Anderson</div>
+                    <div class="user-email">lisa.anderson@example.com</div>
+                  </td>
+                  <td>landerson</td>
+                  <td>
+                    <div class="org-badge">
+                      <span class="material-icons small">business</span>
+                      <span>East Branch</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="role-pills">
+                      <span class="role-pill">Manager</span>
+                      <span class="role-pill">Employee</span>
+                    </div>
+                  </td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td>2025-11-11 10:05</td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn" title="Edit User">
+                        <span class="material-icons">edit</span>
+                      </button>
+                      <button class="action-btn" title="More Actions">
+                        <span class="material-icons">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <div></div>
+            <div class="pagination-controls">
+              <button class="page-nav-btn" disabled title="First page">
+                <span class="material-icons">first_page</span>
+              </button>
+              <button class="page-nav-btn" disabled title="Previous page">
+                <span class="material-icons">chevron_left</span>
+              </button>
+              <button class="page-number active">1</button>
+              <span class="page-of">of 1</span>
+              <button class="page-nav-btn" title="Next page">
+                <span class="material-icons">chevron_right</span>
+              </button>
+              <button class="page-nav-btn" title="Last page">
+                <span class="material-icons">last_page</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
-</body>
+  </body>
 </html>
