@@ -13,7 +13,12 @@ export const BASE_ROUTES = {
 export const APP_ROUTES = {
     DASHBOARD: '/application',
     ADMINISTRATION: '/application/administration',
+    SECURITY: '/application/administration/security',
     INVENTORY_CATEGORIES: '/application/administration/inventorycategories',
+    USERS: '/application/administration/security/users',
+    ROLES: '/application/administration/security/roles',
+    POLICIES: '/application/administration/security/policies',
+    PERMISSIONS: '/application/administration/security/permissions',
 };
 
 // Route actions

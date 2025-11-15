@@ -2,15 +2,15 @@ import React, { useEffect, useMemo } from "react";
 import { Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
-import useTableConfig from "../../../../hooks/useTableConfig";
-import DataTable from "../../../../components/DataTable";
-import ListPageLayout from "../../../../components/layouts/ListPageLayout";
-import { usePage } from "../../../../contexts/PageContext";
+import useTableConfig from "../../../../../hooks/useTableConfig";
+import DataTable from "../../../../../components/DataTable";
+import ListPageLayout from "../../../../../components/layouts/ListPageLayout";
+import { usePage } from "../../../../../contexts/PageContext";
 import {
   fetchRoles,
   removeRole,
   exportRolesData,
-} from "../../../../store/rolesSlice";
+} from "../../../../../store/rolesSlice";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 const RolesList = () => {
@@ -21,7 +21,8 @@ const RolesList = () => {
   useEffect(() => {
     const breadcrumbData = [
       { label: t("administration"), path: "/application/administration" },
-      { label: t("roles"), path: "/application/administration/roles" },
+      { label: t("security"), path: "/application/administration/security" },
+      { label: t("roles"), path: "/application/administration/security/roles" },
     ];
 
     setPageConfig({

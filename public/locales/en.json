@@ -82,5 +82,11 @@
   "client_id": "Client ID",
   "select_client": "Select Client",
   "field_required": "This field is required",
-  "description": "Description"
+  "description": "Description",
+  "security": "Security",
+  "security_dashboard": "Security Dashboard",
+  "security_dashboard_description": "Manage users, roles, policies, and permissions",
+  "users": "Users",
+  "policies": "Policies",
+  "permissions": "Permissions"
 }

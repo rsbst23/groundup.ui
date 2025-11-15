@@ -1,17 +1,19 @@
 import React, { useEffect } from "react";
 import { TextField } from "@mui/material";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
-import FormPageLayout from "../../../../components/layouts/FormPageLayout";
-import useFormState from "../../../../hooks/useFormState";
-import { addRole } from "../../../../store/rolesSlice";
-import { usePage } from "../../../../contexts/PageContext";
+import FormPageLayout from "../../../../../../components/layouts/FormPageLayout";
+import useFormState from "../../../../../../hooks/useFormState";
+import { editRole, fetchRoleByName } from "../../../../../../store/rolesSlice";
+import { usePage } from "../../../../../../contexts/PageContext";
 
-const AddRole = () => {
+const EditRole = () => {
   const { t } = useTranslation();
   const { setPageConfig } = usePage();
+  const { name } = useParams();
 
-  // Define validation schema using Yup
+  // Define validation schema using Yup - for edit we only allow updating description
   const validationSchema = yup.object({
     name: yup
       .string()
@@ -24,38 +26,59 @@ const AddRole = () => {
       .max(255, t("error_field_too_long", { max: 255 })),
   });
 
-  // Initialize form state with Yup validation
   const form = useFormState({
-    fetchAction: null,
-    submitAction: addRole,
-    successRedirect: "../",
-    id: null,
-    isEditing: false,
+    fetchAction: fetchRoleByName,
+    submitAction: editRole,
+    successRedirect: "/application/administration/security/roles",
+    id: name,
+    isEditing: true,
+    dataSelector: (state) => state.roles.roles.find((r) => r.name === name),
     validationSchema,
-    initialValues: {
-      name: "",
-      description: "",
+    // Transform data before submission
+    onBeforeSubmit: (values) => {
+      // For role editing, we're submitting both name and description
+      return {
+        name: name, // Original name for identifying the role
+        roleData: {
+          name: values.name,
+          description: values.description,
+        },
+      };
     },
   });
 
   useEffect(() => {
     setPageConfig({
+      title: t("Edit Role"),
       breadcrumb: [
         { label: t("administration"), path: "/application/administration" },
-        { label: t("roles"), path: "/application/administration/roles" },
-        { label: t("add_role"), path: "/application/administration/roles/add" },
+        { label: t("security"), path: "/application/administration/security" },
+        { label: t("roles"), path: "/application/administration/security/roles" },
+        { label: t("Edit Role"), path: location.pathname },
       ],
     });
-  }, [setPageConfig, t]);
+  }, [setPageConfig, location.pathname, t]);
+
+  // Show loading state while fetching data
+  if (form.loading || !form.initialized) {
+    return (
+      <FormPageLayout
+        title={t("Edit Role")}
+        loading={true}
+        error={form.apiError}
+      />
+    );
+  }
 
   return (
     <FormPageLayout
-      title={t("add_role")}
+      title={t("Edit Role")}
       onSave={form.handleSubmit}
       onCancel={form.handleCancel}
       error={form.apiError}
       showDetailedErrors={process.env.NODE_ENV !== "production"}
     >
+      {/* Role Name field - editable */}
       <TextField
         label={t("role_name")}
         name="name"
@@ -76,6 +99,7 @@ const AddRole = () => {
         disabled={form.submitting}
       />
 
+      {/* Description field - editable */}
       <TextField
         label={t("description")}
         name="description"
@@ -98,4 +122,4 @@ const AddRole = () => {
   );
 };
 
-export default AddRole;
+export default EditRole;
