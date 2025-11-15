@@ -1,14 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  TextField,
-  FormControl,
-  FormControlLabel,
-  Switch,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormHelperText,
-} from "@mui/material";
+import { TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 import FormPageLayout from "../../../../components/layouts/FormPageLayout";
@@ -31,15 +22,6 @@ const AddRole = () => {
       .string()
       .nullable()
       .max(255, t("error_field_too_long", { max: 255 })),
-    isClientRole: yup.boolean(),
-    clientId: yup
-      .string()
-      .nullable()
-      .when("isClientRole", {
-        is: true,
-        then: () => yup.string().required(t("error_field_required")),
-        otherwise: () => yup.string().nullable(),
-      }),
   });
 
   // Initialize form state with Yup validation
@@ -53,8 +35,6 @@ const AddRole = () => {
     initialValues: {
       name: "",
       description: "",
-      isClientRole: false,
-      clientId: "",
     },
   });
 
@@ -114,46 +94,6 @@ const AddRole = () => {
         disabled={form.submitting}
         sx={{ mt: 2 }}
       />
-
-      <FormControlLabel
-        control={
-          <Switch
-            name="isClientRole"
-            checked={form.values.isClientRole || false}
-            onChange={form.handleChange}
-            disabled={form.submitting}
-          />
-        }
-        label={t("client_role")}
-        sx={{ mt: 2, display: "block" }}
-      />
-
-      {form.values.isClientRole && (
-        <FormControl
-          fullWidth
-          error={form.touched.clientId && !!form.errors.clientId}
-          disabled={form.submitting}
-          sx={{ mt: 2 }}
-        >
-          <InputLabel id="client-id-label">{t("client_id")}</InputLabel>
-          <Select
-            labelId="client-id-label"
-            name="clientId"
-            value={form.values.clientId || ""}
-            onChange={form.handleChange}
-            onBlur={form.handleBlur}
-            label={t("client_id")}
-            required
-          >
-            <MenuItem value="">{t("select_client")}</MenuItem>
-            <MenuItem value="groundup-ui">groundup-ui</MenuItem>
-            <MenuItem value="groundup-api">groundup-api</MenuItem>
-          </Select>
-          {form.touched.clientId && form.errors.clientId && (
-            <FormHelperText>{form.errors.clientId}</FormHelperText>
-          )}
-        </FormControl>
-      )}
     </FormPageLayout>
   );
 };
