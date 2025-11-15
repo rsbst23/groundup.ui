@@ -15,65 +15,69 @@ import ErrorDisplay from "../common/ErrorDisplay";
  * @param {boolean} props.loading - Show a loading state while fetching data.
  */
 const FormPageLayout = ({
-    title,
-    children,
-    onSave,
-    onCancel,
-    error,
-    showDetailedErrors = false,
-    loading
+  title,
+  children,
+  onSave,
+  onCancel,
+  error,
+  showDetailedErrors = false,
+  loading,
 }) => {
-    const { t } = useTranslation();
-    const formRef = useRef(null);
+  const { t } = useTranslation();
+  const formRef = useRef(null);
 
-    useEffect(() => {
-        if (!loading && formRef.current) {
-            // Find the first input element after the data has loaded
-            const firstInput = formRef.current.querySelector("input, textarea, select");
-            if (firstInput) {
-                firstInput.focus();
-            }
-        }
-    }, [children, loading]); // Trigger focus when form content updates
+  useEffect(() => {
+    if (!loading && formRef.current) {
+      // Find the first input element after the data has loaded
+      const firstInput = formRef.current.querySelector(
+        "input, textarea, select"
+      );
+      if (firstInput) {
+        firstInput.focus();
+      }
+    }
+  }, [loading]); // Only refocus when loading state changes
 
-    return (
-        <Container maxWidth={false} sx={{ mt: 4 }}>
-            <Paper sx={{ p: 3, width: "100%" }}>
-                <Typography variant="h5" sx={{ mb: 2 }}>
-                    {t(title)}
-                </Typography>
+  return (
+    <Container maxWidth={false} sx={{ mt: 4 }}>
+      <Paper sx={{ p: 3, width: "100%" }}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          {t(title)}
+        </Typography>
 
-                {/* Use the standardized error display component */}
-                {error && (
-                    <ErrorDisplay
-                        error={error}
-                        showDetails={showDetailedErrors}
-                    />
-                )}
+        {/* Use the standardized error display component */}
+        {error && (
+          <ErrorDisplay error={error} showDetails={showDetailedErrors} />
+        )}
 
-                <Box
-                    component="form"
-                    ref={formRef}
-                    onSubmit={onSave}
-                    sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}
-                >
-                    {loading ? (
-                        <Typography variant="body1">{t("loading_data")}</Typography>
-                    ) : (
-                        children
-                    )}
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                        <Button type="submit" variant="contained" color="primary">
-                            {t("save")}
-                        </Button>
-                        <Button onClick={onCancel} color="secondary cancel-button">
-                            {t("cancel")}
-                        </Button>
-                    </Box>
-                </Box>
-            </Paper>
-        </Container>
-    );
+        <Box
+          component="form"
+          ref={formRef}
+          onSubmit={onSave}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            width: "100%",
+          }}
+        >
+          {loading ? (
+            <Typography variant="body1">{t("loading_data")}</Typography>
+          ) : (
+            children
+          )}
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button type="submit" variant="contained" color="primary">
+              {t("save")}
+            </Button>
+            <Button onClick={onCancel} color="secondary cancel-button">
+              {t("cancel")}
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
+  );
 };
 
 export default FormPageLayout;

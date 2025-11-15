@@ -76,10 +76,11 @@
   "roles": "Roles",
   "role_name": "Role Name",
   "add_role": "Add Role",
-  "edit_role": "Edit Role",
+  "Edit Role": "Edit Role",
   "client_role": "Client Role",
   "container": "Container",
   "client_id": "Client ID",
   "select_client": "Select Client",
-  "field_required": "This field is required"
+  "field_required": "This field is required",
+  "description": "Description"
 }

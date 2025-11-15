@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Permissions - Ground Up</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Roboto", sans-serif;
+        background-color: #f5f5f5;
+        color: #333333;
+      }
+
+      /* Header */
+      .app-header {
+        background-color: #3a856a;
+        color: #ffffff;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .app-header h1 {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      /* Layout */
+      .app-container {
+        display: flex;
+        min-height: calc(100vh - 64px);
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background-color: #ffffff;
+        border-right: 1px solid #ddd;
+        padding: 16px 0;
+      }
+
+      .sidebar-item {
+        padding: 12px 24px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #333333;
+        text-decoration: none;
+        transition: background-color 0.2s;
+      }
+
+      .sidebar-item:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .sidebar-item.selected {
+        background-color: rgba(58, 133, 106, 0.1);
+        color: #3a856a;
+        font-weight: 500;
+      }
+
+      .sidebar-item .material-icons {
+        font-size: 20px;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        padding: 24px;
+      }
+
+      /* Breadcrumb */
+      .breadcrumb {
+        margin-bottom: 16px;
+        color: #666666;
+        font-size: 0.875rem;
+      }
+
+      .breadcrumb a {
+        color: #666666;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        color: #3a856a;
+      }
+
+      .breadcrumb span {
+        margin: 0 8px;
+      }
+
+      /* Page Card */
+      .page-card {
+        background-color: #ffffff;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+      }
+
+      /* Page Header */
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+
+      .page-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* Divider */
+      .divider {
+        height: 1px;
+        background-color: #e0e0e0;
+        margin: 16px 0;
+      }
+
+      /* Search Box */
+      .search-box {
+        position: relative;
+        margin-bottom: 16px;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 10px 10px 10px 40px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-family: "Roboto", sans-serif;
+        font-size: 0.875rem;
+      }
+
+      .search-box .material-icons {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666666;
+        font-size: 20px;
+      }
+
+      /* Filter Controls */
+      .filter-controls {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      .filter-select {
+        flex: 1;
+        min-width: 200px;
+        padding: 10px 12px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-family: "Roboto", sans-serif;
+        font-size: 0.875rem;
+        background-color: #ffffff;
+        cursor: pointer;
+      }
+
+      /* Summary Bar */
+      .summary-bar {
+        background-color: #f5f5f5;
+        padding: 12px 16px;
+        border-radius: 4px;
+        margin-bottom: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .summary-count {
+        font-weight: 500;
+        color: #666666;
+      }
+
+      .expand-collapse-btns {
+        display: flex;
+        gap: 8px;
+      }
+
+      .text-btn {
+        background: none;
+        border: none;
+        color: #3a856a;
+        cursor: pointer;
+        font-size: 0.875rem;
+        text-decoration: underline;
+        padding: 0;
+      }
+
+      .text-btn:hover {
+        color: #1f7456;
+      }
+
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s;
+        color: #666666;
+      }
+
+      .icon-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      /* Permission Categories */
+      .permission-categories {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      /* Category */
+      .permission-category {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .category-header {
+        background-color: #f5f5f5;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.2s;
+      }
+
+      .category-header:hover {
+        background-color: #eeeeee;
+      }
+
+      .category-expand-icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+      }
+
+      .permission-category.expanded .category-expand-icon {
+        transform: rotate(90deg);
+      }
+
+      .category-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .category-title {
+        font-weight: 500;
+        font-size: 1rem;
+        color: #333333;
+      }
+
+      .category-count {
+        font-size: 0.875rem;
+        color: #666666;
+        background-color: #e0e0e0;
+        padding: 2px 10px;
+        border-radius: 12px;
+      }
+
+      .category-content {
+        display: none;
+        padding: 24px;
+        background-color: #fafafa;
+      }
+
+      .permission-category.expanded .category-content {
+        display: block;
+      }
+
+      /* Group Grid */
+      .group-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 16px;
+      }
+
+      /* Group Card */
+      .group-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        background-color: #ffffff;
+        overflow: hidden;
+        transition: all 0.2s;
+      }
+
+      .group-card:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .group-card.expanded {
+        border-color: #3a856a;
+      }
+
+      .group-header {
+        padding: 14px 16px;
+        background-color: #fafafa;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.2s;
+      }
+
+      .group-header:hover {
+        background-color: #f5f5f5;
+      }
+
+      .group-expand-icon {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+      }
+
+      .group-card.expanded .group-expand-icon {
+        transform: rotate(90deg);
+      }
+
+      .group-info {
+        flex: 1;
+      }
+
+      .group-title {
+        font-weight: 500;
+        color: #333333;
+        margin-bottom: 4px;
+      }
+
+      .group-count {
+        font-size: 0.75rem;
+        color: #666666;
+        background-color: #e8f5e9;
+        padding: 2px 8px;
+        border-radius: 12px;
+      }
+
+      .group-permissions {
+        display: none;
+        padding: 12px;
+        background-color: #ffffff;
+      }
+
+      .group-card.expanded .group-permissions {
+        display: block;
+      }
+
+      /* Permission Items in Group */
+      .permission-item {
+        padding: 10px 12px;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        transition: background-color 0.2s;
+      }
+
+      .permission-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .permission-item:hover {
+        background-color: #fafafa;
+      }
+
+      .permission-name {
+        font-weight: 500;
+        color: #333333;
+        font-size: 0.875rem;
+        margin-bottom: 4px;
+      }
+
+      .permission-description {
+        font-size: 0.75rem;
+        color: #666666;
+        line-height: 1.4;
+      }
+
+      /* Material Icons */
+      .material-icons {
+        font-size: 20px;
+      }
+
+      .material-icons.small {
+        font-size: 16px;
+      }
+
+      /* Hidden class */
+      .hidden {
+        display: none !important;
+      }
+    </style>
+    <script>
+      function toggleCategory(categoryId) {
+        const category = document.getElementById(categoryId);
+        category.classList.toggle("expanded");
+      }
+
+      function toggleGroup(groupId) {
+        const group = document.getElementById(groupId);
+        group.classList.toggle("expanded");
+      }
+
+      function expandAll() {
+        document
+          .querySelectorAll(".permission-category, .group-card")
+          .forEach((node) => {
+            node.classList.add("expanded");
+          });
+      }
+
+      function collapseAll() {
+        document
+          .querySelectorAll(".permission-category, .group-card")
+          .forEach((node) => {
+            node.classList.remove("expanded");
+          });
+      }
+
+      function updateTotalCount() {
+        const totalPermissions =
+          document.querySelectorAll(".permission-item").length;
+        const visiblePermissions = Array.from(
+          document.querySelectorAll(".permission-item")
+        ).filter((item) => item.style.display !== "none").length;
+
+        const countText =
+          visiblePermissions === totalPermissions
+            ? `${totalPermissions} total permission${
+                totalPermissions !== 1 ? "s" : ""
+              }`
+            : `Showing ${visiblePermissions} of ${totalPermissions} permission${
+                totalPermissions !== 1 ? "s" : ""
+              }`;
+
+        document.getElementById("totalCount").textContent = countText;
+      }
+
+      function applyFilters() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const categoryFilter = document.getElementById("categoryFilter").value;
+        const groupFilter = document.getElementById("groupFilter").value;
+
+        const categories = document.querySelectorAll(".permission-category");
+
+        categories.forEach((category) => {
+          const categoryTitle =
+            category.querySelector(".category-title").textContent;
+          const groups = category.querySelectorAll(".group-card");
+
+          const categoryMatchesSearch =
+            categoryTitle.toLowerCase().includes(searchTerm) ||
+            searchTerm === "";
+          const categoryMatchesFilter =
+            categoryFilter === "" || categoryTitle === categoryFilter;
+
+          let categoryHasVisibleContent = false;
+
+          groups.forEach((group) => {
+            const groupTitle = group.querySelector(".group-title").textContent;
+            const items = group.querySelectorAll(".permission-item");
+
+            const groupMatchesSearch =
+              groupTitle.toLowerCase().includes(searchTerm) ||
+              searchTerm === "";
+            const groupMatchesFilter =
+              groupFilter === "" || groupTitle === groupFilter;
+
+            let groupHasVisiblePermissions = false;
+
+            items.forEach((item) => {
+              const permName = item
+                .querySelector(".permission-name")
+                .textContent.toLowerCase();
+              const permDesc = item
+                .querySelector(".permission-description")
+                .textContent.toLowerCase();
+
+              const permissionMatchesSearch =
+                permName.includes(searchTerm) ||
+                permDesc.includes(searchTerm) ||
+                searchTerm === "";
+
+              if (
+                permissionMatchesSearch &&
+                groupMatchesFilter &&
+                categoryMatchesFilter
+              ) {
+                item.style.display = "";
+                groupHasVisiblePermissions = true;
+              } else {
+                item.style.display = "none";
+              }
+            });
+
+            const shouldShowGroup =
+              (groupMatchesSearch ||
+                groupHasVisiblePermissions ||
+                categoryMatchesSearch) &&
+              groupMatchesFilter &&
+              categoryMatchesFilter;
+
+            if (shouldShowGroup) {
+              group.style.display = "";
+              categoryHasVisibleContent = true;
+
+              if (
+                searchTerm !== "" ||
+                groupFilter !== "" ||
+                categoryFilter !== ""
+              ) {
+                group.classList.add("expanded");
+              }
+            } else {
+              group.style.display = "none";
+            }
+          });
+
+          const shouldShowCategory =
+            (categoryMatchesSearch || categoryHasVisibleContent) &&
+            categoryMatchesFilter;
+
+          if (shouldShowCategory) {
+            category.style.display = "";
+
+            if (
+              searchTerm !== "" ||
+              groupFilter !== "" ||
+              categoryFilter !== ""
+            ) {
+              category.classList.add("expanded");
+            }
+          } else {
+            category.style.display = "none";
+          }
+        });
+
+        updateTotalCount();
+      }
+
+      // Initialize on load
+      window.addEventListener("load", () => {
+        updateTotalCount();
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="app-header">
+      <h1>Ground Up</h1>
+      <div class="user-info">
+        <span>Rob User</span>
+        <span class="material-icons">account_circle</span>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="app-container">
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <a href="#" class="sidebar-item">
+          <span class="material-icons">dashboard</span>
+          <span>Administration</span>
+        </a>
+        <a href="roles-list.html" class="sidebar-item">
+          <span class="material-icons">admin_panel_settings</span>
+          <span>Roles</span>
+        </a>
+        <a href="policies-list.html" class="sidebar-item">
+          <span class="material-icons">policy</span>
+          <span>Policies</span>
+        </a>
+        <a href="#" class="sidebar-item selected">
+          <span class="material-icons">lock</span>
+          <span>Permissions</span>
+        </a>
+        <a href="#" class="sidebar-item">
+          <span class="material-icons">people</span>
+          <span>Users</span>
+        </a>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <a href="#">Administration</a>
+          <span>/</span>
+          <span>Permissions</span>
+        </nav>
+
+        <!-- Page Card -->
+        <div class="page-card">
+          <!-- Page Header -->
+          <div class="page-header">
+            <h2>Permissions</h2>
+            <div class="page-actions">
+              <button class="icon-btn" title="More Actions">
+                <span class="material-icons">more_vert</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Search Box -->
+          <div class="search-box">
+            <span class="material-icons">search</span>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search categories, groups, or permissions..."
+              onkeyup="applyFilters()"
+            />
+          </div>
+
+          <!-- Filter Controls -->
+          <div class="filter-controls">
+            <select
+              class="filter-select"
+              id="categoryFilter"
+              onchange="applyFilters()"
+            >
+              <option value="">All Categories</option>
+              <option value="Administration">Administration</option>
+              <option value="Store Management">Store Management</option>
+            </select>
+            <select
+              class="filter-select"
+              id="groupFilter"
+              onchange="applyFilters()"
+            >
+              <option value="">All Groups</option>
+              <option value="Users">Users</option>
+              <option value="System">System</option>
+              <option value="Reports">Reports</option>
+              <option value="Roles & Policies">Roles & Policies</option>
+              <option value="Books">Books</option>
+              <option value="Inventory Categories">Inventory Categories</option>
+            </select>
+          </div>
+
+          <!-- Summary Bar -->
+          <div class="summary-bar">
+            <span id="totalCount" class="summary-count"
+              >0 total permissions</span
+            >
+            <div class="expand-collapse-btns">
+              <button type="button" class="text-btn" onclick="expandAll()">
+                Expand All
+              </button>
+              <span style="color: #cccccc">|</span>
+              <button type="button" class="text-btn" onclick="collapseAll()">
+                Collapse All
+              </button>
+            </div>
+          </div>
+
+          <!-- Permission Categories -->
+          <div class="permission-categories">
+            <!-- ADMINISTRATION CATEGORY -->
+            <div
+              class="permission-category expanded"
+              id="category-administration"
+            >
+              <div
+                class="category-header"
+                onclick="toggleCategory('category-administration')"
+              >
+                <div class="category-expand-icon">
+                  <span class="material-icons small">chevron_right</span>
+                </div>
+                <div class="category-info">
+                  <span class="category-title">Administration</span>
+                  <span class="category-count">12 permissions</span>
+                </div>
+              </div>
+              <div class="category-content">
+                <div class="group-grid">
+                  <!-- Users Group -->
+                  <div class="group-card" id="group-admin-users">
+                    <div
+                      class="group-header"
+                      onclick="toggleGroup('group-admin-users')"
+                    >
+                      <div class="group-expand-icon">
+                        <span class="material-icons small">chevron_right</span>
+                      </div>
+                      <div class="group-info">
+                        <div class="group-title">Users</div>
+                        <span class="group-count">5 permissions</span>
+                      </div>
+                    </div>
+                    <div class="group-permissions">
+                      <div class="permission-item">
+                        <div class="permission-name">users.create</div>
+                        <div class="permission-description">
+                          Create new user accounts
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">users.read</div>
+                        <div class="permission-description">
+                          View user information
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">users.update</div>
+                        <div class="permission-description">
+                          Modify user details and settings
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">users.delete</div>
+                        <div class="permission-description">
+                          Delete user accounts
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">users.assign_roles</div>
+                        <div class="permission-description">
+                          Assign and manage user roles
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- System Group -->
+                  <div class="group-card expanded" id="group-admin-system">
+                    <div
+                      class="group-header"
+                      onclick="toggleGroup('group-admin-system')"
+                    >
+                      <div class="group-expand-icon">
+                        <span class="material-icons small">chevron_right</span>
+                      </div>
+                      <div class="group-info">
+                        <div class="group-title">System</div>
+                        <span class="group-count">3 permissions</span>
+                      </div>
+                    </div>
+                    <div class="group-permissions">
+                      <div class="permission-item">
+                        <div class="permission-name">system.configuration</div>
+                        <div class="permission-description">
+                          Access system configuration settings
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">system.audit_logs</div>
+                        <div class="permission-description">
+                          View system audit logs and history
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">system.backup</div>
+                        <div class="permission-description">
+                          Perform system backups
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Reports Group -->
+                  <div class="group-card" id="group-admin-reports">
+                    <div
+                      class="group-header"
+                      onclick="toggleGroup('group-admin-reports')"
+                    >
+                      <div class="group-expand-icon">
+                        <span class="material-icons small">chevron_right</span>
+                      </div>
+                      <div class="group-info">
+                        <div class="group-title">Reports</div>
+                        <span class="group-count">2 permissions</span>
+                      </div>
+                    </div>
+                    <div class="group-permissions">
+                      <div class="permission-item">
+                        <div class="permission-name">reports.view</div>
+                        <div class="permission-description">
+                          Access and view reports
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">reports.export</div>
+                        <div class="permission-description">
+                          Export reports to various formats
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Roles & Policies Group -->
+                  <div class="group-card" id="group-admin-roles">
+                    <div
+                      class="group-header"
+                      onclick="toggleGroup('group-admin-roles')"
+                    >
+                      <div class="group-expand-icon">
+                        <span class="material-icons small">chevron_right</span>
+                      </div>
+                      <div class="group-info">
+                        <div class="group-title">Roles & Policies</div>
+                        <span class="group-count">2 permissions</span>
+                      </div>
+                    </div>
+                    <div class="group-permissions">
+                      <div class="permission-item">
+                        <div class="permission-name">roles.manage</div>
+                        <div class="permission-description">
+                          Create, edit, and delete roles
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">policies.manage</div>
+                        <div class="permission-description">
+                          Create, edit, and delete policies
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STORE MANAGEMENT CATEGORY -->
+            <div class="permission-category expanded" id="category-store">
+              <div
+                class="category-header"
+                onclick="toggleCategory('category-store')"
+              >
+                <div class="category-expand-icon">
+                  <span class="material-icons small">chevron_right</span>
+                </div>
+                <div class="category-info">
+                  <span class="category-title">Store Management</span>
+                  <span class="category-count">8 permissions</span>
+                </div>
+              </div>
+              <div class="category-content">
+                <div class="group-grid">
+                  <!-- Books Group -->
+                  <div class="group-card expanded" id="group-store-books">
+                    <div
+                      class="group-header"
+                      onclick="toggleGroup('group-store-books')"
+                    >
+                      <div class="group-expand-icon">
+                        <span class="material-icons small">chevron_right</span>
+                      </div>
+                      <div class="group-info">
+                        <div class="group-title">Books</div>
+                        <span class="group-count">4 permissions</span>
+                      </div>
+                    </div>
+                    <div class="group-permissions">
+                      <div class="permission-item">
+                        <div class="permission-name">books.create</div>
+                        <div class="permission-description">
+                          Create new books in the system
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">books.read</div>
+                        <div class="permission-description">
+                          View book details and listings
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">books.update</div>
+                        <div class="permission-description">
+                          Edit existing book information
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">books.delete</div>
+                        <div class="permission-description">
+                          Remove books from the system
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Inventory Categories Group -->
+                  <div class="group-card" id="group-store-inventory">
+                    <div
+                      class="group-header"
+                      onclick="toggleGroup('group-store-inventory')"
+                    >
+                      <div class="group-expand-icon">
+                        <span class="material-icons small">chevron_right</span>
+                      </div>
+                      <div class="group-info">
+                        <div class="group-title">Inventory Categories</div>
+                        <span class="group-count">4 permissions</span>
+                      </div>
+                    </div>
+                    <div class="group-permissions">
+                      <div class="permission-item">
+                        <div class="permission-name">
+                          inventory.categories.create
+                        </div>
+                        <div class="permission-description">
+                          Create new inventory categories
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">
+                          inventory.categories.read
+                        </div>
+                        <div class="permission-description">
+                          View inventory categories
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">
+                          inventory.categories.update
+                        </div>
+                        <div class="permission-description">
+                          Edit inventory category information
+                        </div>
+                      </div>
+                      <div class="permission-item">
+                        <div class="permission-name">
+                          inventory.categories.delete
+                        </div>
+                        <div class="permission-description">
+                          Remove inventory categories
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

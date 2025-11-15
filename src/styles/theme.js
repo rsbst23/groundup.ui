@@ -245,7 +245,7 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     textDecoration: "none",
-                    color: "inherit",
+                    color: "#3a856a",
                     "&:hover": {
                         color: "#1f7456",
                     },
