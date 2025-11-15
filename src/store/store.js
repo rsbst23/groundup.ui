@@ -2,13 +2,15 @@ import { configureStore } from "@reduxjs/toolkit";
 import booksReducer from "./booksSlice";
 import inventoryCategoriesReducer from "./inventoryCategoriesSlice";
 import rolesReducer from "./rolesSlice";
+import policiesReducer from "./policiesSlice";
 import authReducer from "./authSlice";
 
 export const store = configureStore({
   reducer: {
-        auth: authReducer,
-        books: booksReducer,
-        inventoryCategories: inventoryCategoriesReducer,
-        roles: rolesReducer
+    auth: authReducer,
+    books: booksReducer,
+    inventoryCategories: inventoryCategoriesReducer,
+    roles: rolesReducer,
+    policies: policiesReducer,
   },
 });

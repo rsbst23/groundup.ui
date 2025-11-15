@@ -88,5 +88,7 @@
   "security_dashboard_description": "Manage users, roles, policies, and permissions",
   "users": "Users",
   "policies": "Policies",
-  "permissions": "Permissions"
+  "permissions": "Permissions",
+  "policy_name": "Policy Name",
+  "add_policy": "Add Policy"
 }
